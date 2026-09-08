@@ -5,6 +5,7 @@ interface ToolbarProps {
   selectedIds: Set<string>;
   linkMode: boolean;
   multiSelectMode: boolean;
+  dragEnabled: boolean;
   onAddChild: () => void;
   onAddSibling: () => void;
   onDelete: () => void;
@@ -12,8 +13,10 @@ interface ToolbarProps {
   onLink: () => void;
   onCancelLink: () => void;
   onToggleMultiSelect: () => void;
+  onToggleDrag: () => void;
   onSummary: () => void;
   onInsert: () => void;
+  onFormat: () => void;
   onReset: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -26,6 +29,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   selectedIds,
   linkMode,
   multiSelectMode,
+  dragEnabled,
   onAddChild,
   onAddSibling,
   onDelete,
@@ -33,8 +37,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onLink,
   onCancelLink,
   onToggleMultiSelect,
+  onToggleDrag,
   onSummary,
   onInsert,
+  onFormat,
   onReset,
   onZoomIn,
   onZoomOut,
@@ -144,7 +150,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       </div>
 
-      {/* Multi-select toggle */}
+      {/* Multi-select & Drag toggles */}
       <div className="flex items-center gap-1 px-3 border-r border-gray-200">
         <button
           onClick={onToggleMultiSelect}
@@ -153,7 +159,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               ? 'bg-emerald-100 text-emerald-600 ring-2 ring-emerald-300' 
               : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-600'
           }`}
-          title={multiSelectMode ? "Exit Multi-Select Mode" : "Multi-Select Mode (click nodes to select multiple)"}
+          title={multiSelectMode ? "Exit Multi-Select Mode" : "Multi-Select Mode"}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -161,6 +167,22 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <rect x="3" y="14" width="7" height="7" rx="1"/>
             {multiSelectMode && <path d="M16 16l2 2 4-4" strokeWidth="2.5"/>}
             {!multiSelectMode && <rect x="14" y="14" width="7" height="7" rx="1" opacity="0.4"/>}
+          </svg>
+        </button>
+        <button
+          onClick={onToggleDrag}
+          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+            dragEnabled 
+              ? 'bg-orange-100 text-orange-600 ring-2 ring-orange-300' 
+              : 'text-gray-600 hover:bg-orange-50 hover:text-orange-600'
+          }`}
+          title={dragEnabled ? "Disable Node Drag" : "Enable Node Drag"}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M14 4.5V4a2 2 0 0 0-4 0v.5"/>
+            <path d="M18 6.5V6a2 2 0 0 0-4 0v.5"/>
+            <path d="M7 10h10l-1.5 8.5a2 2 0 0 1-2 1.5H10.5a2 2 0 0 1-2-1.5L7 10z" opacity={dragEnabled ? "1" : "0.4"}/>
+            {dragEnabled && <path d="M12 2v4M8 4l1 2M16 4l-1 2" strokeWidth="1.5"/>}
           </svg>
         </button>
       </div>
@@ -203,17 +225,29 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       </div>
 
-      {/* Reset */}
-      <button
-        onClick={onReset}
-        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
-        title="Reset Map"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M1 4v6h6"/>
-          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-        </svg>
-      </button>
+      {/* Format & Reset */}
+      <div className="flex items-center gap-1">
+        <button
+          onClick={onFormat}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+          title="Format Panel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+          </svg>
+        </button>
+        <button
+          onClick={onReset}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+          title="Reset Map"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M1 4v6h6"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };

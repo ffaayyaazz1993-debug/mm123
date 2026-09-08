@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { MindMap } from './components/MindMap';
 import { Toolbar } from './components/Toolbar';
 import { InsertMenu } from './components/InsertMenu';
+import { FormatPanel } from './components/FormatPanel';
 import { useMindMap } from './hooks/useMindMap';
 import { ViewState, MindNode } from './types';
 
@@ -68,8 +69,14 @@ export default function App() {
   // Multi-select mode: when active, regular clicks toggle node selection
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   
+  // Node drag mode: when active, nodes can be dragged to reposition
+  const [dragEnabled, setDragEnabled] = useState(false);
+  
   // Insert menu state
   const [showInsertMenu, setShowInsertMenu] = useState(false);
+  
+  // Format panel state
+  const [showFormatPanel, setShowFormatPanel] = useState(false);
   
   // Helper to find a node by ID
   const findNode = useCallback((node: MindNode, id: string): MindNode | null => {
@@ -194,8 +201,11 @@ export default function App() {
         onLink={startLinkMode}
         onCancelLink={cancelLinkMode}
         onToggleMultiSelect={() => setMultiSelectMode(!multiSelectMode)}
+        onToggleDrag={() => setDragEnabled(!dragEnabled)}
+        dragEnabled={dragEnabled}
         onSummary={handleCreateSummary}
         onInsert={() => setShowInsertMenu(true)}
+        onFormat={() => setShowFormatPanel(!showFormatPanel)}
         onReset={resetMap}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
@@ -217,6 +227,14 @@ export default function App() {
           onInsertSticker={insertSticker}
           onInsertIllustration={insertIllustration}
           onInsertEquation={insertEquation}
+        />
+      )}
+
+      {/* Format Panel */}
+      {showFormatPanel && (
+        <FormatPanel
+          onClose={() => setShowFormatPanel(false)}
+          onMinimize={() => setShowFormatPanel(false)}
         />
       )}
 
@@ -248,6 +266,7 @@ export default function App() {
         onFinishSummaryEdit={() => setEditingSummaryId(null)}
         onDeleteSummary={deleteSummary}
         onToggleMarker={toggleMarker}
+        dragEnabled={dragEnabled}
         onToggleTask={toggleTask}
         onRemoveLink={removeLink}
         onRemoveAttachment={removeAttachment}
@@ -331,8 +350,8 @@ export default function App() {
           <span>Create floating node</span>
         </div>
         <div className="flex items-center gap-2">
-          <kbd className="px-1.5 py-0.5 bg-cyan-100 rounded text-[10px] font-mono border border-cyan-200 text-cyan-700">Triple-tap node</kbd>
-          <span>Drag to reposition</span>
+          <kbd className="px-1.5 py-0.5 bg-orange-100 rounded text-[10px] font-mono border border-orange-200 text-orange-700">✋ btn</kbd>
+          <span>Toggle node drag</span>
         </div>
       </div>
 

@@ -17,6 +17,7 @@ interface MindMapProps {
   linkMode: boolean;
   linkSourceId: string | null;
   multiSelectMode: boolean;
+  dragEnabled: boolean;
   onSelect: (id: string | null) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -60,6 +61,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   linkMode,
   linkSourceId,
   multiSelectMode,
+  dragEnabled,
   onSelect,
   onEdit,
   onTextChange,
@@ -394,6 +396,7 @@ export const MindMap: React.FC<MindMapProps> = ({
                 isCollapsed={node.collapsed || false}
                 isLinkSource={linkSourceId === node.id}
                 isDragging={draggingNodeId === node.id}
+                dragEnabled={dragEnabled}
                 onSelect={(id, e) => handleNodeSelect(id, e)}
                 onEdit={onEdit}
                 onTextChange={onTextChange}

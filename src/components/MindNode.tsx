@@ -15,6 +15,7 @@ interface MindNodeProps {
   isCollapsed: boolean;
   isLinkSource: boolean;
   isDragging: boolean;
+  dragEnabled: boolean;
   onSelect: (id: string, e: React.MouseEvent) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -49,6 +50,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   isCollapsed,
   isLinkSource,
   isDragging,
+  dragEnabled,
   onSelect,
   onEdit,
   onTextChange,
@@ -100,9 +102,6 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
     }
   }, [isEditing]);
 
-  const [tapCount, setTapCount] = useState(0);
-  const [lastTapTime, setLastTapTime] = useState(0);
-
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(node.id);
@@ -110,40 +109,24 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    const now = Date.now();
-    const timeSinceLastTap = now - lastTapTime;
-    
-    // If within 500ms of last tap, increment counter
-    if (timeSinceLastTap < 500) {
-      const newTapCount = tapCount + 1;
-      setTapCount(newTapCount);
-      
-      // Triple tap detected
-      if (newTapCount >= 3) {
-        setTapCount(0);
-        setLastTapTime(0);
-        onDragStart(node.id, e);
-        return; // Don't call onSelect for triple tap
-      }
-    } else {
-      // Reset counter
-      setTapCount(1);
+    // Don't trigger click if we were dragging
+    if (!isDragging) {
+      onSelect(node.id, e);
     }
-    
-    setLastTapTime(now);
-    onSelect(node.id, e);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    // If in drag mode, prevent default to avoid text selection
-    if (isDragging) {
+    if (e.button !== 0) return;
+    // If drag is enabled, start dragging immediately on mousedown
+    if (dragEnabled && !isEditing) {
       e.preventDefault();
+      e.stopPropagation();
+      onDragStart(node.id, e);
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    // Nothing needed here - drag is handled by parent
+    // Drag is handled by parent MindMap component
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
@@ -210,7 +193,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   return (
     <div
-      className={`absolute select-none group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`absolute select-none group ${isDragging ? 'cursor-grabbing' : dragEnabled ? 'cursor-grab' : 'cursor-pointer'}`}
       style={{
         left: `${x}px`,
         top: `${y}px`,
