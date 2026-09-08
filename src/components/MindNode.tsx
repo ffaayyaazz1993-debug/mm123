@@ -107,26 +107,39 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
     onEdit(node.id);
   };
 
+  const [mouseDownPos, setMouseDownPos] = useState<{ x: number; y: number } | null>(null);
+  const [hasMoved, setHasMoved] = useState(false);
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Don't trigger click if we were dragging
-    if (!isDragging) {
+    // Only trigger click if we haven't moved (not dragging)
+    if (!hasMoved) {
       onSelect(node.id, e);
     }
+    // Reset states
+    setMouseDownPos(null);
+    setHasMoved(false);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
-    // If drag is enabled, start dragging immediately on mousedown
-    if (dragEnabled && !isEditing) {
-      e.preventDefault();
-      e.stopPropagation();
-      onDragStart(node.id, e);
-    }
+    // Record the initial mouse position
+    setMouseDownPos({ x: e.clientX, y: e.clientY });
+    setHasMoved(false);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    // Drag is handled by parent MindMap component
+    // If drag is enabled and we have a mousedown position, check if we should start dragging
+    if (dragEnabled && !isEditing && mouseDownPos && !hasMoved) {
+      const dx = Math.abs(e.clientX - mouseDownPos.x);
+      const dy = Math.abs(e.clientY - mouseDownPos.y);
+      
+      // If moved more than 5px, start dragging
+      if (dx > 5 || dy > 5) {
+        setHasMoved(true);
+        onDragStart(node.id, e);
+      }
+    }
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
