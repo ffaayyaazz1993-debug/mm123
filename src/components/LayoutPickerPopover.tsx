@@ -12,85 +12,6 @@ export interface LayoutItem {
   variants: LayoutVariant[];
 }
 
-const LAYOUT_ITEMS: LayoutItem[] = [
-  {
-    id: 'mindmap',
-    name: 'Mind Map',
-    variants: [
-      { id: 'mm-right', name: 'Map Right', thumbnail: <MiniMindMap direction="right" /> },
-      { id: 'mm-left', name: 'Map Left', thumbnail: <MiniMindMap direction="left" /> },
-      { id: 'mm-both', name: 'Map Both', thumbnail: <MiniMindMap direction="both" /> },
-    ],
-  },
-  {
-    id: 'logic',
-    name: 'Logic Chart',
-    variants: [
-      { id: 'lc-right', name: 'Chart Right', thumbnail: <MiniLogic direction="right" /> },
-      { id: 'lc-left', name: 'Chart Left', thumbnail: <MiniLogic direction="left" /> },
-    ],
-  },
-  {
-    id: 'brace',
-    name: 'Brace Map',
-    variants: [
-      { id: 'br-right', name: 'Brace Right', thumbnail: <MiniBrace side="right" /> },
-      { id: 'br-left', name: 'Brace Left', thumbnail: <MiniBrace side="left" /> },
-    ],
-  },
-  {
-    id: 'org',
-    name: 'Org Chart',
-    variants: [
-      { id: 'oc-down', name: 'Chart Down', thumbnail: <MiniOrg direction="down" /> },
-      { id: 'oc-right', name: 'Chart Right', thumbnail: <MiniOrg direction="right" /> },
-      { id: 'oc-left', name: 'Chart Left', thumbnail: <MiniOrg direction="left" /> },
-    ],
-  },
-  {
-    id: 'tree',
-    name: 'Tree Chart',
-    variants: [
-      { id: 'tc-down', name: 'Tree Down', thumbnail: <MiniTree direction="down" /> },
-      { id: 'tc-right', name: 'Tree Right', thumbnail: <MiniTree direction="right" /> },
-      { id: 'tc-left', name: 'Tree Left', thumbnail: <MiniTree direction="left" /> },
-    ],
-  },
-  {
-    id: 'timeline',
-    name: 'Timeline',
-    variants: [
-      { id: 'tl-horiz', name: 'Horizontal', thumbnail: <MiniTimeline orientation="horizontal" /> },
-      { id: 'tl-vert', name: 'Vertical', thumbnail: <MiniTimeline orientation="vertical" /> },
-    ],
-  },
-  {
-    id: 'fishbone',
-    name: 'Fishbone',
-    variants: [
-      { id: 'fb-right', name: 'Fish Right', thumbnail: <MiniFishbone direction="right" /> },
-      { id: 'fb-left', name: 'Fish Left', thumbnail: <MiniFishbone direction="left" /> },
-    ],
-  },
-  {
-    id: 'treetable',
-    name: 'Tree Table',
-    variants: [
-      { id: 'tt-down', name: 'Table Down', thumbnail: <MiniTreeTable /> },
-      { id: 'tt-right', name: 'Table Right', thumbnail: <MiniTreeTable horizontal /> },
-    ],
-  },
-  {
-    id: 'matrix',
-    name: 'Matrix',
-    variants: [
-      { id: 'mx-2x2', name: '2 × 2', thumbnail: <MiniMatrix size={2} /> },
-      { id: 'mx-3x3', name: '3 × 3', thumbnail: <MiniMatrix size={3} /> },
-      { id: 'mx-4x4', name: '4 × 4', thumbnail: <MiniMatrix size={4} /> },
-    ],
-  },
-];
-
 // --- Mini thumbnail SVGs for variants ---
 
 const MiniMindMap: React.FC<{ direction: 'left' | 'right' | 'both' }> = ({ direction }) => (
@@ -335,6 +256,87 @@ const MiniMatrix: React.FC<{ size: number }> = ({ size }) => {
     </svg>
   );
 };
+
+// --- Layout data (defined after thumbnail components) ---
+
+const LAYOUT_ITEMS: LayoutItem[] = [
+  {
+    id: 'mindmap',
+    name: 'Mind Map',
+    variants: [
+      { id: 'mm-right', name: 'Map Right', thumbnail: <MiniMindMap direction="right" /> },
+      { id: 'mm-left', name: 'Map Left', thumbnail: <MiniMindMap direction="left" /> },
+      { id: 'mm-both', name: 'Map Both', thumbnail: <MiniMindMap direction="both" /> },
+    ],
+  },
+  {
+    id: 'logic',
+    name: 'Logic Chart',
+    variants: [
+      { id: 'lc-right', name: 'Chart Right', thumbnail: <MiniLogic direction="right" /> },
+      { id: 'lc-left', name: 'Chart Left', thumbnail: <MiniLogic direction="left" /> },
+    ],
+  },
+  {
+    id: 'brace',
+    name: 'Brace Map',
+    variants: [
+      { id: 'br-right', name: 'Brace Right', thumbnail: <MiniBrace side="right" /> },
+      { id: 'br-left', name: 'Brace Left', thumbnail: <MiniBrace side="left" /> },
+    ],
+  },
+  {
+    id: 'org',
+    name: 'Org Chart',
+    variants: [
+      { id: 'oc-down', name: 'Chart Down', thumbnail: <MiniOrg direction="down" /> },
+      { id: 'oc-right', name: 'Chart Right', thumbnail: <MiniOrg direction="right" /> },
+      { id: 'oc-left', name: 'Chart Left', thumbnail: <MiniOrg direction="left" /> },
+    ],
+  },
+  {
+    id: 'tree',
+    name: 'Tree Chart',
+    variants: [
+      { id: 'tc-down', name: 'Tree Down', thumbnail: <MiniTree direction="down" /> },
+      { id: 'tc-right', name: 'Tree Right', thumbnail: <MiniTree direction="right" /> },
+      { id: 'tc-left', name: 'Tree Left', thumbnail: <MiniTree direction="left" /> },
+    ],
+  },
+  {
+    id: 'timeline',
+    name: 'Timeline',
+    variants: [
+      { id: 'tl-horiz', name: 'Horizontal', thumbnail: <MiniTimeline orientation="horizontal" /> },
+      { id: 'tl-vert', name: 'Vertical', thumbnail: <MiniTimeline orientation="vertical" /> },
+    ],
+  },
+  {
+    id: 'fishbone',
+    name: 'Fishbone',
+    variants: [
+      { id: 'fb-right', name: 'Fish Right', thumbnail: <MiniFishbone direction="right" /> },
+      { id: 'fb-left', name: 'Fish Left', thumbnail: <MiniFishbone direction="left" /> },
+    ],
+  },
+  {
+    id: 'treetable',
+    name: 'Tree Table',
+    variants: [
+      { id: 'tt-down', name: 'Table Down', thumbnail: <MiniTreeTable /> },
+      { id: 'tt-right', name: 'Table Right', thumbnail: <MiniTreeTable horizontal /> },
+    ],
+  },
+  {
+    id: 'matrix',
+    name: 'Matrix',
+    variants: [
+      { id: 'mx-2x2', name: '2 × 2', thumbnail: <MiniMatrix size={2} /> },
+      { id: 'mx-3x3', name: '3 × 3', thumbnail: <MiniMatrix size={3} /> },
+      { id: 'mx-4x4', name: '4 × 4', thumbnail: <MiniMatrix size={4} /> },
+    ],
+  },
+];
 
 // --- Main Popover Component ---
 

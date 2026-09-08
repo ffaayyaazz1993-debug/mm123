@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { LayoutPickerPopover } from './LayoutPickerPopover';
 
 interface FormatPanelProps {
   onClose: () => void;
@@ -57,6 +58,9 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize })
   const [themeOpen, setThemeOpen] = useState(false);
   const [fontOpen, setFontOpen] = useState(false);
   const [widthOpen, setWidthOpen] = useState(false);
+  const [layoutPickerOpen, setLayoutPickerOpen] = useState(false);
+  const [selectedLayoutName, setSelectedLayoutName] = useState('Org Chart');
+  const layoutCardRef = useRef<HTMLButtonElement>(null);
 
   const tabs = [
     { id: 'style' as const, label: 'Style' },
@@ -162,7 +166,8 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize })
               {/* Layout card */}
               <div style={{ margin: '12px' }}>
                 <button
-                  onClick={() => setLayoutOpen(!layoutOpen)}
+                  ref={layoutCardRef}
+                  onClick={() => setLayoutPickerOpen(!layoutPickerOpen)}
                   className="w-full flex items-center gap-3 p-2.5 rounded-md transition-colors"
                   style={{ background: '#2a2a2a', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
@@ -179,10 +184,20 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize })
                   >
                     <MiniOrgChart accentColor="#9ca3af" size="large" />
                   </div>
-                  <span className="flex-1 text-left" style={{ color: '#e0e0e0', fontSize: '13px' }}>Org Chart</span>
+                  <span className="flex-1 text-left" style={{ color: '#e0e0e0', fontSize: '13px' }}>{selectedLayoutName}</span>
                   <ChevronDown className="flex-shrink-0" />
                 </button>
               </div>
+
+              {/* Layout Picker Popover */}
+              <LayoutPickerPopover
+                isOpen={layoutPickerOpen}
+                onClose={() => setLayoutPickerOpen(false)}
+                onSelect={(layoutId, layoutName, variantId, variantName) => {
+                  setSelectedLayoutName(layoutName);
+                }}
+                anchorRef={layoutCardRef as React.RefObject<HTMLElement>}
+              />
 
               {/* Divider */}
               <div style={{ height: '1px', background: '#333' }}/>
