@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { LayoutPickerPopover } from './LayoutPickerPopover';
 
 interface FormatPanelProps {
@@ -91,6 +91,12 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
   const [widthOpen, setWidthOpen] = useState(false);
   const [layoutPickerOpen, setLayoutPickerOpen] = useState(false);
   const layoutCardRef = useRef<HTMLButtonElement>(null);
+  
+  // Drag state
+  const [position, setPosition] = useState({ x: window.innerWidth - 220, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: 'style' as const, label: 'Style' },
@@ -98,13 +104,61 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
     { id: 'map' as const, label: 'Map' },
   ];
 
+  // Drag handlers
+  const handleDragStart = (e: React.MouseEvent) => {
+    if (panelRef.current) {
+      const rect = panelRef.current.getBoundingClientRect();
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragMove = useCallback((e: MouseEvent) => {
+    if (isDragging) {
+      const newX = e.clientX - dragOffset.x;
+      const newY = e.clientY - dragOffset.y;
+      
+      // Keep panel within viewport bounds
+      const maxX = window.innerWidth - 210;
+      const maxY = window.innerHeight - 100; // Leave some space at bottom
+      
+      setPosition({
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY))
+      });
+    }
+  }, [isDragging, dragOffset]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleDragMove);
+      document.addEventListener('mouseup', handleDragEnd);
+      return () => {
+        document.removeEventListener('mousemove', handleDragMove);
+        document.removeEventListener('mouseup', handleDragEnd);
+      };
+    }
+  }, [isDragging, handleDragMove, handleDragEnd]);
+
   return (
     <div
-      className="fixed top-0 right-0 h-full z-[200] flex"
+      ref={panelRef}
+      className="fixed z-[200] flex"
       style={{
         width: '210px',
+        height: '100vh',
+        left: `${position.x}px`,
+        top: `${position.y}px`,
         fontFamily: 'Inter, "Segoe UI", sans-serif',
         fontSize: '13px',
+        transition: isDragging ? 'none' : 'box-shadow 0.2s'
       }}
     >
       {/* Panel */}
@@ -114,6 +168,10 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
           width: '210px',
           background: '#1e1e1e',
           color: '#fff',
+          borderRadius: isDragging ? '8px' : '0',
+          boxShadow: isDragging 
+            ? '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)' 
+            : '0 0 20px rgba(0,0,0,0.3)',
         }}
       >
         {/* Custom scrollbar styles */}
@@ -124,12 +182,23 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
           .format-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
         `}</style>
 
-        {/* Header */}
-        <div className="relative flex flex-col items-center pt-3 pb-2" style={{ minHeight: '64px' }}>
+        {/* Header - Drag Handle */}
+        <div 
+          className="relative flex flex-col items-center pt-3 pb-2" 
+          style={{ 
+            minHeight: '64px',
+            cursor: isDragging ? 'grabbing' : 'grab',
+            userSelect: 'none'
+          }}
+          onMouseDown={handleDragStart}
+        >
           {/* Window controls */}
           <div className="absolute top-2 right-2 flex items-center gap-1">
             <button
-              onClick={onMinimize}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMinimize();
+              }}
               className="w-5 h-5 flex items-center justify-center rounded transition-colors"
               style={{ color: '#8b8b8b' }}
               onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
@@ -140,7 +209,10 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
               </svg>
             </button>
             <button
-              onClick={onClose}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
               className="w-5 h-5 flex items-center justify-center rounded transition-colors"
               style={{ color: '#8b8b8b' }}
               onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
@@ -158,6 +230,12 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
             <path d="M3 9h18M9 21V9"/>
           </svg>
           <span className="mt-1" style={{ fontSize: '13px', color: '#fff' }}>Format</span>
+          {/* Drag indicator dots */}
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+            <div className="w-1 h-1 rounded-full" style={{ background: '#666' }}></div>
+            <div className="w-1 h-1 rounded-full" style={{ background: '#666' }}></div>
+            <div className="w-1 h-1 rounded-full" style={{ background: '#666' }}></div>
+          </div>
         </div>
 
         {/* Tab bar */}
