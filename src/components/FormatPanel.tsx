@@ -796,7 +796,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                       overflowY: 'auto',
                     }}
                   >
-                    {['Default', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New', 'Verdana', 'Trebuchet MS', 'Tahoma', 'Comic Sans MS', 'Palatino', 'Garamond', 'Bookman', 'Avant Garde', 'Impact', 'Lucida Console', 'Monaco', 'Brush Script MT', 'Papyrus', 'Copperplate'].map((font) => (
+                    {['Default', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New', 'Verdana', 'Trebuchet MS', 'Tahoma', 'Comic Sans MS', 'Palatino', 'Garamond', 'Bookman', 'Avant Garde', 'Impact', 'Lucida Console', 'Monaco', 'Brush Script MT', 'Papyrus', 'Copperplate', 'Calibri', 'Cambria', 'Candara', 'Consolas', 'Constantia', 'Corbel', 'Franklin Gothic', 'Century Gothic', 'Optima', 'Futura', 'Baskerville', 'Didot', 'Bodoni', 'Rockwell', 'Segoe UI', 'Lucida Sans', 'Menlo', 'SF Mono', 'Zapfino', 'Snell Roundhand'].map((font) => (
                       <button
                         key={font}
                         onClick={() => {
