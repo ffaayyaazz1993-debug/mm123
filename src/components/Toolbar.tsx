@@ -18,6 +18,8 @@ interface ToolbarProps {
   onInsert: () => void;
   onFormat: () => void;
   onReset: () => void;
+  onExport: () => void;
+  onImport: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onFitView: () => void;
@@ -42,6 +44,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onInsert,
   onFormat,
   onReset,
+  onExport,
+  onImport,
   onZoomIn,
   onZoomOut,
   onFitView,
@@ -239,6 +243,28 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </svg>
         </button>
         <button
+          onClick={onExport}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-green-50 hover:text-green-600 transition-colors"
+          title="Export (Ctrl+S)"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7,10 12,15 17,10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+        <button
+          onClick={onImport}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+          title="Import (Ctrl+O)"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17,8 12,3 7,8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </button>
+        <button
           onClick={onReset}
           className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
           title="Reset Map"
@@ -337,6 +363,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <div className="flex items-center gap-2">
               <kbd className="px-1.5 py-0.5 bg-orange-100 rounded text-[10px] font-mono border border-orange-200 text-orange-700">✋ btn</kbd>
               <span>Toggle node drag</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-green-100 rounded text-[10px] font-mono border border-green-200 text-green-700">Ctrl+S</kbd>
+              <span>Export mind map</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-blue-100 rounded text-[10px] font-mono border border-blue-200 text-blue-700">Ctrl+O</kbd>
+              <span>Import mind map</span>
             </div>
           </div>
         </div>

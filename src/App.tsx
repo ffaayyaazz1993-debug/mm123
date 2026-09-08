@@ -58,6 +58,9 @@ export default function App() {
     removeNote,
     removeLabel,
     removeTask,
+    setRoot,
+    setRelationships,
+    setSummaries,
   } = useMindMap();
 
   const [viewState, setViewState] = useState<ViewState>({
@@ -127,6 +130,58 @@ export default function App() {
     return findNode(root, selectedId);
   }, [root, selectedId, findNode]);
 
+  // Export mind map to JSON file
+  const handleExport = useCallback(() => {
+    const data = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      root,
+      relationships,
+      summaries,
+      formatOptions,
+      selectedLayout,
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mindmap-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [root, relationships, summaries, formatOptions, selectedLayout]);
+
+  // Import mind map from JSON file
+  const handleImport = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target?.result as string);
+          if (data.root) {
+            setRoot(data.root);
+            if (data.relationships) setRelationships(data.relationships);
+            if (data.summaries) setSummaries(data.summaries);
+            if (data.formatOptions) setFormatOptions(data.formatOptions);
+            if (data.selectedLayout) setSelectedLayout(data.selectedLayout);
+          }
+        } catch (err) {
+          console.error('Failed to import mind map:', err);
+          alert('Failed to import mind map. Invalid file format.');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }, []);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -194,12 +249,20 @@ export default function App() {
           e.preventDefault();
           setShowInsertMenu(true);
         }
+      } else if ((e.key === 's' || e.key === 'S') && (e.ctrlKey || e.metaKey)) {
+        // Export (Ctrl+S / Cmd+S)
+        e.preventDefault();
+        handleExport();
+      } else if ((e.key === 'o' || e.key === 'O') && (e.ctrlKey || e.metaKey)) {
+        // Import (Ctrl+O / Cmd+O)
+        e.preventDefault();
+        handleImport();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, multiSelectMode, showInsertMenu, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary]);
+  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, multiSelectMode, showInsertMenu, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary, handleExport, handleImport]);
 
   const handleZoomIn = useCallback(() => {
     setViewState(prev => ({ ...prev, scale: Math.min(prev.scale * 1.2, 3) }));
@@ -239,6 +302,8 @@ export default function App() {
         onSummary={handleCreateSummary}
         onInsert={() => setShowInsertMenu(true)}
         onFormat={() => setShowFormatPanel(!showFormatPanel)}
+        onExport={handleExport}
+        onImport={handleImport}
         onReset={resetMap}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}

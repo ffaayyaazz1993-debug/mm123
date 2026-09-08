@@ -626,5 +626,8 @@ export function useMindMap() {
     removeNote,
     removeLabel,
     removeTask,
+    setRoot,
+    setRelationships,
+    setSummaries,
   };
 }
