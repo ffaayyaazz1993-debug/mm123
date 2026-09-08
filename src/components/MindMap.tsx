@@ -26,6 +26,7 @@ interface MindMapProps {
   };
   formatOptions: {
     theme: number;
+    themeType: 'colorful' | 'classic';
     backgroundColor: string;
     globalFont: string;
     branchWidth: string;
@@ -272,6 +273,26 @@ export const MindMap: React.FC<MindMapProps> = ({
 
   const visibleNodes = useMemo(() => getVisibleNodes(root), [root, getVisibleNodes]);
 
+  // Theme colors based on theme type
+  const COLORFUL_THEMES = [
+    { colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'] },
+    { colors: ['#ff6b6b', '#feca57', '#ff9ff3'] },
+    { colors: ['#00d2ff', '#3a7bd5', '#00d2ff'] },
+    { colors: ['#56ab2f', '#a8e063', '#56ab2f'] },
+    { colors: ['#ff6b9d', '#c44569', '#f8b500'] },
+    { colors: ['#667eea', '#764ba2', '#f093fb'] },
+  ];
+  const CLASSIC_THEMES = [
+    { colors: ['#4a90d9'] },
+    { colors: ['#58b368'] },
+    { colors: ['#d9534f'] },
+    { colors: ['#8e6bbf'] },
+    { colors: ['#e6a23c'] },
+    { colors: ['#e0407b'] },
+  ];
+  
+  const themes = formatOptions.themeType === 'colorful' ? COLORFUL_THEMES : CLASSIC_THEMES;
+
   // Handle node click with multi-select support
   const handleNodeSelect = useCallback((id: string, e: React.MouseEvent) => {
     if (linkMode) {
@@ -371,7 +392,7 @@ export const MindMap: React.FC<MindMapProps> = ({
           root={root} 
           nodePositions={nodePositions} 
           coloredBranch={formatOptions.coloredBranch}
-          themeColor={['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'][formatOptions.theme]}
+          themeColor={themes[formatOptions.theme]?.colors[0] || '#4a90d9'}
           branchWidth={formatOptions.branchWidth}
         />
 
@@ -408,9 +429,11 @@ export const MindMap: React.FC<MindMapProps> = ({
             const nodeY = isBeingDragged ? draggedNodePosition.y : pos.y;
 
             // Apply theme color if coloredBranch is enabled
-            const themeColors = ['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'];
+            const themeColors = themes[formatOptions.theme]?.colors || ['#4a90d9'];
+            const nodeColor = themeColors[Math.floor(Math.random() * themeColors.length)];
+            
             const nodeWithTheme = formatOptions.coloredBranch 
-              ? { ...node, color: node.color || themeColors[formatOptions.theme] }
+              ? { ...node, color: node.color || nodeColor }
               : node;
 
             return (

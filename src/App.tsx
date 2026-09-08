@@ -94,6 +94,7 @@ export default function App() {
   // Format options state
   const [formatOptions, setFormatOptions] = useState({
     theme: 0,
+    themeType: 'colorful' as 'colorful' | 'classic',
     backgroundColor: '#f5f5f5',
     globalFont: 'Default',
     branchWidth: 'Default',

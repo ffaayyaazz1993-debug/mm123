@@ -18,6 +18,7 @@ interface FormatPanelProps {
   }) => void;
   formatOptions: {
     theme: number;
+    themeType: 'colorful' | 'classic';
     backgroundColor: string;
     globalFont: string;
     branchWidth: string;
@@ -25,6 +26,7 @@ interface FormatPanelProps {
   };
   onFormatChange: (format: {
     theme?: number;
+    themeType?: 'colorful' | 'classic';
     backgroundColor?: string;
     globalFont?: string;
     branchWidth?: string;
@@ -32,8 +34,25 @@ interface FormatPanelProps {
   }) => void;
 }
 
-const THEME_COLORS = ['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'];
-const THEME_NAMES = ['Rose', 'Ocean', 'Forest', 'Amber', 'Ruby', 'Violet'];
+// Colorful gradient themes
+const COLORFUL_THEMES = [
+  { id: 'rainbow', name: 'Rainbow', gradient: 'linear-gradient(135deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7)', colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'] },
+  { id: 'sunset', name: 'Sunset', gradient: 'linear-gradient(135deg, #ff6b6b, #feca57, #ff9ff3)', colors: ['#ff6b6b', '#feca57', '#ff9ff3'] },
+  { id: 'ocean', name: 'Ocean', gradient: 'linear-gradient(135deg, #00d2ff, #3a7bd5, #00d2ff)', colors: ['#00d2ff', '#3a7bd5', '#00d2ff'] },
+  { id: 'forest', name: 'Forest', gradient: 'linear-gradient(135deg, #56ab2f, #a8e063, #56ab2f)', colors: ['#56ab2f', '#a8e063', '#56ab2f'] },
+  { id: 'candy', name: 'Candy', gradient: 'linear-gradient(135deg, #ff6b9d, #c44569, #f8b500)', colors: ['#ff6b9d', '#c44569', '#f8b500'] },
+  { id: 'aurora', name: 'Aurora', gradient: 'linear-gradient(135deg, #667eea, #764ba2, #f093fb)', colors: ['#667eea', '#764ba2', '#f093fb'] },
+];
+
+// Classic solid color themes
+const CLASSIC_THEMES = [
+  { id: 'blue', name: 'Blue', gradient: 'linear-gradient(135deg, #4a90d9, #4a90d9)', colors: ['#4a90d9'] },
+  { id: 'green', name: 'Green', gradient: 'linear-gradient(135deg, #58b368, #58b368)', colors: ['#58b368'] },
+  { id: 'red', name: 'Red', gradient: 'linear-gradient(135deg, #d9534f, #d9534f)', colors: ['#d9534f'] },
+  { id: 'purple', name: 'Purple', gradient: 'linear-gradient(135deg, #8e6bbf, #8e6bbf)', colors: ['#8e6bbf'] },
+  { id: 'orange', name: 'Orange', gradient: 'linear-gradient(135deg, #e6a23c, #e6a23c)', colors: ['#e6a23c'] },
+  { id: 'pink', name: 'Pink', gradient: 'linear-gradient(135deg, #e0407b, #e0407b)', colors: ['#e0407b'] },
+];
 
 // Mini org chart SVG for thumbnails
 const MiniOrgChart: React.FC<{ accentColor?: string; size?: 'large' | 'small' }> = ({ accentColor = '#9ca3af', size = 'large' }) => {
@@ -340,17 +359,23 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = '#2a2a2a')}
                 >
-                  {/* Rainbow pill */}
+                  {/* Theme preview pill */}
                   <div
                     style={{
                       width: '60px',
                       height: '10px',
                       borderRadius: '5px',
-                      background: 'linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7)',
+                      background: formatOptions.themeType === 'colorful' 
+                        ? COLORFUL_THEMES[formatOptions.theme]?.gradient 
+                        : CLASSIC_THEMES[formatOptions.theme]?.gradient,
                       flexShrink: 0,
                     }}
                   />
-                  <span className="flex-1 text-left" style={{ color: '#e0e0e0', fontSize: '13px' }}>Rainbow</span>
+                  <span className="flex-1 text-left" style={{ color: '#e0e0e0', fontSize: '13px' }}>
+                    {formatOptions.themeType === 'colorful' 
+                      ? COLORFUL_THEMES[formatOptions.theme]?.name 
+                      : CLASSIC_THEMES[formatOptions.theme]?.name}
+                  </span>
                   <ChevronDown className="flex-shrink-0" />
                 </button>
                 {/* + button */}
@@ -375,12 +400,37 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                 </button>
               </div>
 
-              {/* Theme preview grid */}
-              <div style={{ margin: '12px' }} className="grid grid-cols-3 gap-2">
-                {THEME_COLORS.map((color, idx) => (
+              {/* Colorful Themes Section */}
+              <div style={{ margin: '12px 12px 6px 12px', fontSize: '10px', color: '#8b8b8b', fontWeight: 600 }}>Colorful</div>
+              <div style={{ margin: '0 12px 12px 12px' }} className="grid grid-cols-3 gap-2">
+                {COLORFUL_THEMES.map((theme, idx) => (
                   <button
-                    key={idx}
-                    onClick={() => onFormatChange({ theme: idx })}
+                    key={theme.id}
+                    onClick={() => onFormatChange({ theme: idx, themeType: 'colorful' })}
+                    className="flex flex-col items-center justify-center transition-all"
+                    style={{
+                      width: '56px',
+                      height: '40px',
+                      background: theme.gradient,
+                      borderRadius: '4px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      outline: formatOptions.theme === idx && formatOptions.themeType === 'colorful' ? '2px solid #d0d0d0' : '2px solid transparent',
+                      outlineOffset: '1px',
+                    }}
+                  >
+                    <MiniOrgChart accentColor="#fff" size="small" />
+                  </button>
+                ))}
+              </div>
+
+              {/* Classic Themes Section */}
+              <div style={{ margin: '6px 12px 6px 12px', fontSize: '10px', color: '#8b8b8b', fontWeight: 600 }}>Classic</div>
+              <div style={{ margin: '0 12px 12px 12px' }} className="grid grid-cols-3 gap-2">
+                {CLASSIC_THEMES.map((theme, idx) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => onFormatChange({ theme: idx, themeType: 'classic' })}
                     className="flex flex-col items-center justify-center transition-all"
                     style={{
                       width: '56px',
@@ -389,11 +439,11 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                       borderRadius: '4px',
                       border: 'none',
                       cursor: 'pointer',
-                      outline: formatOptions.theme === idx ? '2px solid #d0d0d0' : '2px solid transparent',
+                      outline: formatOptions.theme === idx && formatOptions.themeType === 'classic' ? '2px solid #d0d0d0' : '2px solid transparent',
                       outlineOffset: '1px',
                     }}
                   >
-                    <MiniOrgChart accentColor={color} size="small" />
+                    <MiniOrgChart accentColor={theme.colors[0]} size="small" />
                   </button>
                 ))}
               </div>
