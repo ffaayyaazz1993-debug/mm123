@@ -100,17 +100,78 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
     }
   }, [isEditing]);
 
+  const [holdTimer, setHoldTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [mouseDownPos, setMouseDownPos] = useState({ x: 0, y: 0 });
+
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Double-click starts drag mode instead of edit mode
-    onDragStart(node.id, e);
+    onEdit(node.id);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    // If already in drag mode, continue dragging
+    if (e.button !== 0) return; // Only left click
+    
+    const startX = e.clientX;
+    const startY = e.clientY;
+    setMouseDownPos({ x: startX, y: startY });
+    
+    // Start hold timer
+    const timer = setTimeout(() => {
+      // After 3 seconds, enter drag mode
+      onDragStart(node.id, e);
+      setHoldProgress(100);
+    }, 3000);
+    
+    setHoldTimer(timer);
+    
+    // Update progress every 100ms
+    const progressInterval = setInterval(() => {
+      setHoldProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + 3.33; // 100% / 30 intervals (3 seconds / 100ms)
+      });
+    }, 100);
+    
+    // Store interval ID to clear it later
+    (timer as any).progressInterval = progressInterval;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // If not in drag mode yet, check if mouse moved too much
+    if (!isDragging && holdTimer) {
+      const dx = Math.abs(e.clientX - mouseDownPos.x);
+      const dy = Math.abs(e.clientY - mouseDownPos.y);
+      
+      // If moved more than 5px, cancel the hold
+      if (dx > 5 || dy > 5) {
+        clearTimeout(holdTimer);
+        if ((holdTimer as any).progressInterval) {
+          clearInterval((holdTimer as any).progressInterval);
+        }
+        setHoldTimer(null);
+        setHoldProgress(0);
+      }
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    // Cancel hold timer if still active
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      if ((holdTimer as any).progressInterval) {
+        clearInterval((holdTimer as any).progressInterval);
+      }
+      setHoldTimer(null);
+      setHoldProgress(0);
+    }
+    
+    // If in drag mode, end drag
     if (isDragging) {
-      e.stopPropagation();
-      e.preventDefault();
+      onDragEnd(node.id);
     }
   };
 
@@ -176,7 +237,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   return (
     <div
-      className={`absolute select-none group ${isDragging ? 'cursor-grabbing' : 'cursor-pointer'}`}
+      className={`absolute select-none group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       style={{
         left: `${x}px`,
         top: `${y}px`,
@@ -188,7 +249,28 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
+      {/* Hold progress indicator */}
+      {holdProgress > 0 && holdProgress < 100 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <svg className="w-full h-full -rotate-90" style={{ filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.2))' }}>
+            <circle
+              cx="50%"
+              cy="50%"
+              r="45%"
+              fill="none"
+              stroke={color}
+              strokeWidth="3"
+              strokeDasharray={`${holdProgress * 2.83} 283`}
+              strokeLinecap="round"
+              opacity="0.6"
+            />
+          </svg>
+        </div>
+      )}
       <div
         className="relative flex items-center gap-2 whitespace-nowrap transition-all duration-200"
         style={{
