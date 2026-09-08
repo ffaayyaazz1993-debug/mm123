@@ -91,34 +91,36 @@ export const InsertMenu: React.FC<InsertMenuProps> = ({
   }
 
   return (
-    <div className="absolute top-full left-0 mt-2 z-[100] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden min-w-[280px]">
-      <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-700">Insert</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div className="p-3 max-h-[400px] overflow-y-auto">
-        <div className="grid grid-cols-2 gap-2">
-          {menuItems.map(item => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden min-w-[320px]" onClick={(e) => e.stopPropagation()}>
+        <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-700">Insert</h3>
             <button
-              key={item.id}
-              onClick={() => handleItemClick(item.id)}
-              className={`flex items-center gap-2 p-3 rounded-lg transition-all hover:scale-105 ${item.color}`}
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-sm font-medium">{item.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
-          ))}
+          </div>
+        </div>
+
+        <div className="p-3 max-h-[400px] overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2">
+            {menuItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => handleItemClick(item.id)}
+                className={`flex items-center gap-2 p-3 rounded-lg transition-all hover:scale-105 ${item.color}`}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span className="text-sm font-medium">{item.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
