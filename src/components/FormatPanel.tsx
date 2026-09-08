@@ -37,21 +37,30 @@ interface FormatPanelProps {
 // Colorful gradient themes
 const COLORFUL_THEMES = [
   { id: 'rainbow', name: 'Rainbow', gradient: 'linear-gradient(135deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7)', colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'] },
-  { id: 'sunset', name: 'Sunset', gradient: 'linear-gradient(135deg, #ff6b6b, #feca57, #ff9ff3)', colors: ['#ff6b6b', '#feca57', '#ff9ff3'] },
-  { id: 'ocean', name: 'Ocean', gradient: 'linear-gradient(135deg, #00d2ff, #3a7bd5, #00d2ff)', colors: ['#00d2ff', '#3a7bd5', '#00d2ff'] },
-  { id: 'forest', name: 'Forest', gradient: 'linear-gradient(135deg, #56ab2f, #a8e063, #56ab2f)', colors: ['#56ab2f', '#a8e063', '#56ab2f'] },
-  { id: 'candy', name: 'Candy', gradient: 'linear-gradient(135deg, #ff6b9d, #c44569, #f8b500)', colors: ['#ff6b9d', '#c44569', '#f8b500'] },
-  { id: 'aurora', name: 'Aurora', gradient: 'linear-gradient(135deg, #667eea, #764ba2, #f093fb)', colors: ['#667eea', '#764ba2', '#f093fb'] },
+  { id: 'energy', name: 'Energy', gradient: 'linear-gradient(135deg, #ff6b35, #f7931e, #ffd23f)', colors: ['#ff6b35', '#f7931e', '#ffd23f'] },
+  { id: 'ocean', name: 'Ocean', gradient: 'linear-gradient(135deg, #00d2ff, #3a7bd5, #0063b2)', colors: ['#00d2ff', '#3a7bd5', '#0063b2'] },
+  { id: 'dancing', name: 'Dancing', gradient: 'linear-gradient(135deg, #ff6b9d, #c44569, #a855f7)', colors: ['#ff6b9d', '#c44569', '#a855f7'] },
+  { id: 'code', name: 'Code', gradient: 'linear-gradient(135deg, #00d9ff, #00ff88, #00d9ff)', colors: ['#00d9ff', '#00ff88', '#00d9ff'] },
+  { id: 'kimono', name: 'Kimono Island', gradient: 'linear-gradient(135deg, #dc2626, #fbbf24, #1f2937)', colors: ['#dc2626', '#fbbf24', '#1f2937'] },
+  { id: 'roses', name: 'Roses', gradient: 'linear-gradient(135deg, #f43f5e, #ec4899, #be185d)', colors: ['#f43f5e', '#ec4899', '#be185d'] },
+  { id: 'mint', name: 'Mint', gradient: 'linear-gradient(135deg, #6ee7b7, #34d399, #10b981)', colors: ['#6ee7b7', '#34d399', '#10b981'] },
+  { id: 'greentea', name: 'Green Tea', gradient: 'linear-gradient(135deg, #84cc16, #65a30d, #4d7c0f)', colors: ['#84cc16', '#65a30d', '#4d7c0f'] },
+  { id: 'space', name: 'Space', gradient: 'linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95)', colors: ['#1e1b4b', '#312e81', '#4c1d95'] },
+  { id: 'shopisticated', name: 'Shopisticated', gradient: 'linear-gradient(135deg, #7c3aed, #a855f7, #d4af37)', colors: ['#7c3aed', '#a855f7', '#d4af37'] },
+  { id: 'innocence', name: 'Innocence', gradient: 'linear-gradient(135deg, #fbcfe8, #f9a8d4, #f472b6)', colors: ['#fbcfe8', '#f9a8d4', '#f472b6'] },
 ];
 
 // Classic solid color themes
 const CLASSIC_THEMES = [
-  { id: 'blue', name: 'Blue', gradient: 'linear-gradient(135deg, #4a90d9, #4a90d9)', colors: ['#4a90d9'] },
-  { id: 'green', name: 'Green', gradient: 'linear-gradient(135deg, #58b368, #58b368)', colors: ['#58b368'] },
-  { id: 'red', name: 'Red', gradient: 'linear-gradient(135deg, #d9534f, #d9534f)', colors: ['#d9534f'] },
-  { id: 'purple', name: 'Purple', gradient: 'linear-gradient(135deg, #8e6bbf, #8e6bbf)', colors: ['#8e6bbf'] },
-  { id: 'orange', name: 'Orange', gradient: 'linear-gradient(135deg, #e6a23c, #e6a23c)', colors: ['#e6a23c'] },
-  { id: 'pink', name: 'Pink', gradient: 'linear-gradient(135deg, #e0407b, #e0407b)', colors: ['#e0407b'] },
+  { id: 'constancy', name: 'Constancy', gradient: 'linear-gradient(135deg, #3b82f6, #3b82f6)', colors: ['#3b82f6'] },
+  { id: 'cream', name: 'Cream', gradient: 'linear-gradient(135deg, #fef3c7, #fef3c7)', colors: ['#fef3c7'] },
+  { id: 'flowers', name: 'Flowers', gradient: 'linear-gradient(135deg, #ec4899, #ec4899)', colors: ['#ec4899'] },
+  { id: 'coral', name: 'Coral', gradient: 'linear-gradient(135deg, #fb7185, #fb7185)', colors: ['#fb7185'] },
+  { id: 'gorgeous', name: 'Gorgeous', gradient: 'linear-gradient(135deg, #8b5cf6, #8b5cf6)', colors: ['#8b5cf6'] },
+  { id: 'champagne', name: 'Champagne', gradient: 'linear-gradient(135deg, #fbbf24, #fbbf24)', colors: ['#fbbf24'] },
+  { id: 'perfume', name: 'Perfume', gradient: 'linear-gradient(135deg, #a78bfa, #a78bfa)', colors: ['#a78bfa'] },
+  { id: 'zen', name: 'Zen', gradient: 'linear-gradient(135deg, #6b7280, #6b7280)', colors: ['#6b7280'] },
+  { id: 'groove', name: 'Groove', gradient: 'linear-gradient(135deg, #f59e0b, #f59e0b)', colors: ['#f59e0b'] },
 ];
 
 // Mini org chart SVG for thumbnails
