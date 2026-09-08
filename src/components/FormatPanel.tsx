@@ -796,7 +796,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                       overflowY: 'auto',
                     }}
                   >
-                    {['Default', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New', 'Verdana', 'Trebuchet MS', 'Tahoma', 'Comic Sans MS'].map((font) => (
+                    {['Default', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New', 'Verdana', 'Trebuchet MS', 'Tahoma', 'Comic Sans MS', 'Palatino', 'Garamond', 'Bookman', 'Avant Garde', 'Impact', 'Lucida Console', 'Monaco', 'Brush Script MT', 'Papyrus', 'Copperplate'].map((font) => (
                       <button
                         key={font}
                         onClick={() => {
@@ -858,7 +858,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                       overflowY: 'auto',
                     }}
                   >
-                    {['Default', 'Thin', 'Medium', 'Thick', 'Extra Thick'].map((width) => (
+                    {['Hairline', 'Thin', 'Light', 'Default', 'Medium', 'Regular', 'Semi Bold', 'Bold', 'Thick', 'Heavy', 'Extra Thick', 'Ultra'].map((width) => (
                       <button
                         key={width}
                         onClick={() => {
@@ -879,7 +879,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                         <div
                           style={{
                             width: '40px',
-                            height: width === 'Default' ? '2px' : width === 'Thin' ? '1px' : width === 'Medium' ? '3px' : width === 'Thick' ? '5px' : '7px',
+                            height: width === 'Hairline' ? '0.5px' : width === 'Thin' ? '1px' : width === 'Light' ? '1.5px' : width === 'Default' ? '2px' : width === 'Medium' ? '3px' : width === 'Regular' ? '3px' : width === 'Semi Bold' ? '4px' : width === 'Bold' ? '5px' : width === 'Thick' ? '6px' : width === 'Heavy' ? '7px' : width === 'Extra Thick' ? '8px' : '10px',
                             background: '#e0e0e0',
                             borderRadius: '1px',
                           }}

@@ -94,10 +94,18 @@ export const Connections: React.FC<ConnectionsProps> = ({
   // Determine stroke width based on branchWidth setting
   const getStrokeWidth = (baseWidth: number) => {
     switch (branchWidth) {
+      case 'Hairline': return Math.max(0.5, baseWidth - 2);
       case 'Thin': return Math.max(1, baseWidth - 1);
+      case 'Light': return Math.max(1.5, baseWidth - 0.5);
+      case 'Default': return baseWidth;
       case 'Medium': return baseWidth;
-      case 'Thick': return baseWidth + 1;
-      case 'Extra Thick': return baseWidth + 2;
+      case 'Regular': return baseWidth;
+      case 'Semi Bold': return baseWidth + 0.5;
+      case 'Bold': return baseWidth + 1;
+      case 'Thick': return baseWidth + 1.5;
+      case 'Heavy': return baseWidth + 2;
+      case 'Extra Thick': return baseWidth + 2.5;
+      case 'Ultra': return baseWidth + 3;
       default: return baseWidth;
     }
   };
