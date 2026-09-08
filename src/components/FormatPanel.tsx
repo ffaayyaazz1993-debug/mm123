@@ -437,7 +437,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                   >
                     {/* Colorful Section */}
                     <div style={{ fontSize: '10px', color: '#8b8b8b', fontWeight: 600, marginBottom: '6px', marginTop: '4px' }}>Colorful</div>
-                    <div className="grid grid-cols-3 gap-1.5" style={{ marginBottom: '10px' }}>
+                    <div className="grid grid-cols-3 gap-2" style={{ marginBottom: '12px' }}>
                       {COLORFUL_THEMES.map((theme, idx) => (
                         <button
                           key={theme.id}
@@ -447,8 +447,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                           }}
                           className="flex flex-col items-center justify-center transition-all"
                           style={{
-                            height: '36px',
-                            background: theme.gradient,
+                            padding: '4px',
                             borderRadius: '4px',
                             border: 'none',
                             cursor: 'pointer',
@@ -457,14 +456,29 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                           }}
                           title={theme.name}
                         >
-                          <MiniOrgChart accentColor="#fff" size="small" />
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '36px',
+                              background: theme.gradient,
+                              borderRadius: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <MiniOrgChart accentColor="#fff" size="small" />
+                          </div>
+                          <span style={{ fontSize: '9px', color: '#e0e0e0', marginTop: '3px', fontWeight: 500 }}>
+                            {theme.name}
+                          </span>
                         </button>
                       ))}
                     </div>
 
                     {/* Classic Section */}
                     <div style={{ fontSize: '10px', color: '#8b8b8b', fontWeight: 600, marginBottom: '6px' }}>Classic</div>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <div className="grid grid-cols-3 gap-2">
                       {CLASSIC_THEMES.map((theme, idx) => (
                         <button
                           key={theme.id}
@@ -474,8 +488,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                           }}
                           className="flex flex-col items-center justify-center transition-all"
                           style={{
-                            height: '36px',
-                            background: '#fff',
+                            padding: '4px',
                             borderRadius: '4px',
                             border: 'none',
                             cursor: 'pointer',
@@ -484,7 +497,22 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                           }}
                           title={theme.name}
                         >
-                          <MiniOrgChart accentColor={theme.colors[0]} size="small" />
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '36px',
+                              background: '#fff',
+                              borderRadius: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <MiniOrgChart accentColor={theme.colors[0]} size="small" />
+                          </div>
+                          <span style={{ fontSize: '9px', color: '#e0e0e0', marginTop: '3px', fontWeight: 500 }}>
+                            {theme.name}
+                          </span>
                         </button>
                       ))}
                     </div>
