@@ -10,6 +10,54 @@ export interface MindNode {
   height?: number;
   summaries?: Summary[];
   markers?: string[]; // Array of marker IDs
+  
+  // Insert features
+  note?: string;
+  label?: string;
+  task?: TaskData;
+  links?: LinkData[];
+  attachments?: AttachmentData[];
+  audioNote?: AudioNoteData;
+  sticker?: string;
+  illustration?: IllustrationData;
+  equation?: string;
+}
+
+export interface TaskData {
+  completed: boolean;
+  dueDate?: string;
+  assignee?: string;
+}
+
+export interface LinkData {
+  id: string;
+  type: 'webpage' | 'topic' | 'file' | 'folder';
+  url: string;
+  title?: string;
+  topicId?: string; // For internal topic links
+}
+
+export interface AttachmentData {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  dataUrl?: string; // Base64 for demo purposes
+}
+
+export interface AudioNoteData {
+  id: string;
+  duration: number; // seconds
+  dataUrl?: string; // Base64 for demo purposes
+  transcript?: string;
+}
+
+export interface IllustrationData {
+  id: string;
+  url: string;
+  alt?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface Relationship {

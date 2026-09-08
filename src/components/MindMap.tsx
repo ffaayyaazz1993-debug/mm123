@@ -33,6 +33,22 @@ interface MindMapProps {
   onFinishSummaryEdit: () => void;
   onDeleteSummary: (id: string) => void;
   onToggleMarker: (nodeId: string, markerId: string) => void;
+  onInsertNote: (nodeId: string, note: string) => void;
+  onInsertLabel: (nodeId: string, label: string) => void;
+  onInsertTask: (nodeId: string) => void;
+  onToggleTask: (nodeId: string) => void;
+  onInsertLink: (nodeId: string, type: 'webpage' | 'topic' | 'file' | 'folder', url: string, title?: string) => void;
+  onRemoveLink: (nodeId: string, linkId: string) => void;
+  onInsertAttachment: (nodeId: string, file: File) => void;
+  onRemoveAttachment: (nodeId: string, attachmentId: string) => void;
+  onInsertAudioNote: (nodeId: string, duration: number, dataUrl?: string) => void;
+  onRemoveAudioNote: (nodeId: string) => void;
+  onInsertSticker: (nodeId: string, sticker: string) => void;
+  onRemoveSticker: (nodeId: string) => void;
+  onInsertIllustration: (nodeId: string, url: string, alt?: string) => void;
+  onRemoveIllustration: (nodeId: string) => void;
+  onInsertEquation: (nodeId: string, equation: string) => void;
+  onRemoveEquation: (nodeId: string) => void;
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
@@ -64,6 +80,22 @@ export const MindMap: React.FC<MindMapProps> = ({
   onFinishSummaryEdit,
   onDeleteSummary,
   onToggleMarker,
+  onInsertNote,
+  onInsertLabel,
+  onInsertTask,
+  onToggleTask,
+  onInsertLink,
+  onRemoveLink,
+  onInsertAttachment,
+  onRemoveAttachment,
+  onInsertAudioNote,
+  onRemoveAudioNote,
+  onInsertSticker,
+  onRemoveSticker,
+  onInsertIllustration,
+  onRemoveIllustration,
+  onInsertEquation,
+  onRemoveEquation,
   viewState,
   setViewState,
 }) => {
@@ -312,6 +344,22 @@ export const MindMap: React.FC<MindMapProps> = ({
                 onToggleCollapse={onToggleCollapse}
                 onAddChild={onAddChild}
                 onToggleMarker={onToggleMarker}
+                onInsertNote={onInsertNote}
+                onInsertLabel={onInsertLabel}
+                onInsertTask={onInsertTask}
+                onToggleTask={onToggleTask}
+                onInsertLink={onInsertLink}
+                onRemoveLink={onRemoveLink}
+                onInsertAttachment={onInsertAttachment}
+                onRemoveAttachment={onRemoveAttachment}
+                onInsertAudioNote={onInsertAudioNote}
+                onRemoveAudioNote={onRemoveAudioNote}
+                onInsertSticker={onInsertSticker}
+                onRemoveSticker={onRemoveSticker}
+                onInsertIllustration={onInsertIllustration}
+                onRemoveIllustration={onRemoveIllustration}
+                onInsertEquation={onInsertEquation}
+                onRemoveEquation={onRemoveEquation}
               />
             );
           })}

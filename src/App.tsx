@@ -35,6 +35,22 @@ export default function App() {
     cancelLinkMode,
     handleLinkNodeClick,
     toggleMarker,
+    insertNote,
+    insertLabel,
+    insertTask,
+    toggleTask,
+    insertLink,
+    removeLink,
+    insertAttachment,
+    removeAttachment,
+    insertAudioNote,
+    removeAudioNote,
+    insertSticker,
+    removeSticker,
+    insertIllustration,
+    removeIllustration,
+    insertEquation,
+    removeEquation,
   } = useMindMap();
 
   const [viewState, setViewState] = useState<ViewState>({
@@ -179,6 +195,22 @@ export default function App() {
         onFinishSummaryEdit={() => setEditingSummaryId(null)}
         onDeleteSummary={deleteSummary}
         onToggleMarker={toggleMarker}
+        onInsertNote={insertNote}
+        onInsertLabel={insertLabel}
+        onInsertTask={insertTask}
+        onToggleTask={toggleTask}
+        onInsertLink={insertLink}
+        onRemoveLink={removeLink}
+        onInsertAttachment={insertAttachment}
+        onRemoveAttachment={removeAttachment}
+        onInsertAudioNote={insertAudioNote}
+        onRemoveAudioNote={removeAudioNote}
+        onInsertSticker={insertSticker}
+        onRemoveSticker={removeSticker}
+        onInsertIllustration={insertIllustration}
+        onRemoveIllustration={removeIllustration}
+        onInsertEquation={insertEquation}
+        onRemoveEquation={removeEquation}
         viewState={viewState}
         setViewState={setViewState}
       />
@@ -224,6 +256,10 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-purple-100 rounded text-[10px] font-mono border border-purple-200 text-purple-700">🏷️ btn</kbd>
           <span>Add markers</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-sky-100 rounded text-[10px] font-mono border border-sky-200 text-sky-700">+ btn</kbd>
+          <span>Insert (note, label, task, link...)</span>
         </div>
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">S</kbd>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MindNode as MindNodeType } from '../types';
 import { MarkerPicker } from './MarkerPicker';
+import { InsertMenu } from './InsertMenu';
 import { getMarkerById } from '../utils/markers';
 
 interface MindNodeProps {
@@ -21,6 +22,22 @@ interface MindNodeProps {
   onToggleCollapse: (id: string) => void;
   onAddChild: (id: string) => void;
   onToggleMarker: (nodeId: string, markerId: string) => void;
+  onInsertNote: (nodeId: string, note: string) => void;
+  onInsertLabel: (nodeId: string, label: string) => void;
+  onInsertTask: (nodeId: string) => void;
+  onToggleTask: (nodeId: string) => void;
+  onInsertLink: (nodeId: string, type: 'webpage' | 'topic' | 'file' | 'folder', url: string, title?: string) => void;
+  onRemoveLink: (nodeId: string, linkId: string) => void;
+  onInsertAttachment: (nodeId: string, file: File) => void;
+  onRemoveAttachment: (nodeId: string, attachmentId: string) => void;
+  onInsertAudioNote: (nodeId: string, duration: number, dataUrl?: string) => void;
+  onRemoveAudioNote: (nodeId: string) => void;
+  onInsertSticker: (nodeId: string, sticker: string) => void;
+  onRemoveSticker: (nodeId: string) => void;
+  onInsertIllustration: (nodeId: string, url: string, alt?: string) => void;
+  onRemoveIllustration: (nodeId: string) => void;
+  onInsertEquation: (nodeId: string, equation: string) => void;
+  onRemoveEquation: (nodeId: string) => void;
 }
 
 export const MindNodeComponent: React.FC<MindNodeProps> = ({
@@ -41,11 +58,29 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   onToggleCollapse,
   onAddChild,
   onToggleMarker,
+  onInsertNote,
+  onInsertLabel,
+  onInsertTask,
+  onToggleTask,
+  onInsertLink,
+  onRemoveLink,
+  onInsertAttachment,
+  onRemoveAttachment,
+  onInsertAudioNote,
+  onRemoveAudioNote,
+  onInsertSticker,
+  onRemoveSticker,
+  onInsertIllustration,
+  onRemoveIllustration,
+  onInsertEquation,
+  onRemoveEquation,
 }) => {
   const [text, setText] = useState(node.text);
   const [showMarkerPicker, setShowMarkerPicker] = useState(false);
+  const [showInsertMenu, setShowInsertMenu] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const markerPickerRef = useRef<HTMLDivElement>(null);
+  const insertMenuRef = useRef<HTMLDivElement>(null);
 
   // Close marker picker when clicking outside
   useEffect(() => {
@@ -261,6 +296,123 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
               onToggleMarker={(markerId) => onToggleMarker(node.id, markerId)}
               onClose={() => setShowMarkerPicker(false)}
             />
+          </div>
+        )}
+
+        {/* Insert button */}
+        {!isEditing && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowInsertMenu(!showInsertMenu);
+            }}
+            className="absolute -left-4 bottom-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+            style={{
+              background: '#fff',
+              color: '#0ea5e9',
+              border: '2px solid #0ea5e9',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+            }}
+            title="Insert"
+          >
+            +
+          </button>
+        )}
+
+        {/* Insert Menu */}
+        {showInsertMenu && (
+          <div
+            ref={insertMenuRef}
+            className="absolute left-0 bottom-full mb-2 z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <InsertMenu
+              node={node}
+              onClose={() => setShowInsertMenu(false)}
+              onInsertNote={onInsertNote}
+              onInsertLabel={onInsertLabel}
+              onInsertTask={onInsertTask}
+              onInsertLink={onInsertLink}
+              onInsertAttachment={onInsertAttachment}
+              onInsertAudioNote={onInsertAudioNote}
+              onInsertSticker={onInsertSticker}
+              onInsertIllustration={onInsertIllustration}
+              onInsertEquation={onInsertEquation}
+            />
+          </div>
+        )}
+
+        {/* Inserted features display */}
+        {!isEditing && (
+          <div className="absolute left-0 top-full mt-2 flex flex-wrap gap-1 max-w-[300px]">
+            {/* Label */}
+            {node.label && (
+              <div className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">
+                🏷️ {node.label}
+              </div>
+            )}
+
+            {/* Task */}
+            {node.task && (
+              <div
+                className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium cursor-pointer hover:bg-green-200 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleTask(node.id);
+                }}
+              >
+                {node.task.completed ? '✅' : '⬜'} Task
+              </div>
+            )}
+
+            {/* Links */}
+            {node.links && node.links.length > 0 && (
+              <div className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium">
+                🔗 {node.links.length} link{node.links.length > 1 ? 's' : ''}
+              </div>
+            )}
+
+            {/* Attachments */}
+            {node.attachments && node.attachments.length > 0 && (
+              <div className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
+                📎 {node.attachments.length} file{node.attachments.length > 1 ? 's' : ''}
+              </div>
+            )}
+
+            {/* Audio Note */}
+            {node.audioNote && (
+              <div className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full font-medium">
+                🎙️ {Math.round(node.audioNote.duration)}s
+              </div>
+            )}
+
+            {/* Sticker */}
+            {node.sticker && (
+              <div className="text-2xl">
+                {node.sticker}
+              </div>
+            )}
+
+            {/* Illustration */}
+            {node.illustration && (
+              <div className="px-2 py-0.5 bg-teal-100 text-teal-700 text-xs rounded-full font-medium">
+                🖼️ Image
+              </div>
+            )}
+
+            {/* Equation */}
+            {node.equation && (
+              <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full font-medium font-mono">
+                ∑ {node.equation}
+              </div>
+            )}
+
+            {/* Note indicator */}
+            {node.note && (
+              <div className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium" title={node.note}>
+                📝 Note
+              </div>
+            )}
           </div>
         )}
 

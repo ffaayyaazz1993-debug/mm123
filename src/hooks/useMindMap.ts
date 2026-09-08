@@ -24,16 +24,19 @@ function createDefaultMap(): MindNode {
     text: '🧠 Mind Mapping',
     color: '#4A90D9',
     markers: ['star-5'],
+    label: 'Central Topic',
+    note: 'This is the main mind map topic. Use the insert button (+) to add notes, labels, tasks, links, and more!',
     children: [
       {
         id: generateId(),
         text: '📋 Planning',
         color: '#E74C3C',
         markers: ['priority-1', 'status-doing'],
+        task: { completed: false, dueDate: '2024-12-31', assignee: 'Team Lead' },
         children: [
-          { id: generateId(), text: 'Set Goals', color: '#E74C3C', children: [], markers: ['progress-75'] },
-          { id: generateId(), text: 'Define Scope', color: '#E74C3C', children: [], markers: ['progress-50'] },
-          { id: generateId(), text: 'Timeline', color: '#E74C3C', children: [], markers: ['progress-25'] },
+          { id: generateId(), text: 'Set Goals', color: '#E74C3C', children: [], markers: ['progress-75'], note: 'Define clear, measurable objectives' },
+          { id: generateId(), text: 'Define Scope', color: '#E74C3C', children: [], markers: ['progress-50'], links: [{ id: 'link1', type: 'webpage', url: 'https://example.com/scope', title: 'Scope Guide' }] },
+          { id: generateId(), text: 'Timeline', color: '#E74C3C', children: [], markers: ['progress-25'], equation: 'T = Σ(tasks) × avg_time' },
         ],
       },
       {
@@ -41,10 +44,11 @@ function createDefaultMap(): MindNode {
         text: '💡 Ideas',
         color: '#2ECC71',
         markers: ['emotion-thinking'],
+        sticker: '💡',
         children: [
-          { id: generateId(), text: 'Brainstorm', color: '#2ECC71', children: [], markers: ['emotion-happy'] },
-          { id: generateId(), text: 'Research', color: '#2ECC71', children: [], markers: ['star-3'] },
-          { id: generateId(), text: 'Innovation', color: '#2ECC71', children: [], markers: ['flag-red'] },
+          { id: generateId(), text: 'Brainstorm', color: '#2ECC71', children: [], markers: ['emotion-happy'], label: 'Creative' },
+          { id: generateId(), text: 'Research', color: '#2ECC71', children: [], markers: ['star-3'], links: [{ id: 'link2', type: 'webpage', url: 'https://research.example.com', title: 'Research Portal' }] },
+          { id: generateId(), text: 'Innovation', color: '#2ECC71', children: [], markers: ['flag-red'], task: { completed: true } },
         ],
       },
       {
@@ -52,10 +56,11 @@ function createDefaultMap(): MindNode {
         text: '🎯 Tasks',
         color: '#F39C12',
         markers: ['priority-2'],
+        task: { completed: false },
         children: [
-          { id: generateId(), text: 'Priority High', color: '#F39C12', children: [], markers: ['priority-1', 'status-todo'] },
-          { id: generateId(), text: 'Priority Medium', color: '#F39C12', children: [], markers: ['priority-5', 'status-doing'] },
-          { id: generateId(), text: 'Priority Low', color: '#F39C12', children: [], markers: ['priority-9'] },
+          { id: generateId(), text: 'Priority High', color: '#F39C12', children: [], markers: ['priority-1', 'status-todo'], task: { completed: false, dueDate: '2024-12-15' } },
+          { id: generateId(), text: 'Priority Medium', color: '#F39C12', children: [], markers: ['priority-5', 'status-doing'], task: { completed: false, dueDate: '2024-12-25' } },
+          { id: generateId(), text: 'Priority Low', color: '#F39C12', children: [], markers: ['priority-9'], task: { completed: true } },
         ],
       },
       {
@@ -63,8 +68,8 @@ function createDefaultMap(): MindNode {
         text: '📚 Resources',
         color: '#9B59B6',
         children: [
-          { id: generateId(), text: 'Team Members', color: '#9B59B6', children: [], markers: ['star-4'] },
-          { id: generateId(), text: 'Tools & Software', color: '#9B59B6', children: [], markers: ['status-review'] },
+          { id: generateId(), text: 'Team Members', color: '#9B59B6', children: [], markers: ['star-4'], label: '5 people' },
+          { id: generateId(), text: 'Tools & Software', color: '#9B59B6', children: [], markers: ['status-review'], links: [{ id: 'link3', type: 'webpage', url: 'https://tools.example.com', title: 'Tools List' }] },
         ],
       },
       {
@@ -73,9 +78,9 @@ function createDefaultMap(): MindNode {
         color: '#1ABC9C',
         markers: ['progress-100'],
         children: [
-          { id: generateId(), text: 'Milestones', color: '#1ABC9C', children: [], markers: ['flag-blue'] },
-          { id: generateId(), text: 'KPIs', color: '#1ABC9C', children: [], markers: ['star-5'] },
-          { id: generateId(), text: 'Reviews', color: '#1ABC9C', children: [], markers: ['status-done'] },
+          { id: generateId(), text: 'Milestones', color: '#1ABC9C', children: [], markers: ['flag-blue'], equation: 'M = completed / total × 100%' },
+          { id: generateId(), text: 'KPIs', color: '#1ABC9C', children: [], markers: ['star-5'], sticker: '🏆' },
+          { id: generateId(), text: 'Reviews', color: '#1ABC9C', children: [], markers: ['status-done'], task: { completed: true } },
         ],
       },
       {
@@ -83,9 +88,10 @@ function createDefaultMap(): MindNode {
         text: '⚡ Actions',
         color: '#E91E63',
         markers: ['flag-red', 'priority-1'],
+        task: { completed: false },
         children: [
-          { id: generateId(), text: 'Next Steps', color: '#E91E63', children: [], markers: ['status-todo'] },
-          { id: generateId(), text: 'Follow Up', color: '#E91E63', children: [], markers: ['status-doing'] },
+          { id: generateId(), text: 'Next Steps', color: '#E91E63', children: [], markers: ['status-todo'], task: { completed: false }, note: 'Immediate action items for this week' },
+          { id: generateId(), text: 'Follow Up', color: '#E91E63', children: [], markers: ['status-doing'], task: { completed: false } },
         ],
       },
     ],
@@ -284,6 +290,120 @@ export function useMindMap() {
     })));
   }, [updateNode]);
 
+  // Insert features management
+  const insertNote = useCallback((nodeId: string, note: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, note })));
+  }, [updateNode]);
+
+  const insertLabel = useCallback((nodeId: string, label: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, label })));
+  }, [updateNode]);
+
+  const insertTask = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      task: { completed: false },
+    })));
+  }, [updateNode]);
+
+  const toggleTask = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => {
+      if (!n.task) return n;
+      return { ...n, task: { ...n.task, completed: !n.task.completed } };
+    }));
+  }, [updateNode]);
+
+  const insertLink = useCallback((nodeId: string, type: 'webpage' | 'topic' | 'file' | 'folder', url: string, title?: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => {
+      const links = n.links || [];
+      const newLink = {
+        id: generateId(),
+        type,
+        url,
+        title: title || url,
+      };
+      return { ...n, links: [...links, newLink] };
+    }));
+  }, [updateNode]);
+
+  const removeLink = useCallback((nodeId: string, linkId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      links: (n.links || []).filter(l => l.id !== linkId),
+    })));
+  }, [updateNode]);
+
+  const insertAttachment = useCallback((nodeId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRoot(prev => updateNode(prev, nodeId, n => {
+        const attachments = n.attachments || [];
+        const newAttachment = {
+          id: generateId(),
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          dataUrl: reader.result as string,
+        };
+        return { ...n, attachments: [...attachments, newAttachment] };
+      }));
+    };
+    reader.readAsDataURL(file);
+  }, [updateNode]);
+
+  const removeAttachment = useCallback((nodeId: string, attachmentId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      attachments: (n.attachments || []).filter(a => a.id !== attachmentId),
+    })));
+  }, [updateNode]);
+
+  const insertAudioNote = useCallback((nodeId: string, duration: number, dataUrl?: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      audioNote: {
+        id: generateId(),
+        duration,
+        dataUrl,
+      },
+    })));
+  }, [updateNode]);
+
+  const removeAudioNote = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, audioNote: undefined })));
+  }, [updateNode]);
+
+  const insertSticker = useCallback((nodeId: string, sticker: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, sticker })));
+  }, [updateNode]);
+
+  const removeSticker = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, sticker: undefined })));
+  }, [updateNode]);
+
+  const insertIllustration = useCallback((nodeId: string, url: string, alt?: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      illustration: {
+        id: generateId(),
+        url,
+        alt,
+      },
+    })));
+  }, [updateNode]);
+
+  const removeIllustration = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, illustration: undefined })));
+  }, [updateNode]);
+
+  const insertEquation = useCallback((nodeId: string, equation: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, equation })));
+  }, [updateNode]);
+
+  const removeEquation = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, equation: undefined })));
+  }, [updateNode]);
+
   const toggleCollapse = useCallback((nodeId: string) => {
     setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, collapsed: !n.collapsed })));
   }, [updateNode]);
@@ -445,5 +565,21 @@ export function useMindMap() {
     toggleMarker,
     removeMarker,
     clearMarkers,
+    insertNote,
+    insertLabel,
+    insertTask,
+    toggleTask,
+    insertLink,
+    removeLink,
+    insertAttachment,
+    removeAttachment,
+    insertAudioNote,
+    removeAudioNote,
+    insertSticker,
+    removeSticker,
+    insertIllustration,
+    removeIllustration,
+    insertEquation,
+    removeEquation,
   };
 }
