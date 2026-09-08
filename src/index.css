@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* Smooth transitions for mind map elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Node hover animations */
+.mind-node {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mind-node:hover {
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+/* Summary bracket animation */
+@keyframes braceAppear {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  to {
+    opacity: 0.8;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Pulse animation for link mode */
+@keyframes linkPulse {
+  0%, 100% {
+    outline-color: rgba(99, 102, 241, 0.5);
+  }
+  50% {
+    outline-color: rgba(99, 102, 241, 1);
+  }
+}
+
+.link-source {
+  animation: linkPulse 1.5s ease-in-out infinite;
+}
+
+/* Multi-select check animation */
+@keyframes checkPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.select-check {
+  animation: checkPop 0.3s ease-out;
+}
+
+/* Relationship line animation */
+@keyframes dashFlow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+.relationship-line {
+  animation: dashFlow 1s linear infinite;
+}
+
+/* Summary node glow */
+@keyframes summaryGlow {
+  0%, 100% {
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(99, 102, 241, 0.3);
+  }
+}
+
+.summary-node {
+  animation: summaryGlow 3s ease-in-out infinite;
+}
+
+/* Toolbar button active state */
+.toolbar-btn:active {
+  transform: scale(0.92);
+}
+
+/* Canvas grid pattern */
+.canvas-grid {
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.3) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Fade in animation for new elements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Prevent text selection during drag */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
