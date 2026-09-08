@@ -10,6 +10,7 @@ export interface MindNode {
   height?: number;
   summaries?: Summary[];
   markers?: string[]; // Array of marker IDs
+  floating?: boolean; // If true, node position is fixed and not auto-layouted
   
   // Insert features
   note?: string;

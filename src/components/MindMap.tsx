@@ -43,6 +43,7 @@ interface MindMapProps {
   onRemoveNote: (nodeId: string) => void;
   onRemoveLabel: (nodeId: string) => void;
   onRemoveTask: (nodeId: string) => void;
+  onAddFloatingNode: (x: number, y: number) => void;
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
@@ -84,6 +85,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   onRemoveNote,
   onRemoveLabel,
   onRemoveTask,
+  onAddFloatingNode,
   viewState,
   setViewState,
 }) => {  const containerRef = useRef<HTMLDivElement>(null);
@@ -151,6 +153,28 @@ export const MindMap: React.FC<MindMapProps> = ({
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
+
+  // Double-click handler to create floating node
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Only create node if double-clicking on canvas background
+    if (target === containerRef.current || target.classList.contains('canvas-bg') || target.tagName === 'svg') {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      // Calculate position relative to container center
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // Convert to mind map coordinates (accounting for pan and zoom)
+      const mindMapX = (clickX - centerX - viewState.offsetX) / viewState.scale;
+      const mindMapY = (clickY - centerY - viewState.offsetY) / viewState.scale;
+
+      onAddFloatingNode(mindMapX, mindMapY);
+    }
+  }, [viewState, onAddFloatingNode]);
 
   // Zoom handler using native event for preventDefault support
   useEffect(() => {
@@ -221,6 +245,7 @@ export const MindMap: React.FC<MindMapProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onDoubleClick={handleDoubleClick}
     >
       {/* Dot grid background */}
       <div 

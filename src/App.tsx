@@ -21,6 +21,7 @@ export default function App() {
     setEditingSummaryId,
     addChild,
     addSibling,
+    addFloatingNode,
     deleteNode,
     updateText,
     toggleCollapse,
@@ -256,6 +257,7 @@ export default function App() {
         onRemoveNote={removeNote}
         onRemoveLabel={removeLabel}
         onRemoveTask={removeTask}
+        onAddFloatingNode={addFloatingNode}
         viewState={viewState}
         setViewState={setViewState}
       />
@@ -321,6 +323,10 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Drag</kbd>
           <span>Pan canvas</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-amber-100 rounded text-[10px] font-mono border border-amber-200 text-amber-700">Double-click</kbd>
+          <span>Create floating node</span>
         </div>
       </div>
 

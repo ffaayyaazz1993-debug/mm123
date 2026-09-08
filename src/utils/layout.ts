@@ -36,14 +36,43 @@ function layoutBranchSide(
 
   const results: LayoutResult[] = [];
   
-  // Calculate total height needed
-  const heights = nodes.map(n => getSubtreeHeight(n));
-  const totalHeight = heights.reduce((a, b) => a + b, 0) + (nodes.length - 1) * VERTICAL_SPACING;
+  // Filter out floating nodes - they have their own positions
+  const nonFloatingNodes = nodes.filter(n => !n.floating);
+  const floatingNodes = nodes.filter(n => n.floating);
+  
+  // Add floating nodes with their fixed positions
+  for (const node of floatingNodes) {
+    results.push({
+      id: node.id,
+      x: node.x || 0,
+      y: node.y || 0,
+      depth,
+      side,
+    });
+    
+    // Layout children of floating nodes recursively
+    if (!node.collapsed && node.children.length > 0) {
+      const childResults = layoutBranchSide(node.children, depth + 1, side, node.x || 0);
+      const childOffsetY = node.y || 0;
+      for (const cr of childResults) {
+        results.push({
+          ...cr,
+          y: cr.y + childOffsetY - (node.y || 0),
+        });
+      }
+    }
+  }
+  
+  if (nonFloatingNodes.length === 0) return results;
+  
+  // Calculate total height needed for non-floating nodes
+  const heights = nonFloatingNodes.map(n => getSubtreeHeight(n));
+  const totalHeight = heights.reduce((a, b) => a + b, 0) + (nonFloatingNodes.length - 1) * VERTICAL_SPACING;
   
   let currentY = -totalHeight / 2;
 
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i];
+  for (let i = 0; i < nonFloatingNodes.length; i++) {
+    const node = nonFloatingNodes[i];
     const subtreeH = heights[i];
     const nodeY = currentY + subtreeH / 2;
     const x = side === 'right' ? baseX + depth * HORIZONTAL_SPACING : baseX - depth * HORIZONTAL_SPACING;

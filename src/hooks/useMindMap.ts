@@ -243,6 +243,25 @@ export function useMindMap() {
     });
   }, [findNode, findParent, updateNode]);
 
+  const addFloatingNode = useCallback((x: number, y: number) => {
+    setRoot(prev => {
+      const color = BRANCH_COLORS[Math.floor(Math.random() * BRANCH_COLORS.length)];
+      const newNode: MindNode = {
+        id: generateId(),
+        text: 'New Topic',
+        color,
+        children: [],
+        x,
+        y,
+        floating: true,
+      };
+      return {
+        ...prev,
+        children: [...prev.children, newNode],
+      };
+    });
+  }, []);
+
   const deleteNode = useCallback((nodeId: string) => {
     setRoot(prev => {
       if (prev.id === nodeId) return prev;
@@ -558,6 +577,7 @@ export function useMindMap() {
     setEditingSummaryId,
     addChild,
     addSibling,
+    addFloatingNode,
     deleteNode,
     updateText,
     toggleCollapse,
