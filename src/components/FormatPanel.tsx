@@ -153,6 +153,8 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
+  const fontDropdownRef = useRef<HTMLDivElement>(null);
+  const widthDropdownRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: 'style' as const, label: 'Style' },
@@ -212,9 +214,13 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (themeOpen || fontOpen || widthOpen) {
+      if (themeOpen) {
         setThemeOpen(false);
+      }
+      if (fontOpen && fontDropdownRef.current && !fontDropdownRef.current.contains(e.target as Node)) {
         setFontOpen(false);
+      }
+      if (widthOpen && widthDropdownRef.current && !widthDropdownRef.current.contains(e.target as Node)) {
         setWidthOpen(false);
       }
       if (bgColorOpen && bgColorRef.current && !bgColorRef.current.contains(e.target as Node)) {
@@ -756,7 +762,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
 
               {/* Global Font */}
               <div style={{ margin: '12px 12px 6px', fontSize: '11px', color: '#8b8b8b' }}>Global Font</div>
-              <div style={{ margin: '0 12px 8px' }}>
+              <div ref={fontDropdownRef} style={{ margin: '0 12px 8px', position: 'relative' }}>
                 <button
                   onClick={() => setFontOpen(!fontOpen)}
                   className="w-full flex items-center justify-between px-2.5 transition-colors"
@@ -770,14 +776,55 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = '#2a2a2a')}
                 >
-                  <span style={{ color: '#e0e0e0', fontSize: '13px' }}>Default</span>
+                  <span style={{ color: '#e0e0e0', fontSize: '13px' }}>{formatOptions.globalFont}</span>
                   <ChevronDown />
                 </button>
+                {fontOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      marginTop: '4px',
+                      background: '#2a2a2a',
+                      borderRadius: '6px',
+                      border: '1px solid #3a3a3a',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      zIndex: 100,
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {['Default', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New', 'Verdana', 'Trebuchet MS', 'Tahoma', 'Comic Sans MS'].map((font) => (
+                      <button
+                        key={font}
+                        onClick={() => {
+                          onFormatChange({ globalFont: font });
+                          setFontOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 transition-colors"
+                        style={{
+                          background: formatOptions.globalFont === font ? '#3a3a3a' : 'transparent',
+                          border: 'none',
+                          color: '#e0e0e0',
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          fontFamily: font === 'Default' ? 'Inter, "Segoe UI", sans-serif' : font,
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = formatOptions.globalFont === font ? '#3a3a3a' : 'transparent')}
+                      >
+                        {font}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Branch Line Width */}
               <div style={{ margin: '12px 12px 6px', fontSize: '11px', color: '#8b8b8b' }}>Branch Line Width</div>
-              <div style={{ margin: '0 12px 8px' }}>
+              <div ref={widthDropdownRef} style={{ margin: '0 12px 8px', position: 'relative' }}>
                 <button
                   onClick={() => setWidthOpen(!widthOpen)}
                   className="w-full flex items-center justify-between px-2.5 transition-colors"
@@ -791,9 +838,57 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = '#2a2a2a')}
                 >
-                  <span style={{ color: '#e0e0e0', fontSize: '13px' }}>Default</span>
+                  <span style={{ color: '#e0e0e0', fontSize: '13px' }}>{formatOptions.branchWidth}</span>
                   <ChevronDown />
                 </button>
+                {widthOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      marginTop: '4px',
+                      background: '#2a2a2a',
+                      borderRadius: '6px',
+                      border: '1px solid #3a3a3a',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      zIndex: 100,
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {['Default', 'Thin', 'Medium', 'Thick', 'Extra Thick'].map((width) => (
+                      <button
+                        key={width}
+                        onClick={() => {
+                          onFormatChange({ branchWidth: width });
+                          setWidthOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 text-left px-3 py-2 transition-colors"
+                        style={{
+                          background: formatOptions.branchWidth === width ? '#3a3a3a' : 'transparent',
+                          border: 'none',
+                          color: '#e0e0e0',
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = formatOptions.branchWidth === width ? '#3a3a3a' : 'transparent')}
+                      >
+                        <div
+                          style={{
+                            width: '40px',
+                            height: width === 'Default' ? '2px' : width === 'Thin' ? '1px' : width === 'Medium' ? '3px' : width === 'Thick' ? '5px' : '7px',
+                            background: '#e0e0e0',
+                            borderRadius: '1px',
+                          }}
+                        />
+                        <span>{width}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Divider */}

@@ -95,6 +95,7 @@ export const Connections: React.FC<ConnectionsProps> = ({
   const getStrokeWidth = (baseWidth: number) => {
     switch (branchWidth) {
       case 'Thin': return Math.max(1, baseWidth - 1);
+      case 'Medium': return baseWidth;
       case 'Thick': return baseWidth + 1;
       case 'Extra Thick': return baseWidth + 2;
       default: return baseWidth;
