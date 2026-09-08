@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MindNode as MindNodeType } from '../types';
+import { MarkerPicker } from './MarkerPicker';
+import { getMarkerById } from '../utils/markers';
 
 interface MindNodeProps {
   node: MindNodeType;
@@ -18,6 +20,7 @@ interface MindNodeProps {
   onFinishEdit: () => void;
   onToggleCollapse: (id: string) => void;
   onAddChild: (id: string) => void;
+  onToggleMarker: (nodeId: string, markerId: string) => void;
 }
 
 export const MindNodeComponent: React.FC<MindNodeProps> = ({
@@ -37,9 +40,26 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   onFinishEdit,
   onToggleCollapse,
   onAddChild,
+  onToggleMarker,
 }) => {
   const [text, setText] = useState(node.text);
+  const [showMarkerPicker, setShowMarkerPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const markerPickerRef = useRef<HTMLDivElement>(null);
+
+  // Close marker picker when clicking outside
+  useEffect(() => {
+    if (!showMarkerPicker) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (markerPickerRef.current && !markerPickerRef.current.contains(e.target as Node)) {
+        setShowMarkerPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMarkerPicker]);
 
   useEffect(() => {
     setText(node.text);
@@ -184,6 +204,64 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
           />
         ) : (
           <span className="pointer-events-none">{node.text}</span>
+        )}
+
+        {/* Markers display */}
+        {node.markers && node.markers.length > 0 && !isEditing && (
+          <div className="flex items-center gap-0.5 ml-1">
+            {node.markers.slice(0, 3).map(markerId => {
+              const marker = getMarkerById(markerId);
+              if (!marker) return null;
+              return (
+                <span
+                  key={markerId}
+                  className="text-sm"
+                  title={marker.name}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {marker.icon}
+                </span>
+              );
+            })}
+            {node.markers.length > 3 && (
+              <span className="text-xs text-gray-500">+{node.markers.length - 3}</span>
+            )}
+          </div>
+        )}
+
+        {/* Marker button */}
+        {!isEditing && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMarkerPicker(!showMarkerPicker);
+            }}
+            className="absolute -left-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+            style={{
+              background: '#fff',
+              color: '#9333ea',
+              border: '2px solid #9333ea',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+            }}
+            title="Add Marker"
+          >
+            🏷️
+          </button>
+        )}
+
+        {/* Marker Picker */}
+        {showMarkerPicker && (
+          <div
+            ref={markerPickerRef}
+            className="absolute left-0 top-full mt-2 z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MarkerPicker
+              currentMarkers={node.markers || []}
+              onToggleMarker={(markerId) => onToggleMarker(node.id, markerId)}
+              onClose={() => setShowMarkerPicker(false)}
+            />
+          </div>
         )}
 
         {/* Collapse/Expand button */}

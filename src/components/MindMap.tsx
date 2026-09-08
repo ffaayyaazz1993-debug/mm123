@@ -32,6 +32,7 @@ interface MindMapProps {
   onUpdateSummaryText: (id: string, text: string) => void;
   onFinishSummaryEdit: () => void;
   onDeleteSummary: (id: string) => void;
+  onToggleMarker: (nodeId: string, markerId: string) => void;
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
@@ -62,6 +63,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   onUpdateSummaryText,
   onFinishSummaryEdit,
   onDeleteSummary,
+  onToggleMarker,
   viewState,
   setViewState,
 }) => {
@@ -309,6 +311,7 @@ export const MindMap: React.FC<MindMapProps> = ({
                 onFinishEdit={onFinishEdit}
                 onToggleCollapse={onToggleCollapse}
                 onAddChild={onAddChild}
+                onToggleMarker={onToggleMarker}
               />
             );
           })}

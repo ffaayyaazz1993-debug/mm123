@@ -34,6 +34,7 @@ export default function App() {
     startLinkMode,
     cancelLinkMode,
     handleLinkNodeClick,
+    toggleMarker,
   } = useMindMap();
 
   const [viewState, setViewState] = useState<ViewState>({
@@ -177,6 +178,7 @@ export default function App() {
         onUpdateSummaryText={updateSummaryText}
         onFinishSummaryEdit={() => setEditingSummaryId(null)}
         onDeleteSummary={deleteSummary}
+        onToggleMarker={toggleMarker}
         viewState={viewState}
         setViewState={setViewState}
       />
@@ -218,6 +220,10 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-emerald-100 rounded text-[10px] font-mono border border-emerald-200 text-emerald-700">☐ btn</kbd>
           <span>Multi-select mode (touchpad)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-purple-100 rounded text-[10px] font-mono border border-purple-200 text-purple-700">🏷️ btn</kbd>
+          <span>Add markers</span>
         </div>
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">S</kbd>

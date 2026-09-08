@@ -23,35 +23,39 @@ function createDefaultMap(): MindNode {
     id: generateId(),
     text: '🧠 Mind Mapping',
     color: '#4A90D9',
+    markers: ['star-5'],
     children: [
       {
         id: generateId(),
         text: '📋 Planning',
         color: '#E74C3C',
+        markers: ['priority-1', 'status-doing'],
         children: [
-          { id: generateId(), text: 'Set Goals', color: '#E74C3C', children: [] },
-          { id: generateId(), text: 'Define Scope', color: '#E74C3C', children: [] },
-          { id: generateId(), text: 'Timeline', color: '#E74C3C', children: [] },
+          { id: generateId(), text: 'Set Goals', color: '#E74C3C', children: [], markers: ['progress-75'] },
+          { id: generateId(), text: 'Define Scope', color: '#E74C3C', children: [], markers: ['progress-50'] },
+          { id: generateId(), text: 'Timeline', color: '#E74C3C', children: [], markers: ['progress-25'] },
         ],
       },
       {
         id: generateId(),
         text: '💡 Ideas',
         color: '#2ECC71',
+        markers: ['emotion-thinking'],
         children: [
-          { id: generateId(), text: 'Brainstorm', color: '#2ECC71', children: [] },
-          { id: generateId(), text: 'Research', color: '#2ECC71', children: [] },
-          { id: generateId(), text: 'Innovation', color: '#2ECC71', children: [] },
+          { id: generateId(), text: 'Brainstorm', color: '#2ECC71', children: [], markers: ['emotion-happy'] },
+          { id: generateId(), text: 'Research', color: '#2ECC71', children: [], markers: ['star-3'] },
+          { id: generateId(), text: 'Innovation', color: '#2ECC71', children: [], markers: ['flag-red'] },
         ],
       },
       {
         id: generateId(),
         text: '🎯 Tasks',
         color: '#F39C12',
+        markers: ['priority-2'],
         children: [
-          { id: generateId(), text: 'Priority High', color: '#F39C12', children: [] },
-          { id: generateId(), text: 'Priority Medium', color: '#F39C12', children: [] },
-          { id: generateId(), text: 'Priority Low', color: '#F39C12', children: [] },
+          { id: generateId(), text: 'Priority High', color: '#F39C12', children: [], markers: ['priority-1', 'status-todo'] },
+          { id: generateId(), text: 'Priority Medium', color: '#F39C12', children: [], markers: ['priority-5', 'status-doing'] },
+          { id: generateId(), text: 'Priority Low', color: '#F39C12', children: [], markers: ['priority-9'] },
         ],
       },
       {
@@ -59,27 +63,29 @@ function createDefaultMap(): MindNode {
         text: '📚 Resources',
         color: '#9B59B6',
         children: [
-          { id: generateId(), text: 'Team Members', color: '#9B59B6', children: [] },
-          { id: generateId(), text: 'Tools & Software', color: '#9B59B6', children: [] },
+          { id: generateId(), text: 'Team Members', color: '#9B59B6', children: [], markers: ['star-4'] },
+          { id: generateId(), text: 'Tools & Software', color: '#9B59B6', children: [], markers: ['status-review'] },
         ],
       },
       {
         id: generateId(),
         text: '📊 Progress',
         color: '#1ABC9C',
+        markers: ['progress-100'],
         children: [
-          { id: generateId(), text: 'Milestones', color: '#1ABC9C', children: [] },
-          { id: generateId(), text: 'KPIs', color: '#1ABC9C', children: [] },
-          { id: generateId(), text: 'Reviews', color: '#1ABC9C', children: [] },
+          { id: generateId(), text: 'Milestones', color: '#1ABC9C', children: [], markers: ['flag-blue'] },
+          { id: generateId(), text: 'KPIs', color: '#1ABC9C', children: [], markers: ['star-5'] },
+          { id: generateId(), text: 'Reviews', color: '#1ABC9C', children: [], markers: ['status-done'] },
         ],
       },
       {
         id: generateId(),
         text: '⚡ Actions',
         color: '#E91E63',
+        markers: ['flag-red', 'priority-1'],
         children: [
-          { id: generateId(), text: 'Next Steps', color: '#E91E63', children: [] },
-          { id: generateId(), text: 'Follow Up', color: '#E91E63', children: [] },
+          { id: generateId(), text: 'Next Steps', color: '#E91E63', children: [], markers: ['status-todo'] },
+          { id: generateId(), text: 'Follow Up', color: '#E91E63', children: [], markers: ['status-doing'] },
         ],
       },
     ],
@@ -250,6 +256,34 @@ export function useMindMap() {
     setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, text })));
   }, [updateNode]);
 
+  // Marker management
+  const toggleMarker = useCallback((nodeId: string, markerId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => {
+      const markers = n.markers || [];
+      const hasMarker = markers.includes(markerId);
+      return {
+        ...n,
+        markers: hasMarker
+          ? markers.filter(id => id !== markerId)
+          : [...markers, markerId],
+      };
+    }));
+  }, [updateNode]);
+
+  const removeMarker = useCallback((nodeId: string, markerId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      markers: (n.markers || []).filter(id => id !== markerId),
+    })));
+  }, [updateNode]);
+
+  const clearMarkers = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      markers: [],
+    })));
+  }, [updateNode]);
+
   const toggleCollapse = useCallback((nodeId: string) => {
     setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, collapsed: !n.collapsed })));
   }, [updateNode]);
@@ -408,5 +442,8 @@ export function useMindMap() {
     startLinkMode,
     cancelLinkMode,
     handleLinkNodeClick,
+    toggleMarker,
+    removeMarker,
+    clearMarkers,
   };
 }

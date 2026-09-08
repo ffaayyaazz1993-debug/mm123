@@ -9,6 +9,7 @@ export interface MindNode {
   width?: number;
   height?: number;
   summaries?: Summary[];
+  markers?: string[]; // Array of marker IDs
 }
 
 export interface Relationship {
