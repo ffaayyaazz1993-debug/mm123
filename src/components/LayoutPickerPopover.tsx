@@ -12,333 +12,161 @@ export interface LayoutItem {
   variants: LayoutVariant[];
 }
 
-// --- Mini thumbnail SVGs for variants ---
-
-const MiniMindMap: React.FC<{ direction: 'left' | 'right' | 'both' }> = ({ direction }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    <rect x="18" y="11" width="8" height="8" rx="1.5" fill="#6b7280" />
-    {direction !== 'left' && (
-      <>
-        <line x1="26" y1="15" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="26" y1="15" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="34" y="5" width="6" height="6" rx="1" fill="#9ca3af" />
-        <rect x="34" y="19" width="6" height="6" rx="1" fill="#9ca3af" />
-      </>
-    )}
-    {direction !== 'right' && (
-      <>
-        <line x1="18" y1="15" x2="10" y2="8" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="18" y1="15" x2="10" y2="22" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="4" y="5" width="6" height="6" rx="1" fill="#9ca3af" />
-        <rect x="4" y="19" width="6" height="6" rx="1" fill="#9ca3af" />
-      </>
-    )}
+// Helper to create SVG thumbnail
+const Thumb = ({ children }: { children: React.ReactNode }) => (
+  <svg width="44" height="30" viewBox="0 0 44 30" fill="none" style={{ flexShrink: 0 }}>
+    {children}
   </svg>
 );
 
-const MiniLogic: React.FC<{ direction: 'left' | 'right' }> = ({ direction }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    {direction === 'right' ? (
-      <>
-        <rect x="2" y="11" width="8" height="8" rx="1.5" fill="#6b7280" />
-        <line x1="10" y1="15" x2="18" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="18" y="11" width="8" height="8" rx="1.5" fill="#6b7280" />
-        <line x1="26" y1="15" x2="34" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="34" y="11" width="8" height="8" rx="1.5" fill="#9ca3af" />
-      </>
-    ) : (
-      <>
-        <rect x="34" y="11" width="8" height="8" rx="1.5" fill="#6b7280" />
-        <line x1="34" y1="15" x2="26" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="18" y="11" width="8" height="8" rx="1.5" fill="#6b7280" />
-        <line x1="18" y1="15" x2="10" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="2" y="11" width="8" height="8" rx="1.5" fill="#9ca3af" />
-      </>
-    )}
-  </svg>
-);
+// --- Generate 12 variants for each layout type ---
 
-const MiniBrace: React.FC<{ side: 'left' | 'right' }> = ({ side }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    {side === 'right' ? (
-      <>
-        <rect x="4" y="4" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="4" y="12" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="4" y="20" width="8" height="6" rx="1" fill="#9ca3af" />
-        <path d="M 14 7 Q 18 7 18 15 Q 18 23 14 23" stroke="#6b7280" strokeWidth="1" fill="none" />
-        <rect x="22" y="11" width="10" height="8" rx="1.5" fill="#6b7280" />
-      </>
-    ) : (
-      <>
-        <rect x="32" y="4" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="32" y="12" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="32" y="20" width="8" height="6" rx="1" fill="#9ca3af" />
-        <path d="M 30 7 Q 26 7 26 15 Q 26 23 30 23" stroke="#6b7280" strokeWidth="1" fill="none" />
-        <rect x="12" y="11" width="10" height="8" rx="1.5" fill="#6b7280" />
-      </>
-    )}
-  </svg>
-);
-
-const MiniOrg: React.FC<{ direction: 'down' | 'left' | 'right' }> = ({ direction }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    {direction === 'down' ? (
-      <>
-        <rect x="17" y="2" width="10" height="6" rx="1" fill="#6b7280" />
-        <line x1="22" y1="8" x2="22" y2="12" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="10" y1="12" x2="34" y2="12" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="10" y1="12" x2="10" y2="16" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="34" y1="12" x2="34" y2="16" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="5" y="16" width="10" height="6" rx="1" fill="#9ca3af" />
-        <rect x="29" y="16" width="10" height="6" rx="1" fill="#9ca3af" />
-        <line x1="10" y1="22" x2="10" y2="24" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="34" y1="22" x2="34" y2="24" stroke="#6b7280" strokeWidth="0.6" />
-      </>
-    ) : direction === 'right' ? (
-      <>
-        <rect x="2" y="11" width="10" height="8" rx="1" fill="#6b7280" />
-        <line x1="12" y1="15" x2="18" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="18" y1="6" x2="18" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="18" y1="6" x2="22" y2="6" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="18" y1="24" x2="22" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="22" y="2" width="10" height="8" rx="1" fill="#9ca3af" />
-        <rect x="22" y="20" width="10" height="8" rx="1" fill="#9ca3af" />
-      </>
-    ) : (
-      <>
-        <rect x="32" y="11" width="10" height="8" rx="1" fill="#6b7280" />
-        <line x1="32" y1="15" x2="26" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="26" y1="6" x2="26" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="26" y1="6" x2="22" y2="6" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="26" y1="24" x2="22" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="12" y="2" width="10" height="8" rx="1" fill="#9ca3af" />
-        <rect x="12" y="20" width="10" height="8" rx="1" fill="#9ca3af" />
-      </>
-    )}
-  </svg>
-);
-
-const MiniTree: React.FC<{ direction: 'down' | 'left' | 'right' }> = ({ direction }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    {direction === 'down' ? (
-      <>
-        <rect x="18" y="2" width="8" height="6" rx="1" fill="#6b7280" />
-        <line x1="22" y1="8" x2="22" y2="12" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="10" y="12" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="26" y="12" width="8" height="6" rx="1" fill="#9ca3af" />
-        <line x1="14" y1="18" x2="14" y2="22" stroke="#6b7280" strokeWidth="0.6" />
-        <rect x="10" y="22" width="8" height="6" rx="1" fill="#9ca3af" opacity="0.7" />
-      </>
-    ) : direction === 'right' ? (
-      <>
-        <rect x="2" y="11" width="8" height="8" rx="1" fill="#6b7280" />
-        <line x1="10" y1="15" x2="14" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="14" y="4" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="14" y="20" width="8" height="6" rx="1" fill="#9ca3af" />
-        <line x1="22" y1="7" x2="26" y2="7" stroke="#6b7280" strokeWidth="0.6" />
-        <rect x="26" y="4" width="8" height="6" rx="1" fill="#9ca3af" opacity="0.7" />
-      </>
-    ) : (
-      <>
-        <rect x="34" y="11" width="8" height="8" rx="1" fill="#6b7280" />
-        <line x1="34" y1="15" x2="30" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="22" y="4" width="8" height="6" rx="1" fill="#9ca3af" />
-        <rect x="22" y="20" width="8" height="6" rx="1" fill="#9ca3af" />
-        <line x1="22" y1="7" x2="18" y2="7" stroke="#6b7280" strokeWidth="0.6" />
-        <rect x="10" y="4" width="8" height="6" rx="1" fill="#9ca3af" opacity="0.7" />
-      </>
-    )}
-  </svg>
-);
-
-const MiniTimeline: React.FC<{ orientation: 'horizontal' | 'vertical' }> = ({ orientation }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    {orientation === 'horizontal' ? (
-      <>
-        <line x1="4" y1="15" x2="40" y2="15" stroke="#6b7280" strokeWidth="1.2" />
-        <circle cx="10" cy="15" r="2.5" fill="#9ca3af" />
-        <circle cx="22" cy="15" r="2.5" fill="#9ca3af" />
-        <circle cx="34" cy="15" r="2.5" fill="#9ca3af" />
-        <line x1="10" y1="12" x2="10" y2="6" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="22" y1="18" x2="22" y2="24" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="34" y1="12" x2="34" y2="6" stroke="#6b7280" strokeWidth="0.6" />
-        <rect x="6" y="2" width="8" height="4" rx="0.5" fill="#6b7280" opacity="0.5" />
-        <rect x="18" y="24" width="8" height="4" rx="0.5" fill="#6b7280" opacity="0.5" />
-        <rect x="30" y="2" width="8" height="4" rx="0.5" fill="#6b7280" opacity="0.5" />
-      </>
-    ) : (
-      <>
-        <line x1="22" y1="4" x2="22" y2="26" stroke="#6b7280" strokeWidth="1.2" />
-        <circle cx="22" cy="8" r="2.5" fill="#9ca3af" />
-        <circle cx="22" cy="15" r="2.5" fill="#9ca3af" />
-        <circle cx="22" cy="22" r="2.5" fill="#9ca3af" />
-        <line x1="25" y1="8" x2="32" y2="8" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="19" y1="15" x2="12" y2="15" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="25" y1="22" x2="32" y2="22" stroke="#6b7280" strokeWidth="0.6" />
-      </>
-    )}
-  </svg>
-);
-
-const MiniFishbone: React.FC<{ direction: 'left' | 'right' }> = ({ direction }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    <line x1="4" y1="15" x2="40" y2="15" stroke="#6b7280" strokeWidth="1.2" />
-    {direction === 'right' ? (
-      <>
-        <rect x="32" y="11" width="10" height="8" rx="1" fill="#6b7280" />
-        <line x1="12" y1="15" x2="8" y2="6" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="12" y1="15" x2="8" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="22" y1="15" x2="18" y2="6" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="22" y1="15" x2="18" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-      </>
-    ) : (
-      <>
-        <rect x="2" y="11" width="10" height="8" rx="1" fill="#6b7280" />
-        <line x1="32" y1="15" x2="36" y2="6" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="32" y1="15" x2="36" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="22" y1="15" x2="26" y2="6" stroke="#6b7280" strokeWidth="0.8" />
-        <line x1="22" y1="15" x2="26" y2="24" stroke="#6b7280" strokeWidth="0.8" />
-      </>
-    )}
-  </svg>
-);
-
-const MiniTreeTable: React.FC<{ horizontal?: boolean }> = ({ horizontal }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-    {horizontal ? (
-      <>
-        <rect x="2" y="11" width="10" height="8" rx="1" fill="#6b7280" />
-        <line x1="12" y1="15" x2="18" y2="15" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="18" y="4" width="22" height="6" rx="1" fill="#9ca3af" opacity="0.6" />
-        <rect x="18" y="12" width="22" height="6" rx="1" fill="#9ca3af" opacity="0.6" />
-        <rect x="18" y="20" width="22" height="6" rx="1" fill="#9ca3af" opacity="0.6" />
-        <line x1="18" y1="15" x2="18" y2="4" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="18" y1="15" x2="18" y2="26" stroke="#6b7280" strokeWidth="0.6" />
-      </>
-    ) : (
-      <>
-        <rect x="17" y="2" width="10" height="6" rx="1" fill="#6b7280" />
-        <line x1="22" y1="8" x2="22" y2="12" stroke="#6b7280" strokeWidth="0.8" />
-        <rect x="4" y="12" width="16" height="5" rx="1" fill="#9ca3af" opacity="0.6" />
-        <rect x="24" y="12" width="16" height="5" rx="1" fill="#9ca3af" opacity="0.6" />
-        <rect x="4" y="20" width="16" height="5" rx="1" fill="#9ca3af" opacity="0.6" />
-        <rect x="24" y="20" width="16" height="5" rx="1" fill="#9ca3af" opacity="0.6" />
-        <line x1="22" y1="12" x2="4" y2="12" stroke="#6b7280" strokeWidth="0.6" />
-        <line x1="22" y1="12" x2="40" y2="12" stroke="#6b7280" strokeWidth="0.6" />
-      </>
-    )}
-  </svg>
-);
-
-const MiniMatrix: React.FC<{ size: number }> = ({ size }) => {
-  const cellSize = Math.floor(28 / size);
-  const gap = 1;
-  const totalSize = size * cellSize + (size - 1) * gap;
-  const offset = (44 - totalSize) / 2;
-  const offsetY = (30 - totalSize) / 2;
-
-  return (
-    <svg width="44" height="30" viewBox="0 0 44 30" fill="none">
-      {Array.from({ length: size }).map((_, row) =>
-        Array.from({ length: size }).map((_, col) => (
-          <rect
-            key={`${row}-${col}`}
-            x={offset + col * (cellSize + gap)}
-            y={offsetY + row * (cellSize + gap)}
-            width={cellSize}
-            height={cellSize}
-            rx={0.5}
-            fill={row === 0 && col === 0 ? '#6b7280' : '#9ca3af'}
-            opacity={row === 0 && col === 0 ? 1 : 0.5}
-          />
-        ))
-      )}
-    </svg>
-  );
-};
-
-// --- Layout data (defined after thumbnail components) ---
-
-const LAYOUT_ITEMS: LayoutItem[] = [
-  {
-    id: 'mindmap',
-    name: 'Mind Map',
-    variants: [
-      { id: 'mm-right', name: 'Map Right', thumbnail: <MiniMindMap direction="right" /> },
-      { id: 'mm-left', name: 'Map Left', thumbnail: <MiniMindMap direction="left" /> },
-      { id: 'mm-both', name: 'Map Both', thumbnail: <MiniMindMap direction="both" /> },
-    ],
-  },
-  {
-    id: 'logic',
-    name: 'Logic Chart',
-    variants: [
-      { id: 'lc-right', name: 'Chart Right', thumbnail: <MiniLogic direction="right" /> },
-      { id: 'lc-left', name: 'Chart Left', thumbnail: <MiniLogic direction="left" /> },
-    ],
-  },
-  {
-    id: 'brace',
-    name: 'Brace Map',
-    variants: [
-      { id: 'br-right', name: 'Brace Right', thumbnail: <MiniBrace side="right" /> },
-      { id: 'br-left', name: 'Brace Left', thumbnail: <MiniBrace side="left" /> },
-    ],
-  },
-  {
-    id: 'org',
-    name: 'Org Chart',
-    variants: [
-      { id: 'oc-down', name: 'Chart Down', thumbnail: <MiniOrg direction="down" /> },
-      { id: 'oc-right', name: 'Chart Right', thumbnail: <MiniOrg direction="right" /> },
-      { id: 'oc-left', name: 'Chart Left', thumbnail: <MiniOrg direction="left" /> },
-    ],
-  },
-  {
-    id: 'tree',
-    name: 'Tree Chart',
-    variants: [
-      { id: 'tc-down', name: 'Tree Down', thumbnail: <MiniTree direction="down" /> },
-      { id: 'tc-right', name: 'Tree Right', thumbnail: <MiniTree direction="right" /> },
-      { id: 'tc-left', name: 'Tree Left', thumbnail: <MiniTree direction="left" /> },
-    ],
-  },
-  {
-    id: 'timeline',
-    name: 'Timeline',
-    variants: [
-      { id: 'tl-horiz', name: 'Horizontal', thumbnail: <MiniTimeline orientation="horizontal" /> },
-      { id: 'tl-vert', name: 'Vertical', thumbnail: <MiniTimeline orientation="vertical" /> },
-    ],
-  },
-  {
-    id: 'fishbone',
-    name: 'Fishbone',
-    variants: [
-      { id: 'fb-right', name: 'Fish Right', thumbnail: <MiniFishbone direction="right" /> },
-      { id: 'fb-left', name: 'Fish Left', thumbnail: <MiniFishbone direction="left" /> },
-    ],
-  },
-  {
-    id: 'treetable',
-    name: 'Tree Table',
-    variants: [
-      { id: 'tt-down', name: 'Table Down', thumbnail: <MiniTreeTable /> },
-      { id: 'tt-right', name: 'Table Right', thumbnail: <MiniTreeTable horizontal /> },
-    ],
-  },
-  {
-    id: 'matrix',
-    name: 'Matrix',
-    variants: [
-      { id: 'mx-2x2', name: '2 × 2', thumbnail: <MiniMatrix size={2} /> },
-      { id: 'mx-3x3', name: '3 × 3', thumbnail: <MiniMatrix size={3} /> },
-      { id: 'mx-4x4', name: '4 × 4', thumbnail: <MiniMatrix size={4} /> },
-    ],
-  },
+const mindMapVariants: LayoutVariant[] = [
+  { id: 'mm-right', name: 'Right', thumbnail: <Thumb><rect x="16" y="11" width="8" height="8" rx="1.5" fill="#6b7280"/><line x1="24" y1="15" x2="32" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="24" y1="15" x2="32" y2="22" stroke="#6b7280" strokeWidth="0.8"/><rect x="32" y="5" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="32" y="19" width="6" height="6" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-left', name: 'Left', thumbnail: <Thumb><rect x="20" y="11" width="8" height="8" rx="1.5" fill="#6b7280"/><line x1="20" y1="15" x2="12" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="15" x2="12" y2="22" stroke="#6b7280" strokeWidth="0.8"/><rect x="6" y="5" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="6" y="19" width="6" height="6" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-both', name: 'Both Sides', thumbnail: <Thumb><rect x="18" y="11" width="8" height="8" rx="1.5" fill="#6b7280"/><line x1="26" y1="15" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="26" y1="15" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.8"/><line x1="18" y1="15" x2="10" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="18" y1="15" x2="10" y2="22" stroke="#6b7280" strokeWidth="0.8"/><rect x="34" y="5" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="34" y="19" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="4" y="5" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="4" y="19" width="6" height="6" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-top', name: 'Top Down', thumbnail: <Thumb><rect x="18" y="2" width="8" height="6" rx="1" fill="#6b7280"/><line x1="22" y1="8" x2="14" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="8" x2="22" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="8" x2="30" y2="14" stroke="#6b7280" strokeWidth="0.8"/><rect x="10" y="14" width="8" height="5" rx="1" fill="#9ca3af"/><rect x="18" y="14" width="8" height="5" rx="1" fill="#9ca3af"/><rect x="26" y="14" width="8" height="5" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-bottom', name: 'Bottom Up', thumbnail: <Thumb><rect x="18" y="22" width="8" height="6" rx="1" fill="#6b7280"/><line x1="22" y1="22" x2="14" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="22" x2="22" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="22" x2="30" y2="16" stroke="#6b7280" strokeWidth="0.8"/><rect x="10" y="11" width="8" height="5" rx="1" fill="#9ca3af"/><rect x="18" y="11" width="8" height="5" rx="1" fill="#9ca3af"/><rect x="26" y="11" width="8" height="5" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-radial', name: 'Radial', thumbnail: <Thumb><circle cx="22" cy="15" r="4" fill="#6b7280"/><circle cx="10" cy="8" r="2.5" fill="#9ca3af"/><circle cx="34" cy="8" r="2.5" fill="#9ca3af"/><circle cx="10" cy="22" r="2.5" fill="#9ca3af"/><circle cx="34" cy="22" r="2.5" fill="#9ca3af"/><line x1="19" y1="12" x2="12" y2="9" stroke="#6b7280" strokeWidth="0.6"/><line x1="25" y1="12" x2="32" y2="9" stroke="#6b7280" strokeWidth="0.6"/><line x1="19" y1="18" x2="12" y2="21" stroke="#6b7280" strokeWidth="0.6"/><line x1="25" y1="18" x2="32" y2="21" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'mm-star', name: 'Star', thumbnail: <Thumb><circle cx="22" cy="15" r="3" fill="#6b7280"/><line x1="22" y1="12" x2="22" y2="4" stroke="#6b7280" strokeWidth="0.8"/><line x1="25" y1="13" x2="32" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="25" y1="17" x2="32" y2="24" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="18" x2="22" y2="26" stroke="#6b7280" strokeWidth="0.8"/><line x1="19" y1="17" x2="12" y2="24" stroke="#6b7280" strokeWidth="0.8"/><line x1="19" y1="13" x2="12" y2="6" stroke="#6b7280" strokeWidth="0.8"/><circle cx="22" cy="4" r="2" fill="#9ca3af"/><circle cx="32" cy="6" r="2" fill="#9ca3af"/><circle cx="32" cy="24" r="2" fill="#9ca3af"/><circle cx="22" cy="26" r="2" fill="#9ca3af"/><circle cx="12" cy="24" r="2" fill="#9ca3af"/><circle cx="12" cy="6" r="2" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-sunburst', name: 'Sunburst', thumbnail: <Thumb><circle cx="22" cy="15" r="4" fill="#6b7280"/><circle cx="22" cy="15" r="8" fill="none" stroke="#9ca3af" strokeWidth="0.5" strokeDasharray="2 2"/><circle cx="22" cy="15" r="12" fill="none" stroke="#9ca3af" strokeWidth="0.5" strokeDasharray="2 2"/><line x1="22" y1="11" x2="22" y2="3" stroke="#6b7280" strokeWidth="0.6"/><line x1="26" y1="15" x2="34" y2="15" stroke="#6b7280" strokeWidth="0.6"/><line x1="18" y1="15" x2="10" y2="15" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="19" x2="22" y2="27" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'mm-multi', name: 'Multi-Level', thumbnail: <Thumb><rect x="16" y="11" width="8" height="8" rx="1.5" fill="#6b7280"/><line x1="24" y1="15" x2="30" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="24" y1="15" x2="30" y2="22" stroke="#6b7280" strokeWidth="0.8"/><rect x="30" y="5" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="30" y="19" width="6" height="6" rx="1" fill="#9ca3af"/><line x1="36" y1="8" x2="40" y2="5" stroke="#6b7280" strokeWidth="0.6"/><line x1="36" y1="8" x2="40" y2="11" stroke="#6b7280" strokeWidth="0.6"/><rect x="38" y="3" width="4" height="4" rx="0.5" fill="#9ca3af" opacity="0.7"/><rect x="38" y="9" width="4" height="4" rx="0.5" fill="#9ca3af" opacity="0.7"/></Thumb> },
+  { id: 'mm-compact', name: 'Compact', thumbnail: <Thumb><rect x="14" y="12" width="6" height="6" rx="1" fill="#6b7280"/><line x1="20" y1="15" x2="24" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="15" x2="24" y2="15" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="15" x2="24" y2="20" stroke="#6b7280" strokeWidth="0.8"/><rect x="24" y="8" width="5" height="4" rx="0.5" fill="#9ca3af"/><rect x="24" y="13" width="5" height="4" rx="0.5" fill="#9ca3af"/><rect x="24" y="18" width="5" height="4" rx="0.5" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-expanded', name: 'Expanded', thumbnail: <Thumb><rect x="10" y="11" width="10" height="8" rx="1.5" fill="#6b7280"/><line x1="20" y1="13" x2="28" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="15" x2="28" y2="15" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="17" x2="28" y2="24" stroke="#6b7280" strokeWidth="0.8"/><rect x="28" y="3" width="8" height="6" rx="1" fill="#9ca3af"/><rect x="28" y="12" width="8" height="6" rx="1" fill="#9ca3af"/><rect x="28" y="21" width="8" height="6" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mm-curved', name: 'Curved', thumbnail: <Thumb><rect x="16" y="11" width="8" height="8" rx="1.5" fill="#6b7280"/><path d="M 24 15 Q 30 8 36 8" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 24 15 Q 30 22 36 22" stroke="#6b7280" strokeWidth="0.8" fill="none"/><rect x="34" y="5" width="6" height="6" rx="1" fill="#9ca3af"/><rect x="34" y="19" width="6" height="6" rx="1" fill="#9ca3af"/></Thumb> },
 ];
 
-// --- Main Popover Component ---
+const logicChartVariants: LayoutVariant[] = [
+  { id: 'lc-linear', name: 'Linear', thumbnail: <Thumb><circle cx="6" cy="15" r="2" fill="#6b7280"/><circle cx="16" cy="15" r="2" fill="#6b7280"/><circle cx="26" cy="15" r="2" fill="#6b7280"/><circle cx="36" cy="15" r="2" fill="#6b7280"/><line x1="8" y1="15" x2="14" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="18" y1="15" x2="24" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="28" y1="15" x2="34" y2="15" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'lc-branch', name: 'Branching', thumbnail: <Thumb><circle cx="6" cy="15" r="2" fill="#6b7280"/><circle cx="16" cy="10" r="2" fill="#6b7280"/><circle cx="16" cy="20" r="2" fill="#6b7280"/><circle cx="26" cy="10" r="2" fill="#6b7280"/><circle cx="26" cy="20" r="2" fill="#6b7280"/><line x1="8" y1="15" x2="14" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="15" x2="14" y2="20" stroke="#6b7280" strokeWidth="1"/><line x1="18" y1="10" x2="24" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="18" y1="20" x2="24" y2="20" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'lc-parallel', name: 'Parallel', thumbnail: <Thumb><circle cx="6" cy="15" r="2" fill="#6b7280"/><circle cx="38" cy="15" r="2" fill="#6b7280"/><line x1="8" y1="15" x2="14" y2="8" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="15" x2="14" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="15" x2="14" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="30" y1="8" x2="36" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="30" y1="15" x2="36" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="30" y1="22" x2="36" y2="15" stroke="#6b7280" strokeWidth="1"/><circle cx="22" cy="8" r="1.5" fill="#9ca3af"/><circle cx="22" cy="15" r="1.5" fill="#9ca3af"/><circle cx="22" cy="22" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'lc-sequential', name: 'Sequential', thumbnail: <Thumb><rect x="4" y="12" width="8" height="6" rx="1" fill="#6b7280"/><rect x="16" y="12" width="8" height="6" rx="1" fill="#6b7280"/><rect x="28" y="12" width="8" height="6" rx="1" fill="#6b7280"/><line x1="12" y1="15" x2="16" y2="15" stroke="#6b7280" strokeWidth="1" markerEnd="url(#arrow)"/><line x1="24" y1="15" x2="28" y2="15" stroke="#6b7280" strokeWidth="1"/><path d="M 12 15 L 16 15 M 14 13 L 16 15 L 14 17" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 24 15 L 28 15 M 26 13 L 28 15 L 26 17" stroke="#6b7280" strokeWidth="0.8" fill="none"/></Thumb> },
+  { id: 'lc-decision', name: 'Decision', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><polygon points="22,12 18,16 22,20 26,16" fill="none" stroke="#6b7280" strokeWidth="1"/><circle cx="12" cy="24" r="2" fill="#9ca3af"/><circle cx="32" cy="24" r="2" fill="#9ca3af"/><line x1="22" y1="8" x2="22" y2="12" stroke="#6b7280" strokeWidth="1"/><line x1="18" y1="16" x2="14" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="26" y1="16" x2="30" y2="22" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'lc-loop', name: 'Loop', thumbnail: <Thumb><circle cx="10" cy="15" r="2" fill="#6b7280"/><circle cx="22" cy="15" r="2" fill="#6b7280"/><circle cx="34" cy="15" r="2" fill="#6b7280"/><line x1="12" y1="15" x2="20" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="24" y1="15" x2="32" y2="15" stroke="#6b7280" strokeWidth="1"/><path d="M 34 15 Q 38 15 38 8 Q 38 4 22 4 Q 6 4 6 8 Q 6 15 10 15" stroke="#6b7280" strokeWidth="0.8" fill="none" strokeDasharray="2 1"/></Thumb> },
+  { id: 'lc-merge', name: 'Merge', thumbnail: <Thumb><circle cx="6" cy="8" r="2" fill="#6b7280"/><circle cx="6" cy="15" r="2" fill="#6b7280"/><circle cx="6" cy="22" r="2" fill="#6b7280"/><circle cx="38" cy="15" r="2" fill="#6b7280"/><line x1="8" y1="8" x2="20" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="15" x2="20" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="22" x2="20" y2="15" stroke="#6b7280" strokeWidth="1"/><circle cx="22" cy="15" r="1.5" fill="#9ca3af"/><line x1="24" y1="15" x2="36" y2="15" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'lc-split', name: 'Split', thumbnail: <Thumb><circle cx="6" cy="15" r="2" fill="#6b7280"/><circle cx="38" cy="8" r="2" fill="#6b7280"/><circle cx="38" cy="15" r="2" fill="#6b7280"/><circle cx="38" cy="22" r="2" fill="#6b7280"/><line x1="8" y1="15" x2="22" y2="8" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="15" x2="22" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="8" y1="15" x2="22" y2="22" stroke="#6b7280" strokeWidth="1"/><circle cx="22" cy="8" r="1.5" fill="#9ca3af"/><circle cx="22" cy="15" r="1.5" fill="#9ca3af"/><circle cx="22" cy="22" r="1.5" fill="#9ca3af"/><line x1="24" y1="8" x2="36" y2="8" stroke="#6b7280" strokeWidth="1"/><line x1="24" y1="15" x2="36" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="24" y1="22" x2="36" y2="22" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'lc-network', name: 'Network', thumbnail: <Thumb><circle cx="10" cy="8" r="2" fill="#6b7280"/><circle cx="22" cy="8" r="2" fill="#6b7280"/><circle cx="34" cy="8" r="2" fill="#6b7280"/><circle cx="10" cy="22" r="2" fill="#6b7280"/><circle cx="22" cy="22" r="2" fill="#6b7280"/><circle cx="34" cy="22" r="2" fill="#6b7280"/><line x1="10" y1="8" x2="22" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="10" y1="22" x2="22" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="22" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="10" y1="8" x2="10" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="22" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="8" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="10" y1="8" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.4" opacity="0.5"/></Thumb> },
+  { id: 'lc-hierarchy', name: 'Hierarchy', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><circle cx="12" cy="15" r="2" fill="#6b7280"/><circle cx="32" cy="15" r="2" fill="#6b7280"/><circle cx="8" cy="24" r="1.5" fill="#9ca3af"/><circle cx="16" cy="24" r="1.5" fill="#9ca3af"/><circle cx="28" cy="24" r="1.5" fill="#9ca3af"/><circle cx="36" cy="24" r="1.5" fill="#9ca3af"/><line x1="22" y1="8" x2="12" y2="13" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="8" x2="32" y2="13" stroke="#6b7280" strokeWidth="0.8"/><line x1="12" y1="17" x2="8" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="12" y1="17" x2="16" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="32" y1="17" x2="28" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="32" y1="17" x2="36" y2="22" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'lc-pipeline', name: 'Pipeline', thumbnail: <Thumb><rect x="4" y="12" width="8" height="6" rx="1" fill="#6b7280"/><rect x="14" y="12" width="8" height="6" rx="1" fill="#6b7280"/><rect x="24" y="12" width="8" height="6" rx="1" fill="#6b7280"/><rect x="34" y="12" width="8" height="6" rx="1" fill="#6b7280"/><path d="M 12 15 L 14 15 M 13 13 L 14 15 L 13 17" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 22 15 L 24 15 M 23 13 L 24 15 L 23 17" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 32 15 L 34 15 M 33 13 L 34 15 L 33 17" stroke="#6b7280" strokeWidth="0.8" fill="none"/></Thumb> },
+  { id: 'lc-flow', name: 'Flow', thumbnail: <Thumb><circle cx="8" cy="15" r="2" fill="#6b7280"/><circle cx="20" cy="8" r="2" fill="#6b7280"/><circle cx="20" cy="22" r="2" fill="#6b7280"/><circle cx="36" cy="15" r="2" fill="#6b7280"/><path d="M 10 15 Q 15 8 18 8" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 10 15 Q 15 22 18 22" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 22 8 Q 30 8 34 15" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 22 22 Q 30 22 34 15" stroke="#6b7280" strokeWidth="0.8" fill="none"/></Thumb> },
+];
+
+const braceMapVariants: LayoutVariant[] = [
+  { id: 'bm-curly', name: 'Curly Braces', thumbnail: <Thumb><path d="M 10 6 Q 6 10 10 15 Q 6 20 10 24" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 14 6 Q 18 10 14 15 Q 18 20 14 24" stroke="#6b7280" strokeWidth="1" fill="none"/><circle cx="8" cy="8" r="1.5" fill="#9ca3af"/><circle cx="8" cy="15" r="1.5" fill="#9ca3af"/><circle cx="8" cy="22" r="1.5" fill="#9ca3af"/><circle cx="16" cy="8" r="1.5" fill="#9ca3af"/><circle cx="16" cy="22" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-square', name: 'Square Brackets', thumbnail: <Thumb><rect x="8" y="6" width="4" height="4" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="8" y="13" width="4" height="4" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="8" y="20" width="4" height="4" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="14" y="6" width="4" height="18" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="1"/><circle cx="10" cy="8" r="1" fill="#9ca3af"/><circle cx="10" cy="15" r="1" fill="#9ca3af"/><circle cx="10" cy="22" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-angle', name: 'Angle Brackets', thumbnail: <Thumb><path d="M 12 6 L 8 15 L 12 24" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 16 6 L 20 15 L 16 24" stroke="#6b7280" strokeWidth="1" fill="none"/><circle cx="6" cy="8" r="1.5" fill="#9ca3af"/><circle cx="6" cy="15" r="1.5" fill="#9ca3af"/><circle cx="6" cy="22" r="1.5" fill="#9ca3af"/><circle cx="22" cy="8" r="1.5" fill="#9ca3af"/><circle cx="22" cy="22" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-round', name: 'Round Brackets', thumbnail: <Thumb><path d="M 12 6 Q 6 15 12 24" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 16 6 Q 22 15 16 24" stroke="#6b7280" strokeWidth="1" fill="none"/><circle cx="8" cy="8" r="1.5" fill="#9ca3af"/><circle cx="8" cy="15" r="1.5" fill="#9ca3af"/><circle cx="8" cy="22" r="1.5" fill="#9ca3af"/><circle cx="20" cy="8" r="1.5" fill="#9ca3af"/><circle cx="20" cy="22" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-double', name: 'Double', thumbnail: <Thumb><path d="M 8 6 Q 4 10 8 15 Q 4 20 8 24" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 12 6 Q 8 10 12 15 Q 8 20 12 24" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 20 6 Q 24 10 20 15 Q 24 20 20 24" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 24 6 Q 28 10 24 15 Q 28 20 24 24" stroke="#6b7280" strokeWidth="0.8" fill="none"/><circle cx="6" cy="10" r="1" fill="#9ca3af"/><circle cx="6" cy="20" r="1" fill="#9ca3af"/><circle cx="26" cy="10" r="1" fill="#9ca3af"/><circle cx="26" cy="20" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-nested', name: 'Nested', thumbnail: <Thumb><path d="M 6 4 Q 2 8 6 12 Q 2 16 6 20 Q 2 24 6 28" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 10 8 Q 7 11 10 14 Q 7 17 10 20" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 14 8 Q 17 11 14 14 Q 17 17 14 20" stroke="#6b7280" strokeWidth="0.8" fill="none"/><circle cx="4" cy="8" r="1" fill="#9ca3af"/><circle cx="4" cy="16" r="1" fill="#9ca3af"/><circle cx="4" cy="24" r="1" fill="#9ca3af"/><circle cx="16" cy="11" r="1" fill="#9ca3af"/><circle cx="16" cy="17" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-grouped', name: 'Grouped', thumbnail: <Thumb><path d="M 8 4 Q 4 8 8 12 Q 4 16 8 20" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 8 14 Q 4 18 8 22 Q 4 26 8 30" stroke="#6b7280" strokeWidth="1" fill="none"/><circle cx="6" cy="6" r="1" fill="#9ca3af"/><circle cx="6" cy="10" r="1" fill="#9ca3af"/><circle cx="6" cy="16" r="1" fill="#9ca3af"/><circle cx="6" cy="20" r="1" fill="#9ca3af"/><circle cx="6" cy="26" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-stacked', name: 'Stacked', thumbnail: <Thumb><rect x="6" y="4" width="16" height="6" rx="1" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="6" y="12" width="16" height="6" rx="1" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="6" y="20" width="16" height="6" rx="1" fill="none" stroke="#6b7280" strokeWidth="0.8"/><path d="M 4 4 L 4 26" stroke="#6b7280" strokeWidth="1.5"/><circle cx="14" cy="7" r="1" fill="#9ca3af"/><circle cx="14" cy="15" r="1" fill="#9ca3af"/><circle cx="14" cy="23" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-flowing', name: 'Flowing', thumbnail: <Thumb><path d="M 6 8 Q 12 8 12 15 Q 12 22 6 22" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 14 8 Q 20 8 20 15 Q 20 22 14 22" stroke="#6b7280" strokeWidth="1" fill="none"/><circle cx="4" cy="8" r="1.5" fill="#9ca3af"/><circle cx="4" cy="22" r="1.5" fill="#9ca3af"/><circle cx="22" cy="8" r="1.5" fill="#9ca3af"/><circle cx="22" cy="22" r="1.5" fill="#9ca3af"/><circle cx="12" cy="15" r="1.5" fill="#9ca3af"/><circle cx="20" cy="15" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-connected', name: 'Connected', thumbnail: <Thumb><path d="M 8 6 Q 4 10 8 14" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 8 14 Q 4 18 8 22" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 12 6 Q 16 10 12 14" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 12 14 Q 16 18 12 22" stroke="#6b7280" strokeWidth="1" fill="none"/><line x1="8" y1="14" x2="12" y2="14" stroke="#6b7280" strokeWidth="0.8"/><circle cx="6" cy="8" r="1" fill="#9ca3af"/><circle cx="6" cy="20" r="1" fill="#9ca3af"/><circle cx="14" cy="8" r="1" fill="#9ca3af"/><circle cx="14" cy="20" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-segmented', name: 'Segmented', thumbnail: <Thumb><line x1="6" y1="6" x2="6" y2="10" stroke="#6b7280" strokeWidth="1.5"/><line x1="6" y1="13" x2="6" y2="17" stroke="#6b7280" strokeWidth="1.5"/><line x1="6" y1="20" x2="6" y2="24" stroke="#6b7280" strokeWidth="1.5"/><rect x="8" y="4" width="12" height="4" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="0.6"/><rect x="8" y="11" width="12" height="4" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="0.6"/><rect x="8" y="18" width="12" height="4" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="0.6"/><circle cx="14" cy="6" r="1" fill="#9ca3af"/><circle cx="14" cy="13" r="1" fill="#9ca3af"/><circle cx="14" cy="20" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'bm-layered', name: 'Layered', thumbnail: <Thumb><path d="M 4 6 Q 2 10 4 14 Q 2 18 4 22" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 10 6 Q 8 10 10 14 Q 8 18 10 22" stroke="#6b7280" strokeWidth="0.8" fill="none" opacity="0.6"/><path d="M 16 6 Q 14 10 16 14 Q 14 18 16 22" stroke="#6b7280" strokeWidth="0.8" fill="none" opacity="0.3"/><circle cx="2" cy="8" r="1" fill="#9ca3af"/><circle cx="2" cy="14" r="1" fill="#9ca3af"/><circle cx="2" cy="20" r="1" fill="#9ca3af"/></Thumb> },
+];
+
+const orgChartVariants: LayoutVariant[] = [
+  { id: 'oc-hierarchical', name: 'Hierarchical', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><circle cx="12" cy="18" r="2" fill="#6b7280"/><circle cx="22" cy="18" r="2" fill="#6b7280"/><circle cx="32" cy="18" r="2" fill="#6b7280"/><line x1="22" y1="8" x2="12" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="8" x2="22" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="8" x2="32" y2="16" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'oc-flat', name: 'Flat', thumbnail: <Thumb><circle cx="8" cy="10" r="2" fill="#6b7280"/><circle cx="22" cy="10" r="2" fill="#6b7280"/><circle cx="36" cy="10" r="2" fill="#6b7280"/><circle cx="8" cy="22" r="2" fill="#6b7280"/><circle cx="22" cy="22" r="2" fill="#6b7280"/><circle cx="36" cy="22" r="2" fill="#6b7280"/><line x1="8" y1="12" x2="8" y2="20" stroke="#6b7280" strokeWidth="1"/><line x1="22" y1="12" x2="22" y2="20" stroke="#6b7280" strokeWidth="1"/><line x1="36" y1="12" x2="36" y2="20" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'oc-matrix', name: 'Matrix', thumbnail: <Thumb><circle cx="8" cy="8" r="2" fill="#6b7280"/><circle cx="22" cy="8" r="2" fill="#6b7280"/><circle cx="36" cy="8" r="2" fill="#6b7280"/><circle cx="8" cy="22" r="2" fill="#6b7280"/><circle cx="22" cy="22" r="2" fill="#6b7280"/><circle cx="36" cy="22" r="2" fill="#6b7280"/><line x1="8" y1="8" x2="8" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="22" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="36" y1="8" x2="36" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="8" y1="8" x2="36" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="8" y1="22" x2="36" y2="22" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'oc-divisional', name: 'Divisional', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><line x1="22" y1="8" x2="22" y2="12" stroke="#6b7280" strokeWidth="0.8"/><line x1="8" y1="12" x2="36" y2="12" stroke="#6b7280" strokeWidth="0.8"/><circle cx="8" cy="18" r="2" fill="#9ca3af"/><circle cx="22" cy="18" r="2" fill="#9ca3af"/><circle cx="36" cy="18" r="2" fill="#9ca3af"/><line x1="8" y1="12" x2="8" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="12" x2="22" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="36" y1="12" x2="36" y2="16" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'oc-functional', name: 'Functional', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><line x1="22" y1="8" x2="22" y2="12" stroke="#6b7280" strokeWidth="0.8"/><rect x="6" y="12" width="32" height="4" rx="1" fill="none" stroke="#6b7280" strokeWidth="0.8"/><circle cx="10" cy="22" r="1.5" fill="#9ca3af"/><circle cx="18" cy="22" r="1.5" fill="#9ca3af"/><circle cx="26" cy="22" r="1.5" fill="#9ca3af"/><circle cx="34" cy="22" r="1.5" fill="#9ca3af"/><line x1="10" y1="16" x2="10" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="18" y1="16" x2="18" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="26" y1="16" x2="26" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="16" x2="34" y2="20" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'oc-team', name: 'Team-Based', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><circle cx="10" cy="15" r="1.5" fill="#9ca3af"/><circle cx="16" cy="15" r="1.5" fill="#9ca3af"/><circle cx="28" cy="15" r="1.5" fill="#9ca3af"/><circle cx="34" cy="15" r="1.5" fill="#9ca3af"/><line x1="22" y1="8" x2="10" y2="13" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="16" y2="13" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="28" y2="13" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="34" y2="13" stroke="#6b7280" strokeWidth="0.6"/><circle cx="13" cy="24" r="1" fill="#9ca3af" opacity="0.6"/><circle cx="31" cy="24" r="1" fill="#9ca3af" opacity="0.6"/></Thumb> },
+  { id: 'oc-network', name: 'Network', thumbnail: <Thumb><circle cx="22" cy="15" r="2" fill="#6b7280"/><circle cx="10" cy="8" r="1.5" fill="#9ca3af"/><circle cx="34" cy="8" r="1.5" fill="#9ca3af"/><circle cx="10" cy="22" r="1.5" fill="#9ca3af"/><circle cx="34" cy="22" r="1.5" fill="#9ca3af"/><line x1="22" y1="15" x2="10" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="10" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="10" y1="8" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.4" opacity="0.4"/><line x1="10" y1="22" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.4" opacity="0.4"/></Thumb> },
+  { id: 'oc-circular', name: 'Circular', thumbnail: <Thumb><circle cx="22" cy="15" r="2" fill="#6b7280"/><circle cx="22" cy="5" r="1.5" fill="#9ca3af"/><circle cx="32" cy="10" r="1.5" fill="#9ca3af"/><circle cx="32" cy="20" r="1.5" fill="#9ca3af"/><circle cx="22" cy="25" r="1.5" fill="#9ca3af"/><circle cx="12" cy="20" r="1.5" fill="#9ca3af"/><circle cx="12" cy="10" r="1.5" fill="#9ca3af"/><line x1="22" y1="15" x2="22" y2="5" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="32" y2="10" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="32" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="22" y2="25" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="12" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="12" y2="10" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'oc-radial', name: 'Radial', thumbnail: <Thumb><circle cx="22" cy="15" r="3" fill="#6b7280"/><circle cx="22" cy="6" r="1.5" fill="#9ca3af"/><circle cx="30" cy="10" r="1.5" fill="#9ca3af"/><circle cx="30" cy="20" r="1.5" fill="#9ca3af"/><circle cx="22" cy="24" r="1.5" fill="#9ca3af"/><circle cx="14" cy="20" r="1.5" fill="#9ca3af"/><circle cx="14" cy="10" r="1.5" fill="#9ca3af"/><line x1="22" y1="12" x2="22" y2="7" stroke="#6b7280" strokeWidth="0.8"/><line x1="25" y1="13" x2="29" y2="11" stroke="#6b7280" strokeWidth="0.8"/><line x1="25" y1="17" x2="29" y2="19" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="18" x2="22" y2="23" stroke="#6b7280" strokeWidth="0.8"/><line x1="19" y1="17" x2="15" y2="19" stroke="#6b7280" strokeWidth="0.8"/><line x1="19" y1="13" x2="15" y2="11" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'oc-inverted', name: 'Inverted', thumbnail: <Thumb><circle cx="22" cy="24" r="2" fill="#6b7280"/><circle cx="12" cy="12" r="2" fill="#6b7280"/><circle cx="22" cy="12" r="2" fill="#6b7280"/><circle cx="32" cy="12" r="2" fill="#6b7280"/><line x1="22" y1="22" x2="12" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="22" x2="22" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="22" x2="32" y2="14" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'oc-multitier', name: 'Multi-Tier', thumbnail: <Thumb><circle cx="22" cy="4" r="1.5" fill="#6b7280"/><circle cx="12" cy="12" r="1.5" fill="#6b7280"/><circle cx="32" cy="12" r="1.5" fill="#6b7280"/><circle cx="8" cy="20" r="1" fill="#9ca3af"/><circle cx="16" cy="20" r="1" fill="#9ca3af"/><circle cx="28" cy="20" r="1" fill="#9ca3af"/><circle cx="36" cy="20" r="1" fill="#9ca3af"/><circle cx="8" cy="26" r="0.8" fill="#9ca3af" opacity="0.6"/><circle cx="16" cy="26" r="0.8" fill="#9ca3af" opacity="0.6"/><line x1="22" y1="5" x2="12" y2="10" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="5" x2="32" y2="10" stroke="#6b7280" strokeWidth="0.6"/><line x1="12" y1="13" x2="8" y2="19" stroke="#6b7280" strokeWidth="0.5"/><line x1="12" y1="13" x2="16" y2="19" stroke="#6b7280" strokeWidth="0.5"/><line x1="32" y1="13" x2="28" y2="19" stroke="#6b7280" strokeWidth="0.5"/><line x1="32" y1="13" x2="36" y2="19" stroke="#6b7280" strokeWidth="0.5"/></Thumb> },
+  { id: 'oc-hybrid', name: 'Hybrid', thumbnail: <Thumb><circle cx="10" cy="8" r="2" fill="#6b7280"/><circle cx="34" cy="8" r="2" fill="#6b7280"/><line x1="12" y1="8" x2="32" y2="8" stroke="#6b7280" strokeWidth="0.8"/><circle cx="10" cy="18" r="1.5" fill="#9ca3af"/><circle cx="22" cy="18" r="1.5" fill="#9ca3af"/><circle cx="34" cy="18" r="1.5" fill="#9ca3af"/><line x1="10" y1="10" x2="10" y2="16" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="22" y2="16" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="10" x2="34" y2="16" stroke="#6b7280" strokeWidth="0.6"/><circle cx="10" cy="26" r="1" fill="#9ca3af" opacity="0.6"/><circle cx="34" cy="26" r="1" fill="#9ca3af" opacity="0.6"/><line x1="10" y1="19" x2="10" y2="25" stroke="#6b7280" strokeWidth="0.4"/><line x1="34" y1="19" x2="34" y2="25" stroke="#6b7280" strokeWidth="0.4"/></Thumb> },
+];
+
+const treeChartVariants: LayoutVariant[] = [
+  { id: 'tc-horizontal', name: 'Horizontal', thumbnail: <Thumb><circle cx="6" cy="15" r="2" fill="#6b7280"/><line x1="8" y1="15" x2="18" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="8" y1="15" x2="18" y2="20" stroke="#6b7280" strokeWidth="0.8"/><circle cx="20" cy="10" r="2" fill="#6b7280"/><circle cx="20" cy="20" r="2" fill="#6b7280"/><line x1="22" y1="10" x2="32" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="10" x2="32" y2="14" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="20" x2="32" y2="16" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="20" x2="32" y2="24" stroke="#6b7280" strokeWidth="0.6"/><circle cx="34" cy="6" r="1.5" fill="#9ca3af"/><circle cx="34" cy="14" r="1.5" fill="#9ca3af"/><circle cx="34" cy="16" r="1.5" fill="#9ca3af"/><circle cx="34" cy="24" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-vertical', name: 'Vertical', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><line x1="22" y1="8" x2="14" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="8" x2="30" y2="16" stroke="#6b7280" strokeWidth="0.8"/><circle cx="14" cy="18" r="2" fill="#6b7280"/><circle cx="30" cy="18" r="2" fill="#6b7280"/><line x1="14" y1="20" x2="10" y2="26" stroke="#6b7280" strokeWidth="0.6"/><line x1="14" y1="20" x2="18" y2="26" stroke="#6b7280" strokeWidth="0.6"/><line x1="30" y1="20" x2="26" y2="26" stroke="#6b7280" strokeWidth="0.6"/><line x1="30" y1="20" x2="34" y2="26" stroke="#6b7280" strokeWidth="0.6"/><circle cx="10" cy="28" r="1.5" fill="#9ca3af"/><circle cx="18" cy="28" r="1.5" fill="#9ca3af"/><circle cx="26" cy="28" r="1.5" fill="#9ca3af"/><circle cx="34" cy="28" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-binary', name: 'Binary', thumbnail: <Thumb><circle cx="22" cy="4" r="2" fill="#6b7280"/><line x1="22" y1="6" x2="14" y2="12" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="6" x2="30" y2="12" stroke="#6b7280" strokeWidth="0.8"/><circle cx="14" cy="14" r="2" fill="#6b7280"/><circle cx="30" cy="14" r="2" fill="#6b7280"/><line x1="14" y1="16" x2="8" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="14" y1="16" x2="20" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="30" y1="16" x2="24" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="30" y1="16" x2="36" y2="22" stroke="#6b7280" strokeWidth="0.6"/><circle cx="8" cy="24" r="1.5" fill="#9ca3af"/><circle cx="20" cy="24" r="1.5" fill="#9ca3af"/><circle cx="24" cy="24" r="1.5" fill="#9ca3af"/><circle cx="36" cy="24" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-balanced', name: 'Balanced', thumbnail: <Thumb><circle cx="22" cy="4" r="2" fill="#6b7280"/><line x1="22" y1="6" x2="10" y2="12" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="6" x2="34" y2="12" stroke="#6b7280" strokeWidth="0.8"/><circle cx="10" cy="14" r="1.5" fill="#6b7280"/><circle cx="34" cy="14" r="1.5" fill="#6b7280"/><line x1="10" y1="16" x2="6" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="10" y1="16" x2="14" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="16" x2="30" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="16" x2="38" y2="22" stroke="#6b7280" strokeWidth="0.6"/><circle cx="6" cy="24" r="1" fill="#9ca3af"/><circle cx="14" cy="24" r="1" fill="#9ca3af"/><circle cx="30" cy="24" r="1" fill="#9ca3af"/><circle cx="38" cy="24" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-unbalanced', name: 'Unbalanced', thumbnail: <Thumb><circle cx="10" cy="6" r="2" fill="#6b7280"/><line x1="10" y1="8" x2="6" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="10" y1="8" x2="14" y2="14" stroke="#6b7280" strokeWidth="0.8"/><circle cx="6" cy="16" r="1.5" fill="#6b7280"/><circle cx="14" cy="16" r="1.5" fill="#6b7280"/><line x1="6" y1="18" x2="4" y2="24" stroke="#6b7280" strokeWidth="0.6"/><line x1="14" y1="18" x2="14" y2="24" stroke="#6b7280" strokeWidth="0.6"/><line x1="14" y1="18" x2="22" y2="24" stroke="#6b7280" strokeWidth="0.6"/><circle cx="4" cy="26" r="1" fill="#9ca3af"/><circle cx="14" cy="26" r="1" fill="#9ca3af"/><circle cx="22" cy="26" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-deep', name: 'Deep', thumbnail: <Thumb><circle cx="6" cy="4" r="1.5" fill="#6b7280"/><line x1="6" y1="5" x2="14" y2="10" stroke="#6b7280" strokeWidth="0.6"/><circle cx="14" cy="10" r="1.5" fill="#6b7280"/><line x1="14" y1="11" x2="22" y2="16" stroke="#6b7280" strokeWidth="0.6"/><circle cx="22" cy="16" r="1.5" fill="#6b7280"/><line x1="22" y1="17" x2="30" y2="22" stroke="#6b7280" strokeWidth="0.6"/><circle cx="30" cy="22" r="1.5" fill="#6b7280"/><line x1="30" y1="23" x2="38" y2="28" stroke="#6b7280" strokeWidth="0.6"/><circle cx="38" cy="28" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-wide', name: 'Wide', thumbnail: <Thumb><circle cx="22" cy="6" r="2" fill="#6b7280"/><line x1="22" y1="8" x2="6" y2="14" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="14" y2="14" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="22" y2="14" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="30" y2="14" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="8" x2="38" y2="14" stroke="#6b7280" strokeWidth="0.6"/><circle cx="6" cy="16" r="1.5" fill="#9ca3af"/><circle cx="14" cy="16" r="1.5" fill="#9ca3af"/><circle cx="22" cy="16" r="1.5" fill="#9ca3af"/><circle cx="30" cy="16" r="1.5" fill="#9ca3af"/><circle cx="38" cy="16" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-bushy', name: 'Bushy', thumbnail: <Thumb><circle cx="22" cy="4" r="2" fill="#6b7280"/><line x1="22" y1="6" x2="14" y2="12" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="6" x2="30" y2="12" stroke="#6b7280" strokeWidth="0.8"/><circle cx="14" cy="14" r="1.5" fill="#6b7280"/><circle cx="30" cy="14" r="1.5" fill="#6b7280"/><line x1="14" y1="16" x2="8" y2="20" stroke="#6b7280" strokeWidth="0.5"/><line x1="14" y1="16" x2="14" y2="20" stroke="#6b7280" strokeWidth="0.5"/><line x1="14" y1="16" x2="20" y2="20" stroke="#6b7280" strokeWidth="0.5"/><line x1="30" y1="16" x2="24" y2="20" stroke="#6b7280" strokeWidth="0.5"/><line x1="30" y1="16" x2="30" y2="20" stroke="#6b7280" strokeWidth="0.5"/><line x1="30" y1="16" x2="36" y2="20" stroke="#6b7280" strokeWidth="0.5"/><circle cx="8" cy="22" r="1" fill="#9ca3af"/><circle cx="14" cy="22" r="1" fill="#9ca3af"/><circle cx="20" cy="22" r="1" fill="#9ca3af"/><circle cx="24" cy="22" r="1" fill="#9ca3af"/><circle cx="30" cy="22" r="1" fill="#9ca3af"/><circle cx="36" cy="22" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-sparse', name: 'Sparse', thumbnail: <Thumb><circle cx="6" cy="15" r="2" fill="#6b7280"/><line x1="8" y1="15" x2="22" y2="8" stroke="#6b7280" strokeWidth="0.8"/><circle cx="22" cy="8" r="2" fill="#6b7280"/><line x1="24" y1="8" x2="38" y2="22" stroke="#6b7280" strokeWidth="0.8"/><circle cx="38" cy="22" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-dense', name: 'Dense', thumbnail: <Thumb><circle cx="22" cy="4" r="1.5" fill="#6b7280"/><line x1="22" y1="5" x2="12" y2="10" stroke="#6b7280" strokeWidth="0.5"/><line x1="22" y1="5" x2="22" y2="10" stroke="#6b7280" strokeWidth="0.5"/><line x1="22" y1="5" x2="32" y2="10" stroke="#6b7280" strokeWidth="0.5"/><circle cx="12" cy="11" r="1" fill="#6b7280"/><circle cx="22" cy="11" r="1" fill="#6b7280"/><circle cx="32" cy="11" r="1" fill="#6b7280"/><line x1="12" y1="12" x2="8" y2="16" stroke="#6b7280" strokeWidth="0.4"/><line x1="12" y1="12" x2="16" y2="16" stroke="#6b7280" strokeWidth="0.4"/><line x1="22" y1="12" x2="18" y2="16" stroke="#6b7280" strokeWidth="0.4"/><line x1="22" y1="12" x2="26" y2="16" stroke="#6b7280" strokeWidth="0.4"/><line x1="32" y1="12" x2="28" y2="16" stroke="#6b7280" strokeWidth="0.4"/><line x1="32" y1="12" x2="36" y2="16" stroke="#6b7280" strokeWidth="0.4"/><circle cx="8" cy="17" r="0.8" fill="#9ca3af"/><circle cx="16" cy="17" r="0.8" fill="#9ca3af"/><circle cx="18" cy="17" r="0.8" fill="#9ca3af"/><circle cx="26" cy="17" r="0.8" fill="#9ca3af"/><circle cx="28" cy="17" r="0.8" fill="#9ca3af"/><circle cx="36" cy="17" r="0.8" fill="#9ca3af"/></Thumb> },
+  { id: 'tc-asymmetric', name: 'Asymmetric', thumbnail: <Thumb><circle cx="14" cy="6" r="2" fill="#6b7280"/><line x1="14" y1="8" x2="8" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="14" y1="8" x2="20" y2="14" stroke="#6b7280" strokeWidth="0.8"/><circle cx="8" cy="16" r="1.5" fill="#6b7280"/><circle cx="20" cy="16" r="1.5" fill="#6b7280"/><line x1="8" y1="18" x2="4" y2="24" stroke="#6b7280" strokeWidth="0.6"/><line x1="8" y1="18" x2="12" y2="24" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="18" x2="20" y2="24" stroke="#6b7280" strokeWidth="0.6"/><circle cx="4" cy="26" r="1" fill="#9ca3af"/><circle cx="12" cy="26" r="1" fill="#9ca3af"/><circle cx="20" cy="26" r="1" fill="#9ca3af"/><circle cx="34" cy="10" r="1" fill="#9ca3af" opacity="0.5"/><line x1="20" y1="16" x2="32" y2="10" stroke="#6b7280" strokeWidth="0.4" opacity="0.5"/></Thumb> },
+  { id: 'tc-symmetric', name: 'Symmetric', thumbnail: <Thumb><circle cx="22" cy="4" r="2" fill="#6b7280"/><line x1="22" y1="6" x2="12" y2="12" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="6" x2="32" y2="12" stroke="#6b7280" strokeWidth="0.8"/><circle cx="12" cy="14" r="1.5" fill="#6b7280"/><circle cx="32" cy="14" r="1.5" fill="#6b7280"/><line x1="12" y1="16" x2="6" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="12" y1="16" x2="18" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="32" y1="16" x2="26" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="32" y1="16" x2="38" y2="22" stroke="#6b7280" strokeWidth="0.6"/><circle cx="6" cy="24" r="1.5" fill="#9ca3af"/><circle cx="18" cy="24" r="1.5" fill="#9ca3af"/><circle cx="26" cy="24" r="1.5" fill="#9ca3af"/><circle cx="38" cy="24" r="1.5" fill="#9ca3af"/></Thumb> },
+];
+
+const timelineVariants: LayoutVariant[] = [
+  { id: 'tl-horizontal', name: 'Horizontal', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="15" r="2" fill="#6b7280"/><circle cx="16" cy="15" r="2" fill="#6b7280"/><circle cx="24" cy="15" r="2" fill="#6b7280"/><circle cx="32" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'tl-vertical', name: 'Vertical', thumbnail: <Thumb><line x1="22" y1="6" x2="22" y2="24" stroke="#6b7280" strokeWidth="1"/><circle cx="22" cy="6" r="2" fill="#6b7280"/><circle cx="22" cy="12" r="2" fill="#6b7280"/><circle cx="22" cy="18" r="2" fill="#6b7280"/><circle cx="22" cy="24" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'tl-zigzag', name: 'Zigzag', thumbnail: <Thumb><line x1="6" y1="8" x2="14" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="15" x2="22" y2="8" stroke="#6b7280" strokeWidth="1"/><line x1="22" y1="8" x2="30" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="30" y1="15" x2="38" y2="8" stroke="#6b7280" strokeWidth="1"/><circle cx="6" cy="8" r="2" fill="#6b7280"/><circle cx="14" cy="15" r="2" fill="#6b7280"/><circle cx="22" cy="8" r="2" fill="#6b7280"/><circle cx="30" cy="15" r="2" fill="#6b7280"/><circle cx="38" cy="8" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'tl-curved', name: 'Curved', thumbnail: <Thumb><path d="M 6 20 Q 14 6 22 15 Q 30 24 38 10" stroke="#6b7280" strokeWidth="1" fill="none"/><circle cx="6" cy="20" r="2" fill="#6b7280"/><circle cx="14" cy="12" r="2" fill="#6b7280"/><circle cx="22" cy="15" r="2" fill="#6b7280"/><circle cx="30" cy="18" r="2" fill="#6b7280"/><circle cx="38" cy="10" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'tl-stepped', name: 'Stepped', thumbnail: <Thumb><line x1="6" y1="22" x2="14" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="22" x2="14" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="16" x2="22" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="22" y1="16" x2="22" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="22" y1="10" x2="30" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="30" y1="10" x2="30" y2="4" stroke="#6b7280" strokeWidth="1"/><line x1="30" y1="4" x2="38" y2="4" stroke="#6b7280" strokeWidth="1"/><circle cx="6" cy="22" r="2" fill="#6b7280"/><circle cx="14" cy="16" r="2" fill="#6b7280"/><circle cx="22" cy="10" r="2" fill="#6b7280"/><circle cx="30" cy="4" r="2" fill="#6b7280"/><circle cx="38" cy="4" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'tl-milestone', name: 'Milestone', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><polygon points="10,12 14,15 10,18" fill="#6b7280"/><polygon points="20,12 24,15 20,18" fill="#6b7280"/><polygon points="30,12 34,15 30,18" fill="#6b7280"/><line x1="12" y1="15" x2="12" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="22" y2="22" stroke="#6b7280" strokeWidth="0.6"/><line x1="32" y1="15" x2="32" y2="8" stroke="#6b7280" strokeWidth="0.6"/><circle cx="12" cy="6" r="1.5" fill="#9ca3af"/><circle cx="22" cy="24" r="1.5" fill="#9ca3af"/><circle cx="32" cy="6" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tl-gantt', name: 'Gantt', thumbnail: <Thumb><rect x="6" y="6" width="12" height="4" rx="1" fill="#6b7280"/><rect x="14" y="13" width="16" height="4" rx="1" fill="#6b7280"/><rect x="22" y="20" width="10" height="4" rx="1" fill="#6b7280"/><line x1="6" y1="4" x2="6" y2="26" stroke="#6b7280" strokeWidth="0.5"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="0.5" strokeDasharray="1 1"/><line x1="22" y1="4" x2="22" y2="26" stroke="#6b7280" strokeWidth="0.5" strokeDasharray="1 1"/><line x1="30" y1="4" x2="30" y2="26" stroke="#6b7280" strokeWidth="0.5" strokeDasharray="1 1"/></Thumb> },
+  { id: 'tl-swimlane', name: 'Swimlane', thumbnail: <Thumb><line x1="6" y1="10" x2="38" y2="10" stroke="#6b7280" strokeWidth="0.5"/><line x1="6" y1="20" x2="38" y2="20" stroke="#6b7280" strokeWidth="0.5"/><circle cx="10" cy="10" r="2" fill="#6b7280"/><circle cx="22" cy="10" r="2" fill="#6b7280"/><circle cx="34" cy="10" r="2" fill="#6b7280"/><circle cx="16" cy="20" r="2" fill="#6b7280"/><circle cx="28" cy="20" r="2" fill="#6b7280"/><line x1="10" y1="10" x2="16" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="10" x2="28" y2="20" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="10" x2="28" y2="20" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'tl-chronological', name: 'Chronological', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="15" r="1.5" fill="#6b7280"/><circle cx="16" cy="15" r="1.5" fill="#6b7280"/><circle cx="24" cy="15" r="1.5" fill="#6b7280"/><circle cx="32" cy="15" r="1.5" fill="#6b7280"/><line x1="8" y1="13" x2="8" y2="8" stroke="#6b7280" strokeWidth="0.5"/><line x1="16" y1="17" x2="16" y2="22" stroke="#6b7280" strokeWidth="0.5"/><line x1="24" y1="13" x2="24" y2="8" stroke="#6b7280" strokeWidth="0.5"/><line x1="32" y1="17" x2="32" y2="22" stroke="#6b7280" strokeWidth="0.5"/><rect x="6" y="6" width="4" height="2" rx="0.5" fill="#9ca3af"/><rect x="14" y="22" width="4" height="2" rx="0.5" fill="#9ca3af"/><rect x="22" y="6" width="4" height="2" rx="0.5" fill="#9ca3af"/><rect x="30" y="22" width="4" height="2" rx="0.5" fill="#9ca3af"/></Thumb> },
+  { id: 'tl-periodic', name: 'Periodic', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><circle cx="10" cy="15" r="2" fill="#6b7280"/><circle cx="22" cy="15" r="2" fill="#6b7280"/><circle cx="34" cy="15" r="2" fill="#6b7280"/><line x1="10" y1="15" x2="10" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="22" y1="15" x2="22" y2="8" stroke="#6b7280" strokeWidth="0.6"/><line x1="34" y1="15" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.6"/><rect x="8" y="4" width="4" height="4" rx="1" fill="#9ca3af"/><rect x="20" y="4" width="4" height="4" rx="1" fill="#9ca3af"/><rect x="32" y="4" width="4" height="4" rx="1" fill="#9ca3af"/></Thumb> },
+  { id: 'tl-spiral', name: 'Spiral', thumbnail: <Thumb><path d="M 22 15 Q 28 15 28 9 Q 28 3 22 3 Q 16 3 16 9 Q 16 15 22 15 Q 34 15 34 9 Q 34 -3 22 -3" stroke="#6b7280" strokeWidth="0.8" fill="none" transform="translate(0, 6)"/><circle cx="22" cy="21" r="1.5" fill="#6b7280"/><circle cx="28" cy="15" r="1.5" fill="#6b7280"/><circle cx="22" cy="9" r="1.5" fill="#6b7280"/><circle cx="16" cy="15" r="1.5" fill="#6b7280"/></Thumb> },
+  { id: 'tl-segmented', name: 'Segmented', thumbnail: <Thumb><rect x="6" y="13" width="8" height="4" rx="1" fill="#6b7280"/><rect x="16" y="13" width="8" height="4" rx="1" fill="#6b7280" opacity="0.7"/><rect x="26" y="13" width="8" height="4" rx="1" fill="#6b7280" opacity="0.4"/><rect x="36" y="13" width="4" height="4" rx="1" fill="#6b7280" opacity="0.2"/><line x1="10" y1="11" x2="10" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="11" x2="20" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="30" y1="11" x2="30" y2="6" stroke="#6b7280" strokeWidth="0.6"/><circle cx="10" cy="4" r="1.5" fill="#9ca3af"/><circle cx="20" cy="4" r="1.5" fill="#9ca3af"/><circle cx="30" cy="4" r="1.5" fill="#9ca3af"/></Thumb> },
+];
+
+const fishboneVariants: LayoutVariant[] = [
+  { id: 'fb-right', name: 'Right', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="12" y1="15" x2="18" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="15" x2="26" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="15" x2="34" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="12" y1="15" x2="18" y2="22" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="15" x2="26" y2="22" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="15" x2="34" y2="22" stroke="#6b7280" strokeWidth="0.8"/><circle cx="38" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-left', name: 'Left', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="10" y1="15" x2="16" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="18" y1="15" x2="24" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="26" y1="15" x2="32" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="10" y1="15" x2="16" y2="22" stroke="#6b7280" strokeWidth="0.8"/><line x1="18" y1="15" x2="24" y2="22" stroke="#6b7280" strokeWidth="0.8"/><line x1="26" y1="15" x2="32" y2="22" stroke="#6b7280" strokeWidth="0.8"/><circle cx="6" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-double', name: 'Double', thumbnail: <Thumb><line x1="6" y1="10" x2="38" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="6" y1="20" x2="38" y2="20" stroke="#6b7280" strokeWidth="0.8"/><line x1="12" y1="10" x2="16" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="10" x2="24" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="28" y1="10" x2="32" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="12" y1="20" x2="16" y2="24" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="20" x2="24" y2="24" stroke="#6b7280" strokeWidth="0.6"/><line x1="28" y1="20" x2="32" y2="24" stroke="#6b7280" strokeWidth="0.6"/><circle cx="38" cy="10" r="1.5" fill="#6b7280"/><circle cx="38" cy="20" r="1.5" fill="#6b7280"/></Thumb> },
+  { id: 'fb-central', name: 'Central', thumbnail: <Thumb><line x1="22" y1="6" x2="22" y2="24" stroke="#6b7280" strokeWidth="1"/><line x1="6" y1="10" x2="16" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="6" y1="15" x2="16" y2="15" stroke="#6b7280" strokeWidth="0.8"/><line x1="6" y1="20" x2="16" y2="20" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="10" x2="38" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="20" x2="38" y2="20" stroke="#6b7280" strokeWidth="0.8"/><circle cx="22" cy="6" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-diagonal', name: 'Diagonal', thumbnail: <Thumb><line x1="6" y1="24" x2="38" y2="6" stroke="#6b7280" strokeWidth="1"/><line x1="12" y1="20" x2="18" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="14" x2="26" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="8" x2="34" y2="4" stroke="#6b7280" strokeWidth="0.8"/><line x1="12" y1="20" x2="8" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="14" x2="16" y2="8" stroke="#6b7280" strokeWidth="0.8"/><circle cx="38" cy="6" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-vertical', name: 'Vertical', thumbnail: <Thumb><line x1="22" y1="6" x2="22" y2="24" stroke="#6b7280" strokeWidth="1"/><line x1="22" y1="10" x2="14" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="15" x2="14" y2="11" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="20" x2="14" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="10" x2="30" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="15" x2="30" y2="11" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="20" x2="30" y2="16" stroke="#6b7280" strokeWidth="0.8"/><circle cx="22" cy="24" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-multispine', name: 'Multi-Spine', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="15" x2="14" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="15" x2="22" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="30" y1="15" x2="30" y2="6" stroke="#6b7280" strokeWidth="0.8"/><line x1="14" y1="15" x2="14" y2="24" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="15" x2="22" y2="24" stroke="#6b7280" strokeWidth="0.8"/><line x1="30" y1="15" x2="30" y2="24" stroke="#6b7280" strokeWidth="0.8"/><circle cx="6" cy="15" r="2" fill="#6b7280"/><circle cx="38" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-curved', name: 'Curved', thumbnail: <Thumb><path d="M 6 15 Q 22 15 38 15" stroke="#6b7280" strokeWidth="1" fill="none"/><path d="M 12 15 Q 16 8 20 8" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 20 15 Q 24 8 28 8" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 28 15 Q 32 8 36 8" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 12 15 Q 16 22 20 22" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 20 15 Q 24 22 28 22" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 28 15 Q 32 22 36 22" stroke="#6b7280" strokeWidth="0.8" fill="none"/><circle cx="38" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-stepped', name: 'Stepped', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="10" y1="15" x2="14" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="14" y1="10" x2="18" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="18" y1="15" x2="22" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="10" x2="26" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="26" y1="15" x2="30" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="30" y1="10" x2="34" y2="10" stroke="#6b7280" strokeWidth="0.8"/><circle cx="38" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-layered', name: 'Layered', thumbnail: <Thumb><line x1="6" y1="8" x2="38" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="0.8"/><line x1="6" y1="22" x2="38" y2="22" stroke="#6b7280" strokeWidth="0.8"/><line x1="12" y1="8" x2="16" y2="4" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="8" x2="24" y2="4" stroke="#6b7280" strokeWidth="0.6"/><line x1="12" y1="15" x2="16" y2="11" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="15" x2="24" y2="11" stroke="#6b7280" strokeWidth="0.6"/><line x1="12" y1="22" x2="16" y2="18" stroke="#6b7280" strokeWidth="0.6"/><line x1="20" y1="22" x2="24" y2="18" stroke="#6b7280" strokeWidth="0.6"/><circle cx="38" cy="8" r="1.5" fill="#6b7280"/><circle cx="38" cy="15" r="1.5" fill="#6b7280"/><circle cx="38" cy="22" r="1.5" fill="#6b7280"/></Thumb> },
+  { id: 'fb-detailed', name: 'Detailed', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="10" y1="15" x2="14" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="14" y1="10" x2="18" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="18" y1="15" x2="22" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="22" y1="10" x2="26" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="26" y1="15" x2="30" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="30" y1="10" x2="34" y2="6" stroke="#6b7280" strokeWidth="0.6"/><line x1="10" y1="15" x2="14" y2="20" stroke="#6b7280" strokeWidth="0.8"/><line x1="18" y1="15" x2="22" y2="20" stroke="#6b7280" strokeWidth="0.8"/><line x1="26" y1="15" x2="30" y2="20" stroke="#6b7280" strokeWidth="0.8"/><circle cx="38" cy="15" r="2" fill="#6b7280"/></Thumb> },
+  { id: 'fb-minimal', name: 'Minimal', thumbnail: <Thumb><line x1="6" y1="15" x2="38" y2="15" stroke="#6b7280" strokeWidth="1"/><line x1="16" y1="15" x2="22" y2="8" stroke="#6b7280" strokeWidth="0.8"/><line x1="16" y1="15" x2="22" y2="22" stroke="#6b7280" strokeWidth="0.8"/><circle cx="38" cy="15" r="2" fill="#6b7280"/></Thumb> },
+];
+
+const treeTableVariants: LayoutVariant[] = [
+  { id: 'tt-simple', name: 'Simple', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="12" x2="40" y2="12" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="20" x2="40" y2="20" stroke="#6b7280" strokeWidth="1"/><line x1="16" y1="4" x2="16" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="10" cy="8" r="1.5" fill="#6b7280"/><circle cx="10" cy="16" r="1.5" fill="#6b7280"/><circle cx="10" cy="24" r="1.5" fill="#6b7280"/></Thumb> },
+  { id: 'tt-detailed', name: 'Detailed', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="22" x2="40" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="12" y1="4" x2="12" y2="26" stroke="#6b7280" strokeWidth="1"/><line x1="24" y1="4" x2="24" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="7" r="1" fill="#6b7280"/><circle cx="8" cy="13" r="1" fill="#6b7280"/><circle cx="8" cy="19" r="1" fill="#6b7280"/><circle cx="8" cy="25" r="1" fill="#6b7280"/></Thumb> },
+  { id: 'tt-nested', name: 'Nested', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="22" x2="40" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="7" r="1" fill="#6b7280"/><line x1="16" y1="13" x2="20" y2="13" stroke="#6b7280" strokeWidth="0.5"/><circle cx="18" cy="13" r="0.8" fill="#9ca3af"/><line x1="16" y1="19" x2="20" y2="19" stroke="#6b7280" strokeWidth="0.5"/><circle cx="18" cy="19" r="0.8" fill="#9ca3af"/></Thumb> },
+  { id: 'tt-expandable', name: 'Expandable', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><polygon points="8,6 10,8 8,10" fill="#6b7280"/><polygon points="8,12 10,14 8,16" fill="#6b7280"/><polygon points="8,18 10,20 8,22" fill="#6b7280" opacity="0.5"/></Thumb> },
+  { id: 'tt-sortable', name: 'Sortable', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="22" x2="40" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><line x1="26" y1="4" x2="26" y2="26" stroke="#6b7280" strokeWidth="1"/><path d="M 8 6 L 10 8 L 12 6" stroke="#6b7280" strokeWidth="0.8" fill="none"/><path d="M 20 8 L 22 6 L 24 8" stroke="#6b7280" strokeWidth="0.8" fill="none"/></Thumb> },
+  { id: 'tt-filterable', name: 'Filterable', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="7" r="1.5" fill="none" stroke="#6b7280" strokeWidth="0.8"/><line x1="9" y1="8" x2="10" y2="9" stroke="#6b7280" strokeWidth="0.8"/><circle cx="8" cy="13" r="1.5" fill="none" stroke="#6b7280" strokeWidth="0.8"/><line x1="9" y1="14" x2="10" y2="15" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'tt-grouped', name: 'Grouped', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="22" x2="40" y2="22" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><rect x="4" y="4" width="10" height="6" fill="#6b7280" opacity="0.2"/><rect x="4" y="16" width="10" height="6" fill="#6b7280" opacity="0.2"/></Thumb> },
+  { id: 'tt-paginated', name: 'Paginated', thumbnail: <Thumb><rect x="4" y="4" width="36" height="18" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="22" stroke="#6b7280" strokeWidth="1"/><circle cx="10" cy="7" r="1" fill="#6b7280"/><circle cx="10" cy="13" r="1" fill="#6b7280"/><circle cx="10" cy="19" r="1" fill="#6b7280"/><circle cx="18" cy="25" r="1" fill="#6b7280"/><circle cx="22" cy="25" r="1" fill="#6b7280"/><circle cx="26" cy="25" r="1" fill="#6b7280"/></Thumb> },
+  { id: 'tt-searchable', name: 'Searchable', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="7" r="1.5" fill="none" stroke="#6b7280" strokeWidth="0.8"/><line x1="9" y1="8" x2="10" y2="9" stroke="#6b7280" strokeWidth="0.8"/><rect x="16" y="6" width="20" height="2" rx="1" fill="#6b7280" opacity="0.3"/></Thumb> },
+  { id: 'tt-editable', name: 'Editable', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="10" cy="8" r="1.5" fill="#6b7280"/><rect x="16" y="6" width="18" height="3" rx="0.5" fill="none" stroke="#6b7280" strokeWidth="0.6"/><path d="M 36 14 L 38 12 L 38 16 Z" fill="#6b7280"/></Thumb> },
+  { id: 'tt-collapsible', name: 'Collapsible', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><rect x="6" y="6" width="4" height="2" rx="0.5" fill="#6b7280"/><rect x="6" y="12" width="4" height="2" rx="0.5" fill="#6b7280"/><rect x="6" y="18" width="4" height="2" rx="0.5" fill="#6b7280"/><path d="M 16 7 L 18 9 L 20 7" stroke="#6b7280" strokeWidth="0.6" fill="none"/><path d="M 16 19 L 20 19" stroke="#6b7280" strokeWidth="0.6"/></Thumb> },
+  { id: 'tt-comprehensive', name: 'Comprehensive', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="9" x2="40" y2="9" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="14" x2="40" y2="14" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="19" x2="40" y2="19" stroke="#6b7280" strokeWidth="1"/><line x1="12" y1="4" x2="12" y2="26" stroke="#6b7280" strokeWidth="1"/><line x1="22" y1="4" x2="22" y2="26" stroke="#6b7280" strokeWidth="1"/><line x1="32" y1="4" x2="32" y2="26" stroke="#6b7280" strokeWidth="1"/><circle cx="8" cy="6" r="0.8" fill="#6b7280"/><circle cx="8" cy="11" r="0.8" fill="#6b7280"/><circle cx="8" cy="16" r="0.8" fill="#6b7280"/><circle cx="8" cy="21" r="0.8" fill="#6b7280"/></Thumb> },
+];
+
+const matrixVariants: LayoutVariant[] = [
+  { id: 'mx-2x2', name: '2×2 Grid', thumbnail: <Thumb><rect x="6" y="6" width="14" height="10" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="22" y="6" width="14" height="10" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="6" y="18" width="14" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="22" y="18" width="14" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'mx-3x3', name: '3×3 Grid', thumbnail: <Thumb><rect x="4" y="4" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="16" y="4" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="4" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="4" y="13" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="16" y="13" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="13" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="4" y="22" width="10" height="5" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="16" y="22" width="10" height="5" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="22" width="10" height="5" fill="none" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'mx-4x4', name: '4×4 Grid', thumbnail: <Thumb><rect x="4" y="4" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="13" y="4" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="22" y="4" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="31" y="4" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="4" y="11" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="13" y="11" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="22" y="11" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="31" y="11" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="4" y="18" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="13" y="18" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="22" y="18" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/><rect x="31" y="18" width="8" height="6" fill="none" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'mx-sparse', name: 'Sparse', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="6" y="18" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="18" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><circle cx="11" cy="10" r="1.5" fill="#9ca3af"/><circle cx="33" cy="10" r="1.5" fill="#9ca3af"/><circle cx="11" cy="22" r="1.5" fill="#9ca3af"/><circle cx="33" cy="22" r="1.5" fill="#9ca3af"/></Thumb> },
+  { id: 'mx-dense', name: 'Dense', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="12" y1="4" x2="12" y2="26" stroke="#6b7280" strokeWidth="0.8"/><line x1="20" y1="4" x2="20" y2="26" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="4" x2="28" y2="26" stroke="#6b7280" strokeWidth="0.8"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="0.8"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="0.8"/><line x1="4" y1="22" x2="40" y2="22" stroke="#6b7280" strokeWidth="0.8"/><circle cx="8" cy="7" r="1" fill="#9ca3af"/><circle cx="16" cy="7" r="1" fill="#9ca3af"/><circle cx="24" cy="7" r="1" fill="#9ca3af"/><circle cx="32" cy="7" r="1" fill="#9ca3af"/></Thumb> },
+  { id: 'mx-diagonal', name: 'Diagonal', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="6" y="18" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="28" y="18" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="6" y1="6" x2="16" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="6" x2="38" y2="14" stroke="#6b7280" strokeWidth="0.8"/><line x1="6" y1="18" x2="16" y2="26" stroke="#6b7280" strokeWidth="0.8"/><line x1="28" y1="18" x2="38" y2="26" stroke="#6b7280" strokeWidth="0.8"/></Thumb> },
+  { id: 'mx-checkerboard', name: 'Checkerboard', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="#6b7280" opacity="0.3"/><rect x="18" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="30" y="6" width="10" height="8" fill="#6b7280" opacity="0.3"/><rect x="6" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="18" y="16" width="10" height="8" fill="#6b7280" opacity="0.3"/><rect x="30" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/></Thumb> },
+  { id: 'mx-gradient', name: 'Gradient', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="#6b7280" opacity="0.1"/><rect x="18" y="6" width="10" height="8" fill="#6b7280" opacity="0.3"/><rect x="30" y="6" width="10" height="8" fill="#6b7280" opacity="0.5"/><rect x="6" y="16" width="10" height="8" fill="#6b7280" opacity="0.3"/><rect x="18" y="16" width="10" height="8" fill="#6b7280" opacity="0.5"/><rect x="30" y="16" width="10" height="8" fill="#6b7280" opacity="0.7"/></Thumb> },
+  { id: 'mx-heatmap', name: 'Heatmap', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="#6b7280" opacity="0.2"/><rect x="18" y="6" width="10" height="8" fill="#6b7280" opacity="0.8"/><rect x="30" y="6" width="10" height="8" fill="#6b7280" opacity="0.4"/><rect x="6" y="16" width="10" height="8" fill="#6b7280" opacity="0.6"/><rect x="18" y="16" width="10" height="8" fill="#6b7280" opacity="0.3"/><rect x="30" y="16" width="10" height="8" fill="#6b7280" opacity="0.9"/></Thumb> },
+  { id: 'mx-bubble', name: 'Bubble', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="18" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="30" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="6" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="18" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="30" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><circle cx="11" cy="10" r="2" fill="#9ca3af"/><circle cx="23" cy="10" r="3" fill="#9ca3af"/><circle cx="35" cy="10" r="1.5" fill="#9ca3af"/><circle cx="11" cy="20" r="2.5" fill="#9ca3af"/><circle cx="23" cy="20" r="1" fill="#9ca3af"/><circle cx="35" cy="20" r="3" fill="#9ca3af"/></Thumb> },
+  { id: 'mx-weighted', name: 'Weighted', thumbnail: <Thumb><rect x="6" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="18" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="30" y="6" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="6" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="18" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><rect x="30" y="16" width="10" height="8" fill="none" stroke="#6b7280" strokeWidth="1"/><text x="11" y="12" fontSize="6" fill="#6b7280" textAnchor="middle">5</text><text x="23" y="12" fontSize="6" fill="#6b7280" textAnchor="middle">3</text><text x="35" y="12" fontSize="6" fill="#6b7280" textAnchor="middle">8</text><text x="11" y="22" fontSize="6" fill="#6b7280" textAnchor="middle">2</text><text x="23" y="22" fontSize="6" fill="#6b7280" textAnchor="middle">7</text><text x="35" y="22" fontSize="6" fill="#6b7280" textAnchor="middle">4</text></Thumb> },
+  { id: 'mx-pivot', name: 'Pivot Table', thumbnail: <Thumb><rect x="4" y="4" width="36" height="22" fill="none" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="10" x2="40" y2="10" stroke="#6b7280" strokeWidth="1"/><line x1="14" y1="4" x2="14" y2="26" stroke="#6b7280" strokeWidth="1"/><line x1="24" y1="4" x2="24" y2="26" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="16" x2="40" y2="16" stroke="#6b7280" strokeWidth="1"/><line x1="4" y1="22" x2="40" y2="22" stroke="#6b7280" strokeWidth="1"/><rect x="4" y="4" width="10" height="6" fill="#6b7280" opacity="0.3"/><rect x="4" y="10" width="10" height="6" fill="#6b7280" opacity="0.2"/><circle cx="19" cy="7" r="1" fill="#9ca3af"/><circle cx="29" cy="7" r="1" fill="#9ca3af"/><circle cx="19" cy="13" r="1" fill="#9ca3af"/><circle cx="29" cy="13" r="1" fill="#9ca3af"/></Thumb> },
+];
+
+export const LAYOUTS: LayoutItem[] = [
+  { id: 'mind-map', name: 'Mind Map', variants: mindMapVariants },
+  { id: 'logic-chart', name: 'Logic Chart', variants: logicChartVariants },
+  { id: 'brace-map', name: 'Brace Map', variants: braceMapVariants },
+  { id: 'org-chart', name: 'Org Chart', variants: orgChartVariants },
+  { id: 'tree-chart', name: 'Tree Chart', variants: treeChartVariants },
+  { id: 'timeline', name: 'Timeline', variants: timelineVariants },
+  { id: 'fishbone', name: 'Fishbone', variants: fishboneVariants },
+  { id: 'tree-table', name: 'Tree Table', variants: treeTableVariants },
+  { id: 'matrix', name: 'Matrix', variants: matrixVariants },
+];
 
 interface LayoutPickerPopoverProps {
   isOpen: boolean;
@@ -356,7 +184,12 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) {
+      setExpandedId(null);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -383,30 +216,29 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
     };
   }, [isOpen, onClose, anchorRef]);
 
-  // Reset expanded state when popover closes
-  useEffect(() => {
-    if (!isOpen) setExpandedId(null);
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
-  const handleRowClick = (id: string) => {
+  const toggleExpand = (id: string) => {
     setExpandedId(prev => (prev === id ? null : id));
   };
 
-  const handleVariantClick = (layoutId: string, layoutName: string, variantId: string, variantName: string) => {
+  const handleSelectVariant = (layoutId: string, layoutName: string, variantId: string, variantName: string) => {
     onSelect(layoutId, layoutName, variantId, variantName);
     onClose();
   };
+
+  // Calculate position
+  const anchorRect = anchorRef.current?.getBoundingClientRect();
+  const top = anchorRect ? anchorRect.top : 100;
+  const right = window.innerWidth - (anchorRect ? anchorRect.left : window.innerWidth - 250) + 10;
 
   return (
     <div
       ref={popoverRef}
       style={{
         position: 'fixed',
-        top: '50%',
-        right: '222px',
-        transform: 'translateY(-50%)',
+        top: `${Math.max(20, top - 50)}px`,
+        right: `${right + 220}px`,
         width: '310px',
         minHeight: '530px',
         background: '#262626',
@@ -414,106 +246,100 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
         boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
         padding: '12px',
         display: 'flex',
-        zIndex: 300,
+        zIndex: 1000,
         fontFamily: 'Inter, "Segoe UI", sans-serif',
       }}
     >
       {/* Left menu column */}
-      <div style={{ width: '160px', flexShrink: 0 }}>
-        {LAYOUT_ITEMS.map(item => {
-          const isExpanded = expandedId === item.id;
+      <div style={{ width: '160px', paddingRight: '8px' }}>
+        {LAYOUTS.map(layout => {
+          const isExpanded = expandedId === layout.id;
           return (
-            <button
-              key={item.id}
-              onClick={() => handleRowClick(item.id)}
+            <div
+              key={layout.id}
+              onClick={() => toggleExpand(layout.id)}
               style={{
-                width: '100%',
                 height: '40px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 padding: '0 8px',
-                background: 'transparent',
-                border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
                 transition: 'background 0.15s',
+                background: isExpanded ? '#333333' : 'transparent',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#333333')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              onMouseEnter={(e) => {
+                if (!isExpanded) e.currentTarget.style.background = '#333333';
+              }}
+              onMouseLeave={(e) => {
+                if (!isExpanded) e.currentTarget.style.background = 'transparent';
+              }}
             >
-              {/* Caret */}
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                fill="none"
-                style={{
-                  transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s',
-                  flexShrink: 0,
-                }}
-              >
-                <path d="M3 2L7 5L3 8" fill="#cfcfcf" />
-              </svg>
-              {/* Label */}
               <span
                 style={{
-                  fontSize: '14px',
-                  color: '#e6e6e6',
-                  fontWeight: 500,
-                  textAlign: 'left',
-                  flex: 1,
+                  fontSize: '10px',
+                  color: '#cfcfcf',
+                  transition: 'transform 0.2s',
+                  transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                  display: 'inline-block',
                 }}
               >
-                {item.name}
+                ▸
               </span>
-            </button>
+              <span style={{ fontSize: '14px', color: '#e6e6e6', fontWeight: 500 }}>
+                {layout.name}
+              </span>
+            </div>
           );
         })}
       </div>
 
-      {/* Right pane - submenu/preview area */}
+      {/* Right pane - submenu/preview */}
       <div
         style={{
           flex: 1,
-          marginLeft: '12px',
           background: '#1e1e1e',
-          borderRadius: '6px',
-          padding: '8px',
-          minHeight: '500px',
+          borderRadius: '4px',
+          padding: expandedId ? '8px' : '0',
+          overflowY: 'auto',
+          maxHeight: '500px',
         }}
       >
         {expandedId && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {LAYOUT_ITEMS.find(item => item.id === expandedId)?.variants.map(variant => (
-              <button
+          <>
+            <div style={{ fontSize: '11px', color: '#8b8b8b', marginBottom: '8px', fontWeight: 600 }}>
+              {LAYOUTS.find(l => l.id === expandedId)?.name} Variants
+            </div>
+            {LAYOUTS.find(l => l.id === expandedId)?.variants.map(variant => (
+              <div
                 key={variant.id}
-                onClick={() => {
-                  const item = LAYOUT_ITEMS.find(i => i.id === expandedId);
-                  if (item) handleVariantClick(item.id, item.name, variant.id, variant.name);
-                }}
+                onClick={() =>
+                  handleSelectVariant(
+                    expandedId,
+                    LAYOUTS.find(l => l.id === expandedId)?.name || '',
+                    variant.id,
+                    variant.name
+                  )
+                }
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
                   padding: '6px 8px',
-                  background: 'transparent',
-                  border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   transition: 'background 0.15s',
-                  width: '100%',
+                  marginBottom: '2px',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = '#333333')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                {/* Thumbnail */}
                 <div
                   style={{
                     width: '44px',
                     height: '30px',
-                    background: '#2a2a2a',
+                    background: '#fff',
                     borderRadius: '3px',
                     display: 'flex',
                     alignItems: 'center',
@@ -523,15 +349,14 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                 >
                   {variant.thumbnail}
                 </div>
-                {/* Name */}
-                <span style={{ fontSize: '12px', color: '#e6e6e6', fontWeight: 400 }}>
-                  {variant.name}
-                </span>
-              </button>
+                <span style={{ fontSize: '12px', color: '#e0e0e0' }}>{variant.name}</span>
+              </div>
             ))}
-          </div>
+          </>
         )}
       </div>
     </div>
   );
 };
+
+export default LayoutPickerPopover;
