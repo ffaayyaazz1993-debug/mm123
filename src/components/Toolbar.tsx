@@ -2,10 +2,13 @@ import React from 'react';
 
 interface ToolbarProps {
   selectedId: string | null;
+  linkMode: boolean;
   onAddChild: () => void;
   onAddSibling: () => void;
   onDelete: () => void;
   onEdit: () => void;
+  onLink: () => void;
+  onCancelLink: () => void;
   onReset: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -15,10 +18,13 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   selectedId,
+  linkMode,
   onAddChild,
   onAddSibling,
   onDelete,
   onEdit,
+  onLink,
+  onCancelLink,
   onReset,
   onZoomIn,
   onZoomOut,
@@ -113,6 +119,33 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
           </svg>
         </button>
+      </div>
+
+      {/* Relationship controls */}
+      <div className="flex items-center gap-1 px-3 border-r border-gray-200">
+        {linkMode ? (
+          <button
+            onClick={onCancelLink}
+            className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 text-indigo-600 transition-colors hover:bg-indigo-200"
+            title="Cancel Link (Esc)"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        ) : (
+          <button
+            onClick={onLink}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+            title="Add Relationship (R)"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Reset */}

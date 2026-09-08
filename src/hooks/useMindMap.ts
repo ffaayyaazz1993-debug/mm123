@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { MindNode } from '../types';
+import { MindNode, Relationship } from '../types';
 
 const BRANCH_COLORS = [
   '#4A90D9', // blue
@@ -86,24 +86,65 @@ function createDefaultMap(): MindNode {
   };
 }
 
+function createDefaultRelationships(root: MindNode): Relationship[] {
+  // Create some demo relationships between nodes
+  const rels: Relationship[] = [];
+  
+  // Connect "Set Goals" to "Milestones" (Planning -> Progress)
+  if (root.children[0]?.children[0] && root.children[4]?.children[0]) {
+    rels.push({
+      id: generateId(),
+      sourceId: root.children[0].children[0].id,
+      targetId: root.children[4].children[0].id,
+      label: 'tracks',
+      color: '#6366f1',
+    });
+  }
+  
+  // Connect "Brainstorm" to "Innovation" (Ideas internal)
+  if (root.children[1]?.children[0] && root.children[1]?.children[2]) {
+    rels.push({
+      id: generateId(),
+      sourceId: root.children[1].children[0].id,
+      targetId: root.children[1].children[2].id,
+      label: 'leads to',
+      color: '#2ECC71',
+    });
+  }
+  
+  // Connect "Next Steps" to "Priority High" (Actions -> Tasks)
+  if (root.children[5]?.children[0] && root.children[2]?.children[0]) {
+    rels.push({
+      id: generateId(),
+      sourceId: root.children[5].children[0].id,
+      targetId: root.children[2].children[0].id,
+      label: 'prioritizes',
+      color: '#E91E63',
+    });
+  }
+  
+  return rels;
+}
+
+function createInitial() {
+  const root = createDefaultMap();
+  const relationships = createDefaultRelationships(root);
+  return { root, relationships };
+}
+
 export function useMindMap() {
-  const [root, setRoot] = useState<MindNode>(createDefaultMap);
+  const [initial] = useState(createInitial);
+  const [root, setRoot] = useState<MindNode>(initial.root);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [relationships, setRelationships] = useState<Relationship[]>(initial.relationships);
+  const [linkMode, setLinkMode] = useState(false);
+  const [linkSourceId, setLinkSourceId] = useState<string | null>(null);
 
   const findNode = useCallback((node: MindNode, id: string): MindNode | null => {
     if (node.id === id) return node;
     for (const child of node.children) {
       const found = findNode(child, id);
-      if (found) return found;
-    }
-    return null;
-  }, []);
-
-  const findParent = useCallback((node: MindNode, id: string): MindNode | null => {
-    for (const child of node.children) {
-      if (child.id === id) return node;
-      const found = findParent(child, id);
       if (found) return found;
     }
     return null;
@@ -117,43 +158,55 @@ export function useMindMap() {
     };
   }, []);
 
+  const deleteNodeFromTree = useCallback((node: MindNode, id: string): MindNode => {
+    return {
+      ...node,
+      children: node.children
+        .filter(child => child.id !== id)
+        .map(child => deleteNodeFromTree(child, id)),
+    };
+  }, []);
+
   const addChild = useCallback((parentId: string) => {
     setRoot(prev => {
       const parent = findNode(prev, parentId);
       if (!parent) return prev;
-      
-      const colorIndex = parent.children.length % BRANCH_COLORS.length;
-      // If parent is root (no parent of its own), use branch colors
-      const isRoot = !findParent(prev, parent.id);
-      const newColor = isRoot ? BRANCH_COLORS[colorIndex] : parent.color;
-      
+      const color = parent.color || BRANCH_COLORS[Math.floor(Math.random() * BRANCH_COLORS.length)];
       const newNode: MindNode = {
         id: generateId(),
         text: 'New Topic',
-        color: newColor || BRANCH_COLORS[colorIndex],
+        color,
         children: [],
       };
-
       return updateNode(prev, parentId, n => ({
         ...n,
         children: [...n.children, newNode],
-        collapsed: false,
       }));
     });
   }, [findNode, updateNode]);
 
   const addSibling = useCallback((nodeId: string) => {
     setRoot(prev => {
+      const findParent = (node: MindNode, targetId: string): MindNode | null => {
+        for (const child of node.children) {
+          if (child.id === targetId) return node;
+          const found = findParent(child, targetId);
+          if (found) return found;
+        }
+        return null;
+      };
+
       const parent = findParent(prev, nodeId);
       if (!parent) return prev;
-      
-      const node = findNode(prev, nodeId);
-      if (!node) return prev;
 
+      const targetNode = findNode(prev, nodeId);
+      if (!targetNode) return prev;
+
+      const color = targetNode.color || BRANCH_COLORS[Math.floor(Math.random() * BRANCH_COLORS.length)];
       const newNode: MindNode = {
         id: generateId(),
         text: 'New Topic',
-        color: node.color,
+        color,
         children: [],
       };
 
@@ -162,20 +215,17 @@ export function useMindMap() {
         children: [...n.children, newNode],
       }));
     });
-  }, [findNode, findParent, updateNode]);
+  }, [findNode, updateNode]);
 
   const deleteNode = useCallback((nodeId: string) => {
     setRoot(prev => {
-      const parent = findParent(prev, nodeId);
-      if (!parent) return prev; // Can't delete root
-      
-      return updateNode(prev, parent.id, n => ({
-        ...n,
-        children: n.children.filter(c => c.id !== nodeId),
-      }));
+      if (prev.id === nodeId) return prev;
+      return deleteNodeFromTree(prev, nodeId);
     });
+    // Also remove any relationships involving this node
+    setRelationships(prev => prev.filter(r => r.sourceId !== nodeId && r.targetId !== nodeId));
     setSelectedId(null);
-  }, [findParent, updateNode]);
+  }, [deleteNodeFromTree]);
 
   const updateText = useCallback((nodeId: string, text: string) => {
     setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, text })));
@@ -186,15 +236,78 @@ export function useMindMap() {
   }, [updateNode]);
 
   const resetMap = useCallback(() => {
-    setRoot(createDefaultMap());
+    const newInitial = createInitial();
+    setRoot(newInitial.root);
+    setRelationships(newInitial.relationships);
     setSelectedId(null);
     setEditingId(null);
+    setLinkMode(false);
+    setLinkSourceId(null);
   }, []);
+
+  // Relationship management
+  const addRelationship = useCallback((sourceId: string, targetId: string, label: string = 'relates to') => {
+    // Don't add duplicate relationships
+    const exists = relationships.some(
+      r => (r.sourceId === sourceId && r.targetId === targetId) ||
+           (r.sourceId === targetId && r.targetId === sourceId)
+    );
+    if (exists || sourceId === targetId) return;
+
+    const newRel: Relationship = {
+      id: generateId(),
+      sourceId,
+      targetId,
+      label,
+      color: '#6366f1',
+    };
+    setRelationships(prev => [...prev, newRel]);
+  }, [relationships]);
+
+  const deleteRelationship = useCallback((relId: string) => {
+    setRelationships(prev => prev.filter(r => r.id !== relId));
+  }, []);
+
+  const updateRelationshipLabel = useCallback((relId: string, label: string) => {
+    setRelationships(prev => prev.map(r => r.id === relId ? { ...r, label } : r));
+  }, []);
+
+  // Link mode handlers
+  const startLinkMode = useCallback(() => {
+    setLinkMode(true);
+    setLinkSourceId(null);
+  }, []);
+
+  const cancelLinkMode = useCallback(() => {
+    setLinkMode(false);
+    setLinkSourceId(null);
+  }, []);
+
+  const handleLinkNodeClick = useCallback((nodeId: string) => {
+    if (!linkMode) return false;
+
+    if (!linkSourceId) {
+      // First click - set source
+      setLinkSourceId(nodeId);
+      return true;
+    } else {
+      // Second click - create relationship
+      if (nodeId !== linkSourceId) {
+        addRelationship(linkSourceId, nodeId);
+      }
+      setLinkMode(false);
+      setLinkSourceId(null);
+      return true;
+    }
+  }, [linkMode, linkSourceId, addRelationship]);
 
   return {
     root,
     selectedId,
     editingId,
+    relationships,
+    linkMode,
+    linkSourceId,
     setSelectedId,
     setEditingId,
     addChild,
@@ -203,6 +316,11 @@ export function useMindMap() {
     updateText,
     toggleCollapse,
     resetMap,
-    findNode,
+    addRelationship,
+    deleteRelationship,
+    updateRelationshipLabel,
+    startLinkMode,
+    cancelLinkMode,
+    handleLinkNodeClick,
   };
 }

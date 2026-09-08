@@ -9,6 +9,9 @@ export default function App() {
     root,
     selectedId,
     editingId,
+    relationships,
+    linkMode,
+    linkSourceId,
     setSelectedId,
     setEditingId,
     addChild,
@@ -17,6 +20,11 @@ export default function App() {
     updateText,
     toggleCollapse,
     resetMap,
+    deleteRelationship,
+    updateRelationshipLabel,
+    startLinkMode,
+    cancelLinkMode,
+    handleLinkNodeClick,
   } = useMindMap();
 
   const [viewState, setViewState] = useState<ViewState>({
@@ -28,7 +36,19 @@ export default function App() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't handle shortcuts when editing
+      // Escape cancels link mode
+      if (e.key === 'Escape') {
+        if (linkMode) {
+          cancelLinkMode();
+          return;
+        }
+        if (editingId) {
+          setEditingId(null);
+          return;
+        }
+      }
+
+      // Don't handle other shortcuts when editing
       if (editingId) return;
 
       if (e.key === 'Tab' && selectedId) {
@@ -46,12 +66,17 @@ export default function App() {
       } else if (e.key === ' ' && selectedId) {
         e.preventDefault();
         toggleCollapse(selectedId);
+      } else if (e.key === 'r' || e.key === 'R') {
+        if (!linkMode) {
+          e.preventDefault();
+          startLinkMode();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, editingId, addChild, addSibling, deleteNode, setEditingId, toggleCollapse]);
+  }, [selectedId, editingId, linkMode, addChild, addSibling, deleteNode, setEditingId, toggleCollapse, startLinkMode, cancelLinkMode]);
 
   const handleZoomIn = useCallback(() => {
     setViewState(prev => ({ ...prev, scale: Math.min(prev.scale * 1.2, 3) }));
@@ -70,10 +95,13 @@ export default function App() {
       {/* Toolbar */}
       <Toolbar
         selectedId={selectedId}
+        linkMode={linkMode}
         onAddChild={() => selectedId && addChild(selectedId)}
         onAddSibling={() => selectedId && addSibling(selectedId)}
         onDelete={() => selectedId && deleteNode(selectedId)}
         onEdit={() => selectedId && setEditingId(selectedId)}
+        onLink={startLinkMode}
+        onCancelLink={cancelLinkMode}
         onReset={resetMap}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
@@ -86,12 +114,18 @@ export default function App() {
         root={root}
         selectedId={selectedId}
         editingId={editingId}
+        relationships={relationships}
+        linkMode={linkMode}
+        linkSourceId={linkSourceId}
         onSelect={setSelectedId}
         onEdit={setEditingId}
         onTextChange={updateText}
         onFinishEdit={() => setEditingId(null)}
         onToggleCollapse={toggleCollapse}
         onAddChild={addChild}
+        onLinkNodeClick={handleLinkNodeClick}
+        onDeleteRelationship={deleteRelationship}
+        onUpdateRelationshipLabel={updateRelationshipLabel}
         viewState={viewState}
         setViewState={setViewState}
       />
@@ -121,6 +155,10 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Del</kbd>
           <span>Delete node</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">R</kbd>
+          <span>Add relationship</span>
         </div>
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Space</kbd>

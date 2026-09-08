@@ -10,6 +10,14 @@ export interface MindNode {
   height?: number;
 }
 
+export interface Relationship {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  label: string;
+  color?: string;
+}
+
 export interface Position {
   x: number;
   y: number;

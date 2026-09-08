@@ -10,6 +10,7 @@ interface MindNodeProps {
   isRoot: boolean;
   hasChildren: boolean;
   isCollapsed: boolean;
+  isLinkTarget?: boolean;
   onSelect: (id: string) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -27,6 +28,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   isRoot,
   hasChildren,
   isCollapsed,
+  isLinkTarget = false,
   onSelect,
   onEdit,
   onTextChange,
@@ -94,11 +96,13 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
       ? `${color}20`
       : `${color}08`;
   
-  const borderColor = isSelected 
-    ? color
-    : isRoot 
-      ? 'transparent'
-      : `${color}40`;
+  const borderColor = isLinkTarget
+    ? '#6366f1'
+    : isSelected 
+      ? color
+      : isRoot 
+        ? 'transparent'
+        : `${color}40`;
 
   const textColor = isRoot ? '#ffffff' : '#2d3748';
   const fontSize = isRoot ? '16px' : '14px';
@@ -107,13 +111,15 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   const borderRadius = isRoot ? '24px' : '14px';
   const shadow = isRoot 
     ? `0 6px 24px ${color}35, 0 2px 8px ${color}20`
-    : isSelected 
-      ? `0 3px 14px ${color}25, 0 1px 4px rgba(0,0,0,0.06)`
-      : '0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)';
+    : isLinkTarget
+      ? `0 0 0 3px #6366f140, 0 3px 14px #6366f120`
+      : isSelected 
+        ? `0 3px 14px ${color}25, 0 1px 4px rgba(0,0,0,0.06)`
+        : '0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)';
 
   return (
     <div
-      className="absolute cursor-pointer select-none group"
+      className={`absolute cursor-pointer select-none group ${isLinkTarget ? 'animate-pulse' : ''}`}
       style={{
         left: `${x}px`,
         top: `${y}px`,
@@ -148,6 +154,14 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
           />
         )}
 
+        {/* Link target indicator */}
+        {isLinkTarget && (
+          <div 
+            className="absolute -left-1 -top-1 w-3 h-3 rounded-full bg-indigo-500 pointer-events-none"
+            style={{ boxShadow: '0 0 6px #6366f1' }}
+          />
+        )}
+
         {isEditing ? (
           <input
             ref={inputRef}
@@ -165,7 +179,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
         )}
 
         {/* Collapse/Expand button */}
-        {hasChildren && !isEditing && (
+        {hasChildren && !isEditing && !isLinkTarget && (
           <button
             onClick={handleToggleCollapse}
             className="absolute -right-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
@@ -181,7 +195,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
         )}
 
         {/* Add child button */}
-        {!isEditing && (
+        {!isEditing && !isLinkTarget && (
           <button
             onClick={handleAddChild}
             className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
