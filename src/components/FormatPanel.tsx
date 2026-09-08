@@ -584,7 +584,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                     style={{
                       position: 'absolute',
                       top: '100%',
-                      right: 0,
+                      left: 0,
                       width: '280px',
                       background: '#2a2a2a',
                       borderRadius: '6px',
