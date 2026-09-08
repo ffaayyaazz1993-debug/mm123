@@ -172,6 +172,26 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
     }
   }, [isDragging, handleDragMove, handleDragEnd]);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (themeOpen || fontOpen || widthOpen) {
+        setThemeOpen(false);
+        setFontOpen(false);
+        setWidthOpen(false);
+      }
+    };
+    
+    if (themeOpen || fontOpen || widthOpen) {
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, [themeOpen, fontOpen, widthOpen]);
+
   return (
     <div
       ref={panelRef}
@@ -345,7 +365,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
               <div style={{ margin: '12px', fontSize: '11px', color: '#8b8b8b' }}>Color Theme</div>
 
               {/* Theme dropdown row */}
-              <div style={{ margin: '0 12px' }} className="flex items-center gap-1.5">
+              <div style={{ margin: '0 12px' }} className="flex items-center gap-1.5 relative">
                 <button
                   onClick={() => setThemeOpen(!themeOpen)}
                   className="flex-1 flex items-center gap-2 px-2.5 transition-colors"
@@ -398,54 +418,78 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                     <line x1="2" y1="7" x2="12" y2="7"/>
                   </svg>
                 </button>
-              </div>
 
-              {/* Colorful Themes Section */}
-              <div style={{ margin: '12px 12px 6px 12px', fontSize: '10px', color: '#8b8b8b', fontWeight: 600 }}>Colorful</div>
-              <div style={{ margin: '0 12px 12px 12px' }} className="grid grid-cols-3 gap-2">
-                {COLORFUL_THEMES.map((theme, idx) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => onFormatChange({ theme: idx, themeType: 'colorful' })}
-                    className="flex flex-col items-center justify-center transition-all"
+                {/* Theme Dropdown Panel */}
+                {themeOpen && (
+                  <div 
+                    className="absolute top-full left-0 mt-1 z-50"
+                    onClick={(e) => e.stopPropagation()}
                     style={{
-                      width: '56px',
-                      height: '40px',
-                      background: theme.gradient,
-                      borderRadius: '4px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      outline: formatOptions.theme === idx && formatOptions.themeType === 'colorful' ? '2px solid #d0d0d0' : '2px solid transparent',
-                      outlineOffset: '1px',
+                      width: '100%',
+                      background: '#2a2a2a',
+                      borderRadius: '6px',
+                      border: '1px solid #3a3a3a',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      padding: '8px',
+                      maxHeight: '400px',
+                      overflowY: 'auto',
                     }}
                   >
-                    <MiniOrgChart accentColor="#fff" size="small" />
-                  </button>
-                ))}
-              </div>
+                    {/* Colorful Section */}
+                    <div style={{ fontSize: '10px', color: '#8b8b8b', fontWeight: 600, marginBottom: '6px', marginTop: '4px' }}>Colorful</div>
+                    <div className="grid grid-cols-3 gap-1.5" style={{ marginBottom: '10px' }}>
+                      {COLORFUL_THEMES.map((theme, idx) => (
+                        <button
+                          key={theme.id}
+                          onClick={() => {
+                            onFormatChange({ theme: idx, themeType: 'colorful' });
+                            setThemeOpen(false);
+                          }}
+                          className="flex flex-col items-center justify-center transition-all"
+                          style={{
+                            height: '36px',
+                            background: theme.gradient,
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            outline: formatOptions.theme === idx && formatOptions.themeType === 'colorful' ? '2px solid #fff' : '2px solid transparent',
+                            outlineOffset: '1px',
+                          }}
+                          title={theme.name}
+                        >
+                          <MiniOrgChart accentColor="#fff" size="small" />
+                        </button>
+                      ))}
+                    </div>
 
-              {/* Classic Themes Section */}
-              <div style={{ margin: '6px 12px 6px 12px', fontSize: '10px', color: '#8b8b8b', fontWeight: 600 }}>Classic</div>
-              <div style={{ margin: '0 12px 12px 12px' }} className="grid grid-cols-3 gap-2">
-                {CLASSIC_THEMES.map((theme, idx) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => onFormatChange({ theme: idx, themeType: 'classic' })}
-                    className="flex flex-col items-center justify-center transition-all"
-                    style={{
-                      width: '56px',
-                      height: '40px',
-                      background: '#fff',
-                      borderRadius: '4px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      outline: formatOptions.theme === idx && formatOptions.themeType === 'classic' ? '2px solid #d0d0d0' : '2px solid transparent',
-                      outlineOffset: '1px',
-                    }}
-                  >
-                    <MiniOrgChart accentColor={theme.colors[0]} size="small" />
-                  </button>
-                ))}
+                    {/* Classic Section */}
+                    <div style={{ fontSize: '10px', color: '#8b8b8b', fontWeight: 600, marginBottom: '6px' }}>Classic</div>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {CLASSIC_THEMES.map((theme, idx) => (
+                        <button
+                          key={theme.id}
+                          onClick={() => {
+                            onFormatChange({ theme: idx, themeType: 'classic' });
+                            setThemeOpen(false);
+                          }}
+                          className="flex flex-col items-center justify-center transition-all"
+                          style={{
+                            height: '36px',
+                            background: '#fff',
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            outline: formatOptions.theme === idx && formatOptions.themeType === 'classic' ? '2px solid #4a90d9' : '2px solid transparent',
+                            outlineOffset: '1px',
+                          }}
+                          title={theme.name}
+                        >
+                          <MiniOrgChart accentColor={theme.colors[0]} size="small" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Divider */}
