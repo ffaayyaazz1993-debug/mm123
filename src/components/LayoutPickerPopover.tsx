@@ -230,7 +230,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
   // Calculate position
   const anchorRect = anchorRef.current?.getBoundingClientRect();
   const top = anchorRect ? anchorRect.top : 100;
-  const right = window.innerWidth - (anchorRect ? anchorRect.left : window.innerWidth - 250) + 10;
+  const left = anchorRect ? anchorRect.left - 320 : window.innerWidth - 530;
 
   return (
     <div
@@ -238,7 +238,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
       style={{
         position: 'fixed',
         top: `${Math.max(20, top - 50)}px`,
-        right: `${right + 220}px`,
+        left: `${Math.max(10, left)}px`,
         width: '310px',
         minHeight: '530px',
         background: '#262626',
