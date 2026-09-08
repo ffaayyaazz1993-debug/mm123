@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ToolbarProps {
   selectedId: string | null;
@@ -47,6 +47,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onFitView,
   scale,
 }) => {
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const canCreateSummary = selectedIds.size >= 2;
 
   return (
@@ -247,7 +248,99 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
           </svg>
         </button>
+        <button
+          onClick={() => setShowShortcuts(!showShortcuts)}
+          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+            showShortcuts ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'
+          }`}
+          title="Keyboard Shortcuts"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
       </div>
+
+      {/* Shortcuts Popover */}
+      {showShortcuts && (
+        <div className="absolute top-full right-0 mt-2 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 p-4 text-xs text-gray-600 w-80 z-50">
+          <div className="flex items-center justify-between mb-3">
+            <div className="font-semibold text-gray-700 flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              Keyboard Shortcuts
+            </div>
+            <button
+              onClick={() => setShowShortcuts(false)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Tab</kbd>
+              <span>Add child</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Enter</kbd>
+              <span>Add sibling</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">F2</kbd>
+              <span>Edit node</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Del</kbd>
+              <span>Delete node</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">R</kbd>
+              <span>Add relationship</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">I</kbd>
+              <span>Insert (note, label, task, link...)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">S</kbd>
+              <span>Create summary</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Space</kbd>
+              <span>Collapse/Expand</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Ctrl+Click</kbd>
+              <span>Multi-select</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Scroll</kbd>
+              <span>Zoom</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Drag</kbd>
+              <span>Pan canvas</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-amber-100 rounded text-[10px] font-mono border border-amber-200 text-amber-700">Double-click canvas</kbd>
+              <span>Create floating node</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="px-1.5 py-0.5 bg-orange-100 rounded text-[10px] font-mono border border-orange-200 text-orange-700">✋ btn</kbd>
+              <span>Toggle node drag</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
