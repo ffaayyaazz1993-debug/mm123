@@ -49,6 +49,9 @@ interface MindMapProps {
   onRemoveIllustration: (nodeId: string) => void;
   onInsertEquation: (nodeId: string, equation: string) => void;
   onRemoveEquation: (nodeId: string) => void;
+  onRemoveNote: (nodeId: string) => void;
+  onRemoveLabel: (nodeId: string) => void;
+  onRemoveTask: (nodeId: string) => void;
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
@@ -92,14 +95,16 @@ export const MindMap: React.FC<MindMapProps> = ({
   onRemoveAudioNote,
   onInsertSticker,
   onRemoveSticker,
-  onInsertIllustration,
-  onRemoveIllustration,
-  onInsertEquation,
-  onRemoveEquation,
-  viewState,
-  setViewState,
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+    onInsertIllustration,
+    onRemoveIllustration,
+    onInsertEquation,
+    onRemoveEquation,
+    onRemoveNote,
+    onRemoveLabel,
+    onRemoveTask,
+    viewState,
+    setViewState,
+  }) => {  const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
@@ -360,6 +365,9 @@ export const MindMap: React.FC<MindMapProps> = ({
                 onRemoveIllustration={onRemoveIllustration}
                 onInsertEquation={onInsertEquation}
                 onRemoveEquation={onRemoveEquation}
+                onRemoveNote={onRemoveNote}
+                onRemoveLabel={onRemoveLabel}
+                onRemoveTask={onRemoveTask}
               />
             );
           })}

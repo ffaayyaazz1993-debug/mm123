@@ -404,6 +404,18 @@ export function useMindMap() {
     setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, equation: undefined })));
   }, [updateNode]);
 
+  const removeNote = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, note: undefined })));
+  }, [updateNode]);
+
+  const removeLabel = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, label: undefined })));
+  }, [updateNode]);
+
+  const removeTask = useCallback((nodeId: string) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, task: undefined })));
+  }, [updateNode]);
+
   const toggleCollapse = useCallback((nodeId: string) => {
     setRoot(prev => updateNode(prev, nodeId, n => ({ ...n, collapsed: !n.collapsed })));
   }, [updateNode]);
@@ -581,5 +593,8 @@ export function useMindMap() {
     removeIllustration,
     insertEquation,
     removeEquation,
+    removeNote,
+    removeLabel,
+    removeTask,
   };
 }

@@ -38,6 +38,9 @@ interface MindNodeProps {
   onRemoveIllustration: (nodeId: string) => void;
   onInsertEquation: (nodeId: string, equation: string) => void;
   onRemoveEquation: (nodeId: string) => void;
+  onRemoveNote: (nodeId: string) => void;
+  onRemoveLabel: (nodeId: string) => void;
+  onRemoveTask: (nodeId: string) => void;
 }
 
 export const MindNodeComponent: React.FC<MindNodeProps> = ({
@@ -74,6 +77,9 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   onRemoveIllustration,
   onInsertEquation,
   onRemoveEquation,
+  onRemoveNote,
+  onRemoveLabel,
+  onRemoveTask,
 }) => {
   const [text, setText] = useState(node.text);
   const [showMarkerPicker, setShowMarkerPicker] = useState(false);
@@ -345,72 +351,169 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
         {/* Inserted features display */}
         {!isEditing && (
           <div className="absolute left-0 top-full mt-2 flex flex-wrap gap-1 max-w-[300px]">
+            {/* Note */}
+            {node.note && (
+              <div className="group/note relative flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium hover:bg-blue-200 transition-colors" title={node.note}>
+                <span>📝 Note</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveNote(node.id);
+                  }}
+                  className="w-3 h-3 rounded-full bg-blue-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/note:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete note"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+
             {/* Label */}
             {node.label && (
-              <div className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">
-                🏷️ {node.label}
+              <div className="group/label relative flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium hover:bg-purple-200 transition-colors">
+                <span>🏷️ {node.label}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveLabel(node.id);
+                  }}
+                  className="w-3 h-3 rounded-full bg-purple-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/label:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete label"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Task */}
             {node.task && (
-              <div
-                className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium cursor-pointer hover:bg-green-200 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleTask(node.id);
-                }}
-              >
-                {node.task.completed ? '✅' : '⬜'} Task
+              <div className="group/task relative flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium hover:bg-green-200 transition-colors">
+                <span
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleTask(node.id);
+                  }}
+                >
+                  {node.task.completed ? '✅' : '⬜'} Task
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveTask(node.id);
+                  }}
+                  className="w-3 h-3 rounded-full bg-green-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/task:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete task"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Links */}
             {node.links && node.links.length > 0 && (
-              <div className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium">
-                🔗 {node.links.length} link{node.links.length > 1 ? 's' : ''}
+              <div className="group/links relative flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium hover:bg-indigo-200 transition-colors">
+                <span>🔗 {node.links.length} link{node.links.length > 1 ? 's' : ''}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Delete first link for simplicity, or show a menu
+                    if (node.links && node.links.length > 0) {
+                      onRemoveLink(node.id, node.links[0].id);
+                    }
+                  }}
+                  className="w-3 h-3 rounded-full bg-indigo-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/links:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete link"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Attachments */}
             {node.attachments && node.attachments.length > 0 && (
-              <div className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
-                📎 {node.attachments.length} file{node.attachments.length > 1 ? 's' : ''}
+              <div className="group/attachments relative flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium hover:bg-orange-200 transition-colors">
+                <span>📎 {node.attachments.length} file{node.attachments.length > 1 ? 's' : ''}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (node.attachments && node.attachments.length > 0) {
+                      onRemoveAttachment(node.id, node.attachments[0].id);
+                    }
+                  }}
+                  className="w-3 h-3 rounded-full bg-orange-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/attachments:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete attachment"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Audio Note */}
             {node.audioNote && (
-              <div className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full font-medium">
-                🎙️ {Math.round(node.audioNote.duration)}s
+              <div className="group/audio relative flex items-center gap-1 px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full font-medium hover:bg-pink-200 transition-colors">
+                <span>🎙️ {Math.round(node.audioNote.duration)}s</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveAudioNote(node.id);
+                  }}
+                  className="w-3 h-3 rounded-full bg-pink-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/audio:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete audio note"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Sticker */}
             {node.sticker && (
-              <div className="text-2xl">
-                {node.sticker}
+              <div className="group/sticker relative">
+                <div className="text-2xl">{node.sticker}</div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveSticker(node.id);
+                  }}
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center opacity-0 group-hover/sticker:opacity-100 hover:bg-red-600 transition-all shadow-md"
+                  title="Delete sticker"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Illustration */}
             {node.illustration && (
-              <div className="px-2 py-0.5 bg-teal-100 text-teal-700 text-xs rounded-full font-medium">
-                🖼️ Image
+              <div className="group/illustration relative flex items-center gap-1 px-2 py-0.5 bg-teal-100 text-teal-700 text-xs rounded-full font-medium hover:bg-teal-200 transition-colors">
+                <span>🖼️ Image</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveIllustration(node.id);
+                  }}
+                  className="w-3 h-3 rounded-full bg-teal-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/illustration:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete illustration"
+                >
+                  ×
+                </button>
               </div>
             )}
 
             {/* Equation */}
             {node.equation && (
-              <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full font-medium font-mono">
-                ∑ {node.equation}
-              </div>
-            )}
-
-            {/* Note indicator */}
-            {node.note && (
-              <div className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium" title={node.note}>
-                📝 Note
+              <div className="group/equation relative flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full font-medium font-mono hover:bg-gray-200 transition-colors">
+                <span>∑ {node.equation}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveEquation(node.id);
+                  }}
+                  className="w-3 h-3 rounded-full bg-gray-300 text-white text-[8px] flex items-center justify-center opacity-0 group-hover/equation:opacity-100 hover:bg-red-500 transition-all"
+                  title="Delete equation"
+                >
+                  ×
+                </button>
               </div>
             )}
           </div>

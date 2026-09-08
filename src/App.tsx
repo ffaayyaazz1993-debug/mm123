@@ -51,6 +51,9 @@ export default function App() {
     removeIllustration,
     insertEquation,
     removeEquation,
+    removeNote,
+    removeLabel,
+    removeTask,
   } = useMindMap();
 
   const [viewState, setViewState] = useState<ViewState>({
@@ -211,6 +214,9 @@ export default function App() {
         onRemoveIllustration={removeIllustration}
         onInsertEquation={insertEquation}
         onRemoveEquation={removeEquation}
+        onRemoveNote={removeNote}
+        onRemoveLabel={removeLabel}
+        onRemoveTask={removeTask}
         viewState={viewState}
         setViewState={setViewState}
       />
