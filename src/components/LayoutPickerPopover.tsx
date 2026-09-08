@@ -260,13 +260,14 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
         left: `${Math.max(10, finalLeft)}px`,
         width: '380px',
         minHeight: '530px',
-        background: '#262626',
+        background: '#ffffff',
         borderRadius: '8px',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
         padding: '12px',
         display: 'flex',
         zIndex: 1000,
         fontFamily: 'Inter, "Segoe UI", sans-serif',
+        border: '1px solid #e0e0e0',
       }}
     >
       {/* Left menu column */}
@@ -286,10 +287,10 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                   borderRadius: '6px',
                   cursor: 'pointer',
                   transition: 'background 0.15s',
-                  background: isExpanded ? '#333333' : 'transparent',
+                  background: isExpanded ? '#e8e8e8' : 'transparent',
                 }}
                 onMouseEnter={(e) => {
-                  if (!isExpanded) e.currentTarget.style.background = '#333333';
+                  if (!isExpanded) e.currentTarget.style.background = '#f0f0f0';
                 }}
                 onMouseLeave={(e) => {
                   if (!isExpanded) e.currentTarget.style.background = 'transparent';
@@ -297,7 +298,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
               >              <span
                 style={{
                   fontSize: '12px',
-                  color: '#cfcfcf',
+                  color: '#666',
                   transition: 'transform 0.2s',
                   transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
                   display: 'inline-block',
@@ -305,7 +306,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
               >
                 ▸
               </span>
-              <span style={{ fontSize: '15px', color: '#e6e6e6', fontWeight: 500 }}>
+              <span style={{ fontSize: '15px', color: '#333', fontWeight: 500 }}>
                 {layout.name}
               </span>
             </div>
@@ -317,16 +318,16 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
       <div
         style={{
           flex: 1,
-          background: '#1e1e1e',
-          borderRadius: '4px',
-          padding: expandedId ? '8px' : '0',
+          background: '#f5f5f5',
+          borderRadius: '6px',
+          padding: expandedId ? '10px' : '0',
           overflowY: 'auto',
           maxHeight: '500px',
         }}
       >
         {expandedId && (
           <>
-            <div style={{ fontSize: '11px', color: '#8b8b8b', marginBottom: '8px', fontWeight: 600 }}>
+            <div style={{ fontSize: '11px', color: '#666', marginBottom: '8px', fontWeight: 600 }}>
               {LAYOUTS.find(l => l.id === expandedId)?.name} Variants
             </div>
             <div
@@ -357,7 +358,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                     cursor: 'pointer',
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = '#333333')}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = '#e8e8e8')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div
@@ -370,11 +371,12 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
+                      border: '1px solid #ddd',
                     }}
                   >
                     {variant.thumbnail}
                   </div>
-                  <span style={{ fontSize: '11px', color: '#e0e0e0', textAlign: 'center', lineHeight: '1.2', fontWeight: 500 }}>
+                  <span style={{ fontSize: '11px', color: '#333', textAlign: 'center', lineHeight: '1.2', fontWeight: 500 }}>
                     {variant.name}
                   </span>
                 </div>
