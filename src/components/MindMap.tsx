@@ -160,7 +160,7 @@ export const MindMap: React.FC<MindMapProps> = ({
 
       {/* Transform container */}
       <div
-        className="absolute pointer-events-none"
+        className="absolute"
         style={{
           left: '50%',
           top: '50%',
@@ -169,10 +169,12 @@ export const MindMap: React.FC<MindMapProps> = ({
         }}
       >
         {/* Connections SVG */}
-        <Connections root={root} nodePositions={nodePositions} />
+        <div style={{ position: 'absolute', left: 0, top: 0, zIndex: 0 }}>
+          <Connections root={root} nodePositions={nodePositions} />
+        </div>
 
         {/* Nodes */}
-        <div className="pointer-events-auto">
+        <div style={{ position: 'absolute', left: 0, top: 0, zIndex: 1 }}>
           {visibleNodes.map(node => {
             const pos = layoutMap.get(node.id);
             if (!pos) return null;
