@@ -311,47 +311,57 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
             <div style={{ fontSize: '11px', color: '#8b8b8b', marginBottom: '8px', fontWeight: 600 }}>
               {LAYOUTS.find(l => l.id === expandedId)?.name} Variants
             </div>
-            {LAYOUTS.find(l => l.id === expandedId)?.variants.map(variant => (
-              <div
-                key={variant.id}
-                onClick={() =>
-                  handleSelectVariant(
-                    expandedId,
-                    LAYOUTS.find(l => l.id === expandedId)?.name || '',
-                    variant.id,
-                    variant.name
-                  )
-                }
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 8px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s',
-                  marginBottom: '2px',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#333333')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '6px',
+              }}
+            >
+              {LAYOUTS.find(l => l.id === expandedId)?.variants.map(variant => (
                 <div
+                  key={variant.id}
+                  onClick={() =>
+                    handleSelectVariant(
+                      expandedId,
+                      LAYOUTS.find(l => l.id === expandedId)?.name || '',
+                      variant.id,
+                      variant.name
+                    )
+                  }
                   style={{
-                    width: '44px',
-                    height: '30px',
-                    background: '#fff',
-                    borderRadius: '3px',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
+                    gap: '4px',
+                    padding: '6px 4px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s',
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = '#333333')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
-                  {variant.thumbnail}
+                  <div
+                    style={{
+                      width: '44px',
+                      height: '30px',
+                      background: '#fff',
+                      borderRadius: '3px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {variant.thumbnail}
+                  </div>
+                  <span style={{ fontSize: '10px', color: '#e0e0e0', textAlign: 'center', lineHeight: '1.2' }}>
+                    {variant.name}
+                  </span>
                 </div>
-                <span style={{ fontSize: '12px', color: '#e0e0e0' }}>{variant.name}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </>
         )}
       </div>
