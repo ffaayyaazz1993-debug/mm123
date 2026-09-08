@@ -149,7 +149,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
   const bgColorRef = useRef<HTMLDivElement>(null);
   
   // Drag state
-  const [position, setPosition] = useState({ x: window.innerWidth - 220, y: 0 });
+  const [position, setPosition] = useState({ x: window.innerWidth - 290, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
@@ -184,7 +184,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
       const newY = e.clientY - dragOffset.y;
       
       // Keep panel within viewport bounds
-      const maxX = window.innerWidth - 210;
+      const maxX = window.innerWidth - 280;
       const maxY = window.innerHeight - 100; // Leave some space at bottom
       
       setPosition({
@@ -237,7 +237,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
       ref={panelRef}
       className="fixed z-[200] flex"
       style={{
-        width: '210px',
+        width: '280px',
         height: '100vh',
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -250,7 +250,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
       <div
         className="h-full flex flex-col overflow-hidden"
         style={{
-          width: '210px',
+          width: '280px',
           background: '#1e1e1e',
           color: '#fff',
           borderRadius: isDragging ? '8px' : '0',
