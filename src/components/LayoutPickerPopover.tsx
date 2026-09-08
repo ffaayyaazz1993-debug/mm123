@@ -227,10 +227,29 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
     onClose();
   };
 
-  // Calculate position
+  // Calculate position - determine if popover should appear left or right of anchor
   const anchorRect = anchorRef.current?.getBoundingClientRect();
   const top = anchorRect ? anchorRect.top : 100;
-  const left = anchorRect ? anchorRect.left - 320 : window.innerWidth - 530;
+  const popoverWidth = 310;
+  const gap = 10;
+  
+  // Calculate left position (popover to the left of anchor)
+  const leftPosition = anchorRect ? anchorRect.left - popoverWidth - gap : window.innerWidth - popoverWidth - gap - 210;
+  
+  // Calculate right position (popover to the right of anchor)
+  const rightPosition = anchorRect ? anchorRect.right + gap : window.innerWidth - popoverWidth - 10;
+  
+  // Choose position based on available space
+  // If left position would go off-screen (< 10px), use right position
+  // If right position would go off-screen (> window.innerWidth - 10), use left position
+  let finalLeft = leftPosition;
+  if (leftPosition < 10) {
+    finalLeft = rightPosition;
+  }
+  // Ensure we don't go off the right edge
+  if (finalLeft + popoverWidth > window.innerWidth - 10) {
+    finalLeft = window.innerWidth - popoverWidth - 10;
+  }
 
   return (
     <div
@@ -238,8 +257,8 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
       style={{
         position: 'fixed',
         top: `${Math.max(20, top - 50)}px`,
-        left: `${Math.max(10, left)}px`,
-        width: '310px',
+        left: `${Math.max(10, finalLeft)}px`,
+        width: `${popoverWidth}px`,
         minHeight: '530px',
         background: '#262626',
         borderRadius: '8px',
