@@ -16,6 +16,20 @@ interface FormatPanelProps {
     variantId: string;
     variantName: string;
   }) => void;
+  formatOptions: {
+    theme: number;
+    backgroundColor: string;
+    globalFont: string;
+    branchWidth: string;
+    coloredBranch: boolean;
+  };
+  onFormatChange: (format: {
+    theme?: number;
+    backgroundColor?: string;
+    globalFont?: string;
+    branchWidth?: string;
+    coloredBranch?: boolean;
+  }) => void;
 }
 
 const THEME_COLORS = ['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'];
@@ -67,10 +81,10 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
   onMinimize,
   selectedLayout,
   onLayoutChange,
+  formatOptions,
+  onFormatChange,
 }) => {
   const [activeTab, setActiveTab] = useState<'style' | 'pitch' | 'map'>('map');
-  const [selectedTheme, setSelectedTheme] = useState(0);
-  const [coloredBranch, setColoredBranch] = useState(true);
   const [layoutOpen, setLayoutOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [fontOpen, setFontOpen] = useState(false);
@@ -279,7 +293,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                 {THEME_COLORS.map((color, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedTheme(idx)}
+                    onClick={() => onFormatChange({ theme: idx })}
                     className="flex flex-col items-center justify-center transition-all"
                     style={{
                       width: '56px',
@@ -288,7 +302,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
                       borderRadius: '4px',
                       border: 'none',
                       cursor: 'pointer',
-                      outline: selectedTheme === idx ? '2px solid #d0d0d0' : '2px solid transparent',
+                      outline: formatOptions.theme === idx ? '2px solid #d0d0d0' : '2px solid transparent',
                       outlineOffset: '1px',
                     }}
                   >
@@ -366,18 +380,18 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
               <div style={{ margin: '0 12px' }} className="flex items-center justify-between py-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <div
-                    onClick={() => setColoredBranch(!coloredBranch)}
+                    onClick={() => onFormatChange({ coloredBranch: !formatOptions.coloredBranch })}
                     className="flex items-center justify-center transition-colors"
                     style={{
                       width: '14px',
                       height: '14px',
                       borderRadius: '3px',
-                      background: coloredBranch ? '#4a90d9' : 'transparent',
-                      border: coloredBranch ? 'none' : '1.5px solid #8b8b8b',
+                      background: formatOptions.coloredBranch ? '#4a90d9' : 'transparent',
+                      border: formatOptions.coloredBranch ? 'none' : '1.5px solid #8b8b8b',
                       cursor: 'pointer',
                     }}
                   >
-                    {coloredBranch && (
+                    {formatOptions.coloredBranch && (
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M2 5L4.5 7.5L8 3"/>
                       </svg>

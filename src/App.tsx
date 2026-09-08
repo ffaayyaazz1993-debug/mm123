@@ -90,6 +90,25 @@ export default function App() {
     variantId: 'oc-hierarchical',
     variantName: 'Hierarchical',
   });
+
+  // Format options state
+  const [formatOptions, setFormatOptions] = useState({
+    theme: 0,
+    backgroundColor: '#f5f5f5',
+    globalFont: 'Default',
+    branchWidth: 'Default',
+    coloredBranch: true,
+  });
+
+  const handleFormatChange = (format: {
+    theme?: number;
+    backgroundColor?: string;
+    globalFont?: string;
+    branchWidth?: string;
+    coloredBranch?: boolean;
+  }) => {
+    setFormatOptions(prev => ({ ...prev, ...format }));
+  };
   
   // Helper to find a node by ID
   const findNode = useCallback((node: MindNode, id: string): MindNode | null => {
@@ -250,6 +269,8 @@ export default function App() {
           onMinimize={() => setShowFormatPanel(false)}
           selectedLayout={selectedLayout}
           onLayoutChange={setSelectedLayout}
+          formatOptions={formatOptions}
+          onFormatChange={handleFormatChange}
         />
       )}
 
@@ -266,6 +287,7 @@ export default function App() {
         linkSourceId={linkSourceId}
         multiSelectMode={multiSelectMode}
         selectedLayout={selectedLayout}
+        formatOptions={formatOptions}
         onSelect={setSelectedId}
         onEdit={setEditingId}
         onTextChange={updateText}

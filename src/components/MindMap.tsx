@@ -24,6 +24,13 @@ interface MindMapProps {
     variantId: string;
     variantName: string;
   };
+  formatOptions: {
+    theme: number;
+    backgroundColor: string;
+    globalFont: string;
+    branchWidth: string;
+    coloredBranch: boolean;
+  };
   onSelect: (id: string | null) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -69,6 +76,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   multiSelectMode,
   dragEnabled,
   selectedLayout,
+  formatOptions,
   onSelect,
   onEdit,
   onTextChange,
@@ -288,7 +296,11 @@ export const MindMap: React.FC<MindMapProps> = ({
     <div
       ref={containerRef}
       className="w-full h-full overflow-hidden relative"
-      style={{ cursor: isDraggingCanvas || draggingNodeId ? 'grabbing' : linkMode ? 'crosshair' : multiSelectMode ? 'cell' : 'default' }}
+      style={{ 
+        cursor: isDraggingCanvas || draggingNodeId ? 'grabbing' : linkMode ? 'crosshair' : multiSelectMode ? 'cell' : 'default',
+        backgroundColor: formatOptions.backgroundColor,
+        fontFamily: formatOptions.globalFont !== 'Default' ? formatOptions.globalFont : 'Inter, "Segoe UI", sans-serif',
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -355,7 +367,13 @@ export const MindMap: React.FC<MindMapProps> = ({
         }}
       >
         {/* Connections SVG */}
-        <Connections root={root} nodePositions={nodePositions} />
+        <Connections 
+          root={root} 
+          nodePositions={nodePositions} 
+          coloredBranch={formatOptions.coloredBranch}
+          themeColor={['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'][formatOptions.theme]}
+          branchWidth={formatOptions.branchWidth}
+        />
 
         {/* Relationships SVG */}
         <Relationships
@@ -389,10 +407,16 @@ export const MindMap: React.FC<MindMapProps> = ({
             const nodeX = isBeingDragged ? draggedNodePosition.x : pos.x;
             const nodeY = isBeingDragged ? draggedNodePosition.y : pos.y;
 
+            // Apply theme color if coloredBranch is enabled
+            const themeColors = ['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'];
+            const nodeWithTheme = formatOptions.coloredBranch 
+              ? { ...node, color: node.color || themeColors[formatOptions.theme] }
+              : node;
+
             return (
               <MindNodeComponent
                 key={node.id}
-                node={node}
+                node={nodeWithTheme}
                 x={nodeX}
                 y={nodeY}
                 isSelected={selectedId === node.id}

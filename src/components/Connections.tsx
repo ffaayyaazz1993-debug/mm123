@@ -4,6 +4,9 @@ import { MindNode } from '../types';
 interface ConnectionsProps {
   root: MindNode;
   nodePositions: Map<string, { x: number; y: number; width: number; height: number }>;
+  coloredBranch?: boolean;
+  themeColor?: string;
+  branchWidth?: string;
 }
 
 interface PathData {
@@ -70,7 +73,13 @@ function collectPaths(
   }
 }
 
-export const Connections: React.FC<ConnectionsProps> = ({ root, nodePositions }) => {
+export const Connections: React.FC<ConnectionsProps> = ({ 
+  root, 
+  nodePositions,
+  coloredBranch = true,
+  themeColor = '#4a90d9',
+  branchWidth = 'Default'
+}) => {
   const paths: PathData[] = [];
   collectPaths(root, nodePositions, paths);
 
@@ -81,6 +90,16 @@ export const Connections: React.FC<ConnectionsProps> = ({ root, nodePositions })
   // We use a negative offset so that negative coordinates (left-side nodes)
   // are also visible. The g transform shifts paths to match.
   const OFFSET = 3000;
+
+  // Determine stroke width based on branchWidth setting
+  const getStrokeWidth = (baseWidth: number) => {
+    switch (branchWidth) {
+      case 'Thin': return Math.max(1, baseWidth - 1);
+      case 'Thick': return baseWidth + 1;
+      case 'Extra Thick': return baseWidth + 2;
+      default: return baseWidth;
+    }
+  };
 
   return (
     <svg
@@ -95,28 +114,34 @@ export const Connections: React.FC<ConnectionsProps> = ({ root, nodePositions })
       }}
     >
       <g transform={`translate(${OFFSET}, ${OFFSET})`}>
-        {paths.map(({ d, color, key, strokeWidth }) => (
-          <g key={key}>
-            {/* Glow */}
-            <path
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth={strokeWidth + 5}
-              strokeLinecap="round"
-              opacity={0.12}
-            />
-            {/* Main stroke */}
-            <path
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              opacity={0.85}
-            />
-          </g>
-        ))}
+        {paths.map(({ d, color, key, strokeWidth }) => {
+          // Use theme color if coloredBranch is enabled, otherwise use node color
+          const finalColor = coloredBranch ? themeColor : color;
+          const finalWidth = getStrokeWidth(strokeWidth);
+          
+          return (
+            <g key={key}>
+              {/* Glow */}
+              <path
+                d={d}
+                fill="none"
+                stroke={finalColor}
+                strokeWidth={finalWidth + 5}
+                strokeLinecap="round"
+                opacity={0.12}
+              />
+              {/* Main stroke */}
+              <path
+                d={d}
+                fill="none"
+                stroke={finalColor}
+                strokeWidth={finalWidth}
+                strokeLinecap="round"
+                opacity={0.85}
+              />
+            </g>
+          );
+        })}
       </g>
     </svg>
   );
