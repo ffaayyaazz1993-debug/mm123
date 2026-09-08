@@ -275,20 +275,29 @@ export const MindMap: React.FC<MindMapProps> = ({
 
   // Theme colors based on theme type
   const COLORFUL_THEMES = [
-    { colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'] },
-    { colors: ['#ff6b6b', '#feca57', '#ff9ff3'] },
-    { colors: ['#00d2ff', '#3a7bd5', '#00d2ff'] },
-    { colors: ['#56ab2f', '#a8e063', '#56ab2f'] },
-    { colors: ['#ff6b9d', '#c44569', '#f8b500'] },
-    { colors: ['#667eea', '#764ba2', '#f093fb'] },
+    { colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'] }, // Rainbow
+    { colors: ['#ff6b35', '#f7931e', '#ffd23f'] }, // Energy
+    { colors: ['#00d2ff', '#3a7bd5', '#0063b2'] }, // Ocean
+    { colors: ['#ff6b9d', '#c44569', '#a855f7'] }, // Dancing
+    { colors: ['#00d9ff', '#00ff88', '#00d9ff'] }, // Code
+    { colors: ['#dc2626', '#fbbf24', '#1f2937'] }, // Kimono Island
+    { colors: ['#f43f5e', '#ec4899', '#be185d'] }, // Roses
+    { colors: ['#6ee7b7', '#34d399', '#10b981'] }, // Mint
+    { colors: ['#84cc16', '#65a30d', '#4d7c0f'] }, // Green Tea
+    { colors: ['#1e1b4b', '#312e81', '#4c1d95'] }, // Space
+    { colors: ['#7c3aed', '#a855f7', '#d4af37'] }, // Shopisticated
+    { colors: ['#fbcfe8', '#f9a8d4', '#f472b6'] }, // Innocence
   ];
   const CLASSIC_THEMES = [
-    { colors: ['#4a90d9'] },
-    { colors: ['#58b368'] },
-    { colors: ['#d9534f'] },
-    { colors: ['#8e6bbf'] },
-    { colors: ['#e6a23c'] },
-    { colors: ['#e0407b'] },
+    { colors: ['#3b82f6'] }, // Constancy
+    { colors: ['#fef3c7'] }, // Cream
+    { colors: ['#ec4899'] }, // Flowers
+    { colors: ['#fb7185'] }, // Coral
+    { colors: ['#8b5cf6'] }, // Gorgeous
+    { colors: ['#fbbf24'] }, // Champagne
+    { colors: ['#a78bfa'] }, // Perfume
+    { colors: ['#6b7280'] }, // Zen
+    { colors: ['#f59e0b'] }, // Groove
   ];
   
   const themes = formatOptions.themeType === 'colorful' ? COLORFUL_THEMES : CLASSIC_THEMES;
