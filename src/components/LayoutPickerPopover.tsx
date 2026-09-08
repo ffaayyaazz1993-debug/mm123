@@ -12,9 +12,9 @@ export interface LayoutItem {
   variants: LayoutVariant[];
 }
 
-// Helper to create SVG thumbnail
+// Helper to create SVG thumbnail - bigger and broader
 const Thumb = ({ children }: { children: React.ReactNode }) => (
-  <svg width="44" height="30" viewBox="0 0 44 30" fill="none" style={{ flexShrink: 0 }}>
+  <svg width="64" height="44" viewBox="0 0 44 30" fill="none" style={{ flexShrink: 0 }}>
     {children}
   </svg>
 );
@@ -333,8 +333,8 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
-                gap: '6px',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '8px',
               }}
             >
               {LAYOUTS.find(l => l.id === expandedId)?.variants.map(variant => (
@@ -352,9 +352,9 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '4px',
-                    padding: '6px 4px',
-                    borderRadius: '4px',
+                    gap: '6px',
+                    padding: '8px 6px',
+                    borderRadius: '6px',
                     cursor: 'pointer',
                     transition: 'background 0.15s',
                   }}
