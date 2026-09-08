@@ -106,6 +106,12 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
 
   // Drag handlers
   const handleDragStart = (e: React.MouseEvent) => {
+    // Only start drag if clicking directly on the header, not on child elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[data-no-drag]')) {
+      return;
+    }
+    
     if (panelRef.current) {
       const rect = panelRef.current.getBoundingClientRect();
       setDragOffset({
@@ -275,7 +281,10 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
               <div style={{ margin: '12px' }}>
                 <button
                   ref={layoutCardRef}
-                  onClick={() => setLayoutPickerOpen(!layoutPickerOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLayoutPickerOpen(!layoutPickerOpen);
+                  }}
                   className="w-full flex items-center gap-3 p-2.5 rounded-md transition-colors"
                   style={{ background: '#2a2a2a', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
