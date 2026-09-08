@@ -90,6 +90,10 @@ export default function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Escape cancels link mode, multi-select mode, or summary edit
       if (e.key === 'Escape') {
+        if (showInsertMenu) {
+          setShowInsertMenu(false);
+          return;
+        }
         if (linkMode) {
           cancelLinkMode();
           return;
@@ -142,12 +146,18 @@ export default function App() {
           e.preventDefault();
           createSummary(Array.from(selectedIds));
         }
+      } else if ((e.key === 'i' || e.key === 'I') && !e.ctrlKey && !e.metaKey) {
+        // Open insert menu
+        if (selectedId && !showInsertMenu) {
+          e.preventDefault();
+          setShowInsertMenu(true);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, multiSelectMode, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary]);
+  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, multiSelectMode, showInsertMenu, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary]);
 
   const handleZoomIn = useCallback(() => {
     setViewState(prev => ({ ...prev, scale: Math.min(prev.scale * 1.2, 3) }));
@@ -293,7 +303,7 @@ export default function App() {
           <span>Add markers</span>
         </div>
         <div className="flex items-center gap-2">
-          <kbd className="px-1.5 py-0.5 bg-sky-100 rounded text-[10px] font-mono border border-sky-200 text-sky-700">+ btn</kbd>
+          <kbd className="px-1.5 py-0.5 bg-sky-100 rounded text-[10px] font-mono border border-sky-200 text-sky-700">I</kbd>
           <span>Insert (note, label, task, link...)</span>
         </div>
         <div className="flex items-center gap-2">
