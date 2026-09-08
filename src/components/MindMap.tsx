@@ -1,15 +1,19 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
-import { MindNode as MindNodeType, Relationship, ViewState } from '../types';
+import { MindNode as MindNodeType, Relationship, Summary, ViewState } from '../types';
 import { calculateLayout, LayoutResult } from '../utils/layout';
 import { MindNodeComponent } from './MindNode';
 import { Connections } from './Connections';
 import { Relationships } from './Relationships';
+import { Summaries } from './Summaries';
 
 interface MindMapProps {
   root: MindNodeType;
   selectedId: string | null;
+  selectedIds: Set<string>;
   editingId: string | null;
+  editingSummaryId: string | null;
   relationships: Relationship[];
+  summaries: Summary[];
   linkMode: boolean;
   linkSourceId: string | null;
   onSelect: (id: string | null) => void;
@@ -21,6 +25,12 @@ interface MindMapProps {
   onLinkNodeClick: (id: string) => boolean;
   onDeleteRelationship: (id: string) => void;
   onUpdateRelationshipLabel: (id: string, label: string) => void;
+  onToggleNodeSelection: (id: string) => void;
+  onClearSelection: () => void;
+  onEditSummary: (id: string) => void;
+  onUpdateSummaryText: (id: string, text: string) => void;
+  onFinishSummaryEdit: () => void;
+  onDeleteSummary: (id: string) => void;
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
@@ -28,8 +38,11 @@ interface MindMapProps {
 export const MindMap: React.FC<MindMapProps> = ({
   root,
   selectedId,
+  selectedIds,
   editingId,
+  editingSummaryId,
   relationships,
+  summaries,
   linkMode,
   linkSourceId,
   onSelect,
@@ -41,6 +54,12 @@ export const MindMap: React.FC<MindMapProps> = ({
   onLinkNodeClick,
   onDeleteRelationship,
   onUpdateRelationshipLabel,
+  onToggleNodeSelection,
+  onClearSelection,
+  onEditSummary,
+  onUpdateSummaryText,
+  onFinishSummaryEdit,
+  onDeleteSummary,
   viewState,
   setViewState,
 }) => {
@@ -92,8 +111,9 @@ export const MindMap: React.FC<MindMapProps> = ({
       setIsDragging(true);
       setDragStart({ x: e.clientX - viewState.offsetX, y: e.clientY - viewState.offsetY });
       onSelect(null);
+      onClearSelection();
     }
-  }, [viewState.offsetX, viewState.offsetY, onSelect]);
+  }, [viewState.offsetX, viewState.offsetY, onSelect, onClearSelection]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isDragging) {
@@ -120,7 +140,6 @@ export const MindMap: React.FC<MindMapProps> = ({
       setViewState(prev => {
         const newScale = Math.min(Math.max(prev.scale * delta, 0.15), 3);
         
-        // Zoom toward cursor
         const rect = el.getBoundingClientRect();
         const mouseX = e.clientX - rect.left - rect.width / 2;
         const mouseY = e.clientY - rect.top - rect.height / 2;
@@ -150,14 +169,23 @@ export const MindMap: React.FC<MindMapProps> = ({
 
   const visibleNodes = useMemo(() => getVisibleNodes(root), [root, getVisibleNodes]);
 
-  // Handle node click (with link mode support)
-  const handleNodeSelect = useCallback((id: string) => {
+  // Handle node click with multi-select support
+  const handleNodeSelect = useCallback((id: string, e?: React.MouseEvent) => {
     if (linkMode) {
       onLinkNodeClick(id);
+      return;
+    }
+    
+    if (e && (e.ctrlKey || e.metaKey)) {
+      // Multi-select mode
+      onToggleNodeSelection(id);
+      onSelect(id);
     } else {
+      // Single select
+      onClearSelection();
       onSelect(id);
     }
-  }, [linkMode, onLinkNodeClick, onSelect]);
+  }, [linkMode, onLinkNodeClick, onToggleNodeSelection, onClearSelection, onSelect]);
 
   return (
     <div
@@ -182,11 +210,25 @@ export const MindMap: React.FC<MindMapProps> = ({
 
       {/* Link mode indicator */}
       {linkMode && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 bg-indigo-500 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 animate-pulse">
-          <span>🔗</span>
-          {linkSourceId 
-            ? 'Now click the target node to create relationship' 
-            : 'Click the source node to start relationship'}
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 bg-indigo-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          {linkSourceId ? 'Click target node to create relationship' : 'Click source node'}
+          <span className="text-indigo-200 ml-1">(Esc to cancel)</span>
+        </div>
+      )}
+
+      {/* Multi-select indicator */}
+      {selectedIds.size > 0 && !linkMode && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          {selectedIds.size} node{selectedIds.size > 1 ? 's' : ''} selected
+          <span className="text-emerald-200 ml-1">(Ctrl+Click to toggle)</span>
         </div>
       )}
 
@@ -200,10 +242,10 @@ export const MindMap: React.FC<MindMapProps> = ({
           transformOrigin: '0 0',
         }}
       >
-        {/* Parent-child connections SVG */}
+        {/* Connections SVG */}
         <Connections root={root} nodePositions={nodePositions} />
 
-        {/* Relationship connections SVG */}
+        {/* Relationships SVG */}
         <Relationships
           root={root}
           relationships={relationships}
@@ -212,13 +254,23 @@ export const MindMap: React.FC<MindMapProps> = ({
           onUpdateLabel={onUpdateRelationshipLabel}
         />
 
+        {/* Summaries SVG */}
+        <Summaries
+          root={root}
+          summaries={summaries}
+          nodePositions={nodePositions}
+          editingSummaryId={editingSummaryId}
+          onEditSummary={onEditSummary}
+          onUpdateText={onUpdateSummaryText}
+          onFinishEdit={onFinishSummaryEdit}
+          onDeleteSummary={onDeleteSummary}
+        />
+
         {/* Nodes */}
         <div className="pointer-events-auto">
           {visibleNodes.map(node => {
             const pos = layoutMap.get(node.id);
             if (!pos) return null;
-
-            const isLinkSource = linkMode && linkSourceId === node.id;
 
             return (
               <MindNodeComponent
@@ -226,13 +278,14 @@ export const MindMap: React.FC<MindMapProps> = ({
                 node={node}
                 x={pos.x}
                 y={pos.y}
-                isSelected={selectedId === node.id || isLinkSource}
+                isSelected={selectedId === node.id}
+                isMultiSelected={selectedIds.has(node.id)}
                 isEditing={editingId === node.id}
                 isRoot={pos.depth === 0}
                 hasChildren={node.children.length > 0}
                 isCollapsed={node.collapsed || false}
-                isLinkTarget={linkMode && !isLinkSource}
-                onSelect={handleNodeSelect}
+                isLinkSource={linkSourceId === node.id}
+                onSelect={(id) => handleNodeSelect(id)}
                 onEdit={onEdit}
                 onTextChange={onTextChange}
                 onFinishEdit={onFinishEdit}

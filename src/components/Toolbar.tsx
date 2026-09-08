@@ -2,6 +2,7 @@ import React from 'react';
 
 interface ToolbarProps {
   selectedId: string | null;
+  selectedIds: Set<string>;
   linkMode: boolean;
   onAddChild: () => void;
   onAddSibling: () => void;
@@ -9,6 +10,7 @@ interface ToolbarProps {
   onEdit: () => void;
   onLink: () => void;
   onCancelLink: () => void;
+  onSummary: () => void;
   onReset: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -18,6 +20,7 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   selectedId,
+  selectedIds,
   linkMode,
   onAddChild,
   onAddSibling,
@@ -25,12 +28,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onEdit,
   onLink,
   onCancelLink,
+  onSummary,
   onReset,
   onZoomIn,
   onZoomOut,
   onFitView,
   scale,
 }) => {
+  const canCreateSummary = selectedIds.size >= 2;
+
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200/50 px-3 py-2">
       {/* View controls */}
@@ -121,7 +127,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       </div>
 
-      {/* Relationship controls */}
+      {/* Relationship & Summary controls */}
       <div className="flex items-center gap-1 px-3 border-r border-gray-200">
         {linkMode ? (
           <button
@@ -146,6 +152,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             </svg>
           </button>
         )}
+        <button
+          onClick={onSummary}
+          disabled={!canCreateSummary}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-600"
+          title="Create Summary (S) - Select 2+ sibling nodes first"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+            <path d="M2 6v12" strokeWidth="2.5"/>
+          </svg>
+        </button>
       </div>
 
       {/* Reset */}

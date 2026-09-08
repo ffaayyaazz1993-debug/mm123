@@ -8,18 +8,27 @@ export default function App() {
   const {
     root,
     selectedId,
+    selectedIds,
     editingId,
+    editingSummaryId,
     relationships,
+    summaries,
     linkMode,
     linkSourceId,
     setSelectedId,
     setEditingId,
+    setEditingSummaryId,
     addChild,
     addSibling,
     deleteNode,
     updateText,
     toggleCollapse,
     resetMap,
+    toggleNodeSelection,
+    clearSelection,
+    createSummary,
+    deleteSummary,
+    updateSummaryText,
     deleteRelationship,
     updateRelationshipLabel,
     startLinkMode,
@@ -36,20 +45,28 @@ export default function App() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape cancels link mode
+      // Escape cancels link mode or summary edit
       if (e.key === 'Escape') {
         if (linkMode) {
           cancelLinkMode();
+          return;
+        }
+        if (editingSummaryId) {
+          setEditingSummaryId(null);
           return;
         }
         if (editingId) {
           setEditingId(null);
           return;
         }
+        if (selectedIds.size > 0) {
+          clearSelection();
+          return;
+        }
       }
 
       // Don't handle other shortcuts when editing
-      if (editingId) return;
+      if (editingId || editingSummaryId) return;
 
       if (e.key === 'Tab' && selectedId) {
         e.preventDefault();
@@ -66,17 +83,23 @@ export default function App() {
       } else if (e.key === ' ' && selectedId) {
         e.preventDefault();
         toggleCollapse(selectedId);
-      } else if (e.key === 'r' || e.key === 'R') {
+      } else if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey) {
         if (!linkMode) {
           e.preventDefault();
           startLinkMode();
+        }
+      } else if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.metaKey) {
+        // Create summary from selected nodes
+        if (selectedIds.size >= 2) {
+          e.preventDefault();
+          createSummary(Array.from(selectedIds));
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, editingId, linkMode, addChild, addSibling, deleteNode, setEditingId, toggleCollapse, startLinkMode, cancelLinkMode]);
+  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary]);
 
   const handleZoomIn = useCallback(() => {
     setViewState(prev => ({ ...prev, scale: Math.min(prev.scale * 1.2, 3) }));
@@ -90,11 +113,18 @@ export default function App() {
     setViewState({ offsetX: 0, offsetY: 0, scale: 1 });
   }, []);
 
+  const handleCreateSummary = useCallback(() => {
+    if (selectedIds.size >= 2) {
+      createSummary(Array.from(selectedIds));
+    }
+  }, [selectedIds, createSummary]);
+
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 overflow-hidden relative">
       {/* Toolbar */}
       <Toolbar
         selectedId={selectedId}
+        selectedIds={selectedIds}
         linkMode={linkMode}
         onAddChild={() => selectedId && addChild(selectedId)}
         onAddSibling={() => selectedId && addSibling(selectedId)}
@@ -102,6 +132,7 @@ export default function App() {
         onEdit={() => selectedId && setEditingId(selectedId)}
         onLink={startLinkMode}
         onCancelLink={cancelLinkMode}
+        onSummary={handleCreateSummary}
         onReset={resetMap}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
@@ -113,8 +144,11 @@ export default function App() {
       <MindMap
         root={root}
         selectedId={selectedId}
+        selectedIds={selectedIds}
         editingId={editingId}
+        editingSummaryId={editingSummaryId}
         relationships={relationships}
+        summaries={summaries}
         linkMode={linkMode}
         linkSourceId={linkSourceId}
         onSelect={setSelectedId}
@@ -126,6 +160,12 @@ export default function App() {
         onLinkNodeClick={handleLinkNodeClick}
         onDeleteRelationship={deleteRelationship}
         onUpdateRelationshipLabel={updateRelationshipLabel}
+        onToggleNodeSelection={toggleNodeSelection}
+        onClearSelection={clearSelection}
+        onEditSummary={setEditingSummaryId}
+        onUpdateSummaryText={updateSummaryText}
+        onFinishSummaryEdit={() => setEditingSummaryId(null)}
+        onDeleteSummary={deleteSummary}
         viewState={viewState}
         setViewState={setViewState}
       />
@@ -159,6 +199,14 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">R</kbd>
           <span>Add relationship</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Ctrl+Click</kbd>
+          <span>Multi-select</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">S</kbd>
+          <span>Create summary</span>
         </div>
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Space</kbd>

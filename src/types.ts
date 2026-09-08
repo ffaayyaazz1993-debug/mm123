@@ -8,6 +8,7 @@ export interface MindNode {
   y?: number;
   width?: number;
   height?: number;
+  summaries?: Summary[];
 }
 
 export interface Relationship {
@@ -15,6 +16,13 @@ export interface Relationship {
   sourceId: string;
   targetId: string;
   label: string;
+  color?: string;
+}
+
+export interface Summary {
+  id: string;
+  topicIds: string[]; // IDs of the nodes being summarized
+  text: string;
   color?: string;
 }
 

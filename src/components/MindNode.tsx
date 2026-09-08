@@ -6,11 +6,12 @@ interface MindNodeProps {
   x: number;
   y: number;
   isSelected: boolean;
+  isMultiSelected: boolean;
   isEditing: boolean;
   isRoot: boolean;
   hasChildren: boolean;
   isCollapsed: boolean;
-  isLinkTarget?: boolean;
+  isLinkSource: boolean;
   onSelect: (id: string) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -24,11 +25,12 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   x,
   y,
   isSelected,
+  isMultiSelected,
   isEditing,
   isRoot,
   hasChildren,
   isCollapsed,
-  isLinkTarget = false,
+  isLinkSource,
   onSelect,
   onEdit,
   onTextChange,
@@ -92,13 +94,13 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   // Styling based on node type
   const bgColor = isRoot 
     ? color
-    : isSelected 
+    : (isSelected || isMultiSelected)
       ? `${color}20`
       : `${color}08`;
   
-  const borderColor = isLinkTarget
+  const borderColor = isLinkSource
     ? '#6366f1'
-    : isSelected 
+    : (isSelected || isMultiSelected)
       ? color
       : isRoot 
         ? 'transparent'
@@ -111,20 +113,18 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   const borderRadius = isRoot ? '24px' : '14px';
   const shadow = isRoot 
     ? `0 6px 24px ${color}35, 0 2px 8px ${color}20`
-    : isLinkTarget
-      ? `0 0 0 3px #6366f140, 0 3px 14px #6366f120`
-      : isSelected 
-        ? `0 3px 14px ${color}25, 0 1px 4px rgba(0,0,0,0.06)`
-        : '0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)';
+    : (isSelected || isMultiSelected)
+      ? `0 3px 14px ${color}25, 0 1px 4px rgba(0,0,0,0.06)`
+      : '0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)';
 
   return (
     <div
-      className={`absolute cursor-pointer select-none group ${isLinkTarget ? 'animate-pulse' : ''}`}
+      className="absolute cursor-pointer select-none group"
       style={{
         left: `${x}px`,
         top: `${y}px`,
         transform: 'translate(-50%, -50%)',
-        zIndex: isSelected ? 10 : 1,
+        zIndex: isSelected || isMultiSelected ? 10 : 1,
       }}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
@@ -141,10 +141,12 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
           fontSize,
           fontWeight,
           backdropFilter: isRoot ? 'none' : 'blur(8px)',
+          outline: isLinkSource ? '3px solid #6366f1' : undefined,
+          outlineOffset: '2px',
         }}
       >
         {/* Selection indicator */}
-        {isSelected && !isRoot && (
+        {(isSelected || isMultiSelected) && !isRoot && (
           <div 
             className="absolute inset-0 rounded-[inherit] pointer-events-none"
             style={{
@@ -154,12 +156,18 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
           />
         )}
 
-        {/* Link target indicator */}
-        {isLinkTarget && (
-          <div 
-            className="absolute -left-1 -top-1 w-3 h-3 rounded-full bg-indigo-500 pointer-events-none"
-            style={{ boxShadow: '0 0 6px #6366f1' }}
-          />
+        {/* Multi-select badge */}
+        {isMultiSelected && !isRoot && (
+          <div
+            className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold"
+            style={{
+              background: '#10b981',
+              color: '#fff',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            }}
+          >
+            ✓
+          </div>
         )}
 
         {isEditing ? (
@@ -179,7 +187,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
         )}
 
         {/* Collapse/Expand button */}
-        {hasChildren && !isEditing && !isLinkTarget && (
+        {hasChildren && !isEditing && (
           <button
             onClick={handleToggleCollapse}
             className="absolute -right-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
@@ -195,7 +203,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
         )}
 
         {/* Add child button */}
-        {!isEditing && !isLinkTarget && (
+        {!isEditing && (
           <button
             onClick={handleAddChild}
             className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { MindNode, Relationship } from '../types';
+import { MindNode, Relationship, Summary } from '../types';
 
 const BRANCH_COLORS = [
   '#4A90D9', // blue
@@ -87,10 +87,8 @@ function createDefaultMap(): MindNode {
 }
 
 function createDefaultRelationships(root: MindNode): Relationship[] {
-  // Create some demo relationships between nodes
   const rels: Relationship[] = [];
   
-  // Connect "Set Goals" to "Milestones" (Planning -> Progress)
   if (root.children[0]?.children[0] && root.children[4]?.children[0]) {
     rels.push({
       id: generateId(),
@@ -101,7 +99,6 @@ function createDefaultRelationships(root: MindNode): Relationship[] {
     });
   }
   
-  // Connect "Brainstorm" to "Innovation" (Ideas internal)
   if (root.children[1]?.children[0] && root.children[1]?.children[2]) {
     rels.push({
       id: generateId(),
@@ -112,7 +109,6 @@ function createDefaultRelationships(root: MindNode): Relationship[] {
     });
   }
   
-  // Connect "Next Steps" to "Priority High" (Actions -> Tasks)
   if (root.children[5]?.children[0] && root.children[2]?.children[0]) {
     rels.push({
       id: generateId(),
@@ -126,18 +122,36 @@ function createDefaultRelationships(root: MindNode): Relationship[] {
   return rels;
 }
 
+function createDefaultSummaries(root: MindNode): Summary[] {
+  // Create a demo summary for the Planning branch
+  const planning = root.children[0];
+  if (planning && planning.children.length >= 2) {
+    return [{
+      id: generateId(),
+      topicIds: [planning.children[0].id, planning.children[1].id],
+      text: '📌 Foundation',
+      color: '#E74C3C',
+    }];
+  }
+  return [];
+}
+
 function createInitial() {
   const root = createDefaultMap();
   const relationships = createDefaultRelationships(root);
-  return { root, relationships };
+  const summaries = createDefaultSummaries(root);
+  return { root, relationships, summaries };
 }
 
 export function useMindMap() {
   const [initial] = useState(createInitial);
   const [root, setRoot] = useState<MindNode>(initial.root);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingSummaryId, setEditingSummaryId] = useState<string | null>(null);
   const [relationships, setRelationships] = useState<Relationship[]>(initial.relationships);
+  const [summaries, setSummaries] = useState<Summary[]>(initial.summaries);
   const [linkMode, setLinkMode] = useState(false);
   const [linkSourceId, setLinkSourceId] = useState<string | null>(null);
 
@@ -145,6 +159,15 @@ export function useMindMap() {
     if (node.id === id) return node;
     for (const child of node.children) {
       const found = findNode(child, id);
+      if (found) return found;
+    }
+    return null;
+  }, []);
+
+  const findParent = useCallback((node: MindNode, targetId: string): MindNode | null => {
+    for (const child of node.children) {
+      if (child.id === targetId) return node;
+      const found = findParent(child, targetId);
       if (found) return found;
     }
     return null;
@@ -187,15 +210,6 @@ export function useMindMap() {
 
   const addSibling = useCallback((nodeId: string) => {
     setRoot(prev => {
-      const findParent = (node: MindNode, targetId: string): MindNode | null => {
-        for (const child of node.children) {
-          if (child.id === targetId) return node;
-          const found = findParent(child, targetId);
-          if (found) return found;
-        }
-        return null;
-      };
-
       const parent = findParent(prev, nodeId);
       if (!parent) return prev;
 
@@ -215,16 +229,21 @@ export function useMindMap() {
         children: [...n.children, newNode],
       }));
     });
-  }, [findNode, updateNode]);
+  }, [findNode, findParent, updateNode]);
 
   const deleteNode = useCallback((nodeId: string) => {
     setRoot(prev => {
       if (prev.id === nodeId) return prev;
       return deleteNodeFromTree(prev, nodeId);
     });
-    // Also remove any relationships involving this node
     setRelationships(prev => prev.filter(r => r.sourceId !== nodeId && r.targetId !== nodeId));
+    setSummaries(prev => prev.filter(s => !s.topicIds.includes(nodeId)));
     setSelectedId(null);
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.delete(nodeId);
+      return next;
+    });
   }, [deleteNodeFromTree]);
 
   const updateText = useCallback((nodeId: string, text: string) => {
@@ -239,15 +258,73 @@ export function useMindMap() {
     const newInitial = createInitial();
     setRoot(newInitial.root);
     setRelationships(newInitial.relationships);
+    setSummaries(newInitial.summaries);
     setSelectedId(null);
+    setSelectedIds(new Set());
     setEditingId(null);
+    setEditingSummaryId(null);
     setLinkMode(false);
     setLinkSourceId(null);
   }, []);
 
+  // Multi-select management
+  const toggleNodeSelection = useCallback((nodeId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  }, []);
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
+  // Summary management
+  const createSummary = useCallback((topicIds: string[]) => {
+    if (topicIds.length < 2) return;
+    
+    // Verify all topics are siblings (have the same parent)
+    const parents = topicIds.map(id => findParent(root, id));
+    const parentIds = new Set(parents.map(p => p?.id));
+    if (parentIds.size !== 1 || !parents[0]) return;
+
+    const parent = parents[0];
+    const firstTopic = findNode(root, topicIds[0]);
+    const color = firstTopic?.color || '#6366f1';
+
+    const newSummary: Summary = {
+      id: generateId(),
+      topicIds,
+      text: 'Summary',
+      color,
+    };
+
+    setSummaries(prev => [...prev, newSummary]);
+    setSelectedIds(new Set());
+  }, [root, findNode, findParent]);
+
+  const deleteSummary = useCallback((summaryId: string) => {
+    setSummaries(prev => prev.filter(s => s.id !== summaryId));
+    if (editingSummaryId === summaryId) {
+      setEditingSummaryId(null);
+    }
+  }, [editingSummaryId]);
+
+  const updateSummaryText = useCallback((summaryId: string, text: string) => {
+    setSummaries(prev => prev.map(s => s.id === summaryId ? { ...s, text } : s));
+  }, []);
+
+  const getSummaryForNode = useCallback((nodeId: string): Summary | undefined => {
+    return summaries.find(s => s.topicIds.includes(nodeId));
+  }, [summaries]);
+
   // Relationship management
   const addRelationship = useCallback((sourceId: string, targetId: string, label: string = 'relates to') => {
-    // Don't add duplicate relationships
     const exists = relationships.some(
       r => (r.sourceId === sourceId && r.targetId === targetId) ||
            (r.sourceId === targetId && r.targetId === sourceId)
@@ -287,11 +364,9 @@ export function useMindMap() {
     if (!linkMode) return false;
 
     if (!linkSourceId) {
-      // First click - set source
       setLinkSourceId(nodeId);
       return true;
     } else {
-      // Second click - create relationship
       if (nodeId !== linkSourceId) {
         addRelationship(linkSourceId, nodeId);
       }
@@ -304,18 +379,29 @@ export function useMindMap() {
   return {
     root,
     selectedId,
+    selectedIds,
     editingId,
+    editingSummaryId,
     relationships,
+    summaries,
     linkMode,
     linkSourceId,
     setSelectedId,
+    setSelectedIds,
     setEditingId,
+    setEditingSummaryId,
     addChild,
     addSibling,
     deleteNode,
     updateText,
     toggleCollapse,
     resetMap,
+    toggleNodeSelection,
+    clearSelection,
+    createSummary,
+    deleteSummary,
+    updateSummaryText,
+    getSummaryForNode,
     addRelationship,
     deleteRelationship,
     updateRelationshipLabel,
