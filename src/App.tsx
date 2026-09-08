@@ -42,13 +42,21 @@ export default function App() {
     scale: 1,
   });
 
+  // Multi-select mode: when active, regular clicks toggle node selection
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape cancels link mode or summary edit
+      // Escape cancels link mode, multi-select mode, or summary edit
       if (e.key === 'Escape') {
         if (linkMode) {
           cancelLinkMode();
+          return;
+        }
+        if (multiSelectMode) {
+          setMultiSelectMode(false);
+          clearSelection();
           return;
         }
         if (editingSummaryId) {
@@ -99,7 +107,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary]);
+  }, [selectedId, selectedIds, editingId, editingSummaryId, linkMode, multiSelectMode, addChild, addSibling, deleteNode, setEditingId, setEditingSummaryId, toggleCollapse, startLinkMode, cancelLinkMode, clearSelection, createSummary]);
 
   const handleZoomIn = useCallback(() => {
     setViewState(prev => ({ ...prev, scale: Math.min(prev.scale * 1.2, 3) }));
@@ -126,12 +134,14 @@ export default function App() {
         selectedId={selectedId}
         selectedIds={selectedIds}
         linkMode={linkMode}
+        multiSelectMode={multiSelectMode}
         onAddChild={() => selectedId && addChild(selectedId)}
         onAddSibling={() => selectedId && addSibling(selectedId)}
         onDelete={() => selectedId && deleteNode(selectedId)}
         onEdit={() => selectedId && setEditingId(selectedId)}
         onLink={startLinkMode}
         onCancelLink={cancelLinkMode}
+        onToggleMultiSelect={() => setMultiSelectMode(!multiSelectMode)}
         onSummary={handleCreateSummary}
         onReset={resetMap}
         onZoomIn={handleZoomIn}
@@ -151,6 +161,7 @@ export default function App() {
         summaries={summaries}
         linkMode={linkMode}
         linkSourceId={linkSourceId}
+        multiSelectMode={multiSelectMode}
         onSelect={setSelectedId}
         onEdit={setEditingId}
         onTextChange={updateText}
@@ -203,6 +214,10 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">Ctrl+Click</kbd>
           <span>Multi-select</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-emerald-100 rounded text-[10px] font-mono border border-emerald-200 text-emerald-700">☐ btn</kbd>
+          <span>Multi-select mode (touchpad)</span>
         </div>
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">S</kbd>

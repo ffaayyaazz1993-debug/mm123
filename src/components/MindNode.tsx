@@ -12,7 +12,7 @@ interface MindNodeProps {
   hasChildren: boolean;
   isCollapsed: boolean;
   isLinkSource: boolean;
-  onSelect: (id: string) => void;
+  onSelect: (id: string, e: React.MouseEvent) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
   onFinishEdit: () => void;
@@ -59,7 +59,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onSelect(node.id);
+    onSelect(node.id, e);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

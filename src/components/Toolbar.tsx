@@ -4,12 +4,14 @@ interface ToolbarProps {
   selectedId: string | null;
   selectedIds: Set<string>;
   linkMode: boolean;
+  multiSelectMode: boolean;
   onAddChild: () => void;
   onAddSibling: () => void;
   onDelete: () => void;
   onEdit: () => void;
   onLink: () => void;
   onCancelLink: () => void;
+  onToggleMultiSelect: () => void;
   onSummary: () => void;
   onReset: () => void;
   onZoomIn: () => void;
@@ -22,12 +24,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   selectedId,
   selectedIds,
   linkMode,
+  multiSelectMode,
   onAddChild,
   onAddSibling,
   onDelete,
   onEdit,
   onLink,
   onCancelLink,
+  onToggleMultiSelect,
   onSummary,
   onReset,
   onZoomIn,
@@ -123,6 +127,27 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="3,6 5,6 21,6"/>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Multi-select toggle */}
+      <div className="flex items-center gap-1 px-3 border-r border-gray-200">
+        <button
+          onClick={onToggleMultiSelect}
+          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+            multiSelectMode 
+              ? 'bg-emerald-100 text-emerald-600 ring-2 ring-emerald-300' 
+              : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-600'
+          }`}
+          title={multiSelectMode ? "Exit Multi-Select Mode" : "Multi-Select Mode (click nodes to select multiple)"}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            {multiSelectMode && <path d="M16 16l2 2 4-4" strokeWidth="2.5"/>}
+            {!multiSelectMode && <rect x="14" y="14" width="7" height="7" rx="1" opacity="0.4"/>}
           </svg>
         </button>
       </div>

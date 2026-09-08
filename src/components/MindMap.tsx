@@ -16,6 +16,7 @@ interface MindMapProps {
   summaries: Summary[];
   linkMode: boolean;
   linkSourceId: string | null;
+  multiSelectMode: boolean;
   onSelect: (id: string | null) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -45,6 +46,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   summaries,
   linkMode,
   linkSourceId,
+  multiSelectMode,
   onSelect,
   onEdit,
   onTextChange,
@@ -170,28 +172,30 @@ export const MindMap: React.FC<MindMapProps> = ({
   const visibleNodes = useMemo(() => getVisibleNodes(root), [root, getVisibleNodes]);
 
   // Handle node click with multi-select support
-  const handleNodeSelect = useCallback((id: string, e?: React.MouseEvent) => {
+  const handleNodeSelect = useCallback((id: string, e: React.MouseEvent) => {
     if (linkMode) {
       onLinkNodeClick(id);
       return;
     }
     
-    if (e && (e.ctrlKey || e.metaKey)) {
-      // Multi-select mode
+    // Multi-select mode: toggle selection on every click
+    // Or: Ctrl (Windows/Linux) or Cmd (Mac) + click
+    if (multiSelectMode || e.ctrlKey || e.metaKey) {
+      e.preventDefault();
       onToggleNodeSelection(id);
       onSelect(id);
     } else {
-      // Single select
+      // Single select - clear multi-selection
       onClearSelection();
       onSelect(id);
     }
-  }, [linkMode, onLinkNodeClick, onToggleNodeSelection, onClearSelection, onSelect]);
+  }, [linkMode, multiSelectMode, onLinkNodeClick, onToggleNodeSelection, onClearSelection, onSelect]);
 
   return (
     <div
       ref={containerRef}
       className="w-full h-full overflow-hidden relative"
-      style={{ cursor: isDragging ? 'grabbing' : linkMode ? 'crosshair' : 'default' }}
+      style={{ cursor: isDragging ? 'grabbing' : linkMode ? 'crosshair' : multiSelectMode ? 'cell' : 'default' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -228,7 +232,21 @@ export const MindMap: React.FC<MindMapProps> = ({
             <rect x="14" y="14" width="7" height="7" rx="1"/>
           </svg>
           {selectedIds.size} node{selectedIds.size > 1 ? 's' : ''} selected
-          <span className="text-emerald-200 ml-1">(Ctrl+Click to toggle)</span>
+          <span className="text-emerald-200 ml-1">
+            {multiSelectMode ? '(Click to toggle)' : '(Ctrl+Click to toggle)'}
+          </span>
+        </div>
+      )}
+
+      {/* Multi-select mode active indicator */}
+      {multiSelectMode && selectedIds.size === 0 && !linkMode && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-500/90 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          Multi-Select Mode: Click nodes to select
+          <span className="text-emerald-200 ml-1">(Esc to exit)</span>
         </div>
       )}
 
@@ -285,7 +303,7 @@ export const MindMap: React.FC<MindMapProps> = ({
                 hasChildren={node.children.length > 0}
                 isCollapsed={node.collapsed || false}
                 isLinkSource={linkSourceId === node.id}
-                onSelect={(id) => handleNodeSelect(id)}
+                onSelect={(id, e) => handleNodeSelect(id, e)}
                 onEdit={onEdit}
                 onTextChange={onTextChange}
                 onFinishEdit={onFinishEdit}
