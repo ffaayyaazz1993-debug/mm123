@@ -63,6 +63,30 @@ const CLASSIC_THEMES = [
   { id: 'groove', name: 'Groove', gradient: 'linear-gradient(135deg, #f59e0b, #f59e0b)', colors: ['#f59e0b'] },
 ];
 
+// Comprehensive color palette for background picker
+const ALL_COLORS = [
+  // Row 1: Whites & Grays
+  '#ffffff', '#f5f5f5', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#525252', '#404040', '#262626', '#171717',
+  // Row 2: Reds
+  '#fef2f2', '#fee2e2', '#fecaca', '#fca5a5', '#f87171', '#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d',
+  // Row 3: Oranges
+  '#fff7ed', '#ffedd5', '#fed7aa', '#fdba74', '#fb923c', '#f97316', '#ea580c', '#c2410c', '#9a3412', '#7c2d12',
+  // Row 4: Yellows
+  '#fefce8', '#fef9c3', '#fef08a', '#fde047', '#facc15', '#eab308', '#ca8a04', '#a16207', '#854d0e', '#713f12',
+  // Row 5: Greens
+  '#f0fdf4', '#dcfce7', '#bbf7d0', '#86efac', '#4ade80', '#22c55e', '#16a34a', '#15803d', '#166534', '#14532d',
+  // Row 6: Teals
+  '#f0fdfa', '#ccfbf1', '#99f6e4', '#5eead4', '#2dd4bf', '#14b8a6', '#0d9488', '#0f766e', '#115e59', '#134e4a',
+  // Row 7: Blues
+  '#eff6ff', '#dbeafe', '#bfdbfe', '#93c5fd', '#60a5fa', '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#1e3a8a',
+  // Row 8: Indigos
+  '#eef2ff', '#e0e7ff', '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5', '#4338ca', '#3730a3', '#312e81',
+  // Row 9: Purples
+  '#faf5ff', '#f3e8ff', '#e9d5ff', '#d8b4fe', '#c084fc', '#a855f7', '#9333ea', '#7e22ce', '#6b21a8', '#581c87',
+  // Row 10: Pinks
+  '#fdf2f8', '#fce7f3', '#fbcfe8', '#f9a8d4', '#f472b6', '#ec4899', '#db2777', '#be185d', '#9d174d', '#831843',
+];
+
 // Mini org chart SVG for thumbnails
 const MiniOrgChart: React.FC<{ accentColor?: string; size?: 'large' | 'small' }> = ({ accentColor = '#9ca3af', size = 'large' }) => {
   const w = size === 'large' ? 76 : 48;
@@ -118,7 +142,11 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
   const [fontOpen, setFontOpen] = useState(false);
   const [widthOpen, setWidthOpen] = useState(false);
   const [layoutPickerOpen, setLayoutPickerOpen] = useState(false);
+  const [bgColorOpen, setBgColorOpen] = useState(false);
+  const [bgColorTab, setBgColorTab] = useState<'all' | 'theme' | 'recent'>('all');
+  const [recentColors, setRecentColors] = useState<string[]>([]);
   const layoutCardRef = useRef<HTMLButtonElement>(null);
+  const bgColorRef = useRef<HTMLDivElement>(null);
   
   // Drag state
   const [position, setPosition] = useState({ x: window.innerWidth - 220, y: 0 });
@@ -189,9 +217,12 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
         setFontOpen(false);
         setWidthOpen(false);
       }
+      if (bgColorOpen && bgColorRef.current && !bgColorRef.current.contains(e.target as Node)) {
+        setBgColorOpen(false);
+      }
     };
     
-    if (themeOpen || fontOpen || widthOpen) {
+    if (themeOpen || fontOpen || widthOpen || bgColorOpen) {
       setTimeout(() => {
         document.addEventListener('click', handleClickOutside);
       }, 0);
@@ -199,7 +230,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
         document.removeEventListener('click', handleClickOutside);
       };
     }
-  }, [themeOpen, fontOpen, widthOpen]);
+  }, [themeOpen, fontOpen, widthOpen, bgColorOpen]);
 
   return (
     <div
@@ -533,17 +564,191 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({
               <div style={{ height: '1px', background: '#333' }}/>
 
               {/* Background Color row */}
-              <div style={{ margin: '0 12px' }} className="flex items-center justify-between py-3">
+              <div style={{ margin: '0 12px', position: 'relative' }} className="flex items-center justify-between py-3" ref={bgColorRef}>
                 <span style={{ color: '#fff', fontSize: '13px' }}>Background Color</span>
-                <div
+                <button
+                  onClick={() => setBgColorOpen(!bgColorOpen)}
                   style={{
                     width: '60px',
                     height: '24px',
-                    background: '#f5f5f5',
+                    background: formatOptions.backgroundColor,
                     borderRadius: '4px',
                     border: '1px solid #444',
+                    cursor: 'pointer',
                   }}
                 />
+                
+                {/* Background Color Picker Dropdown */}
+                {bgColorOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      right: 0,
+                      width: '280px',
+                      background: '#2a2a2a',
+                      borderRadius: '6px',
+                      border: '1px solid #3a3a3a',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      zIndex: 100,
+                      marginTop: '8px',
+                    }}
+                  >
+                    {/* Tabs */}
+                    <div style={{ display: 'flex', borderBottom: '1px solid #3a3a3a' }}>
+                      <button
+                        onClick={() => setBgColorTab('all')}
+                        style={{
+                          flex: 1,
+                          padding: '8px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: bgColorTab === 'all' ? '2px solid #fff' : '2px solid transparent',
+                          color: bgColorTab === 'all' ? '#fff' : '#8b8b8b',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        All Colors
+                      </button>
+                      <button
+                        onClick={() => setBgColorTab('theme')}
+                        style={{
+                          flex: 1,
+                          padding: '8px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: bgColorTab === 'theme' ? '2px solid #fff' : '2px solid transparent',
+                          color: bgColorTab === 'theme' ? '#fff' : '#8b8b8b',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Current Theme
+                      </button>
+                      <button
+                        onClick={() => setBgColorTab('recent')}
+                        style={{
+                          flex: 1,
+                          padding: '8px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: bgColorTab === 'recent' ? '2px solid #fff' : '2px solid transparent',
+                          color: bgColorTab === 'recent' ? '#fff' : '#8b8b8b',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Recent
+                      </button>
+                    </div>
+
+                    {/* Content based on active tab */}
+                    <div style={{ padding: '12px', maxHeight: '300px', overflowY: 'auto' }}>
+                      {/* All Colors Tab */}
+                      {bgColorTab === 'all' && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '4px' }}>
+                          {ALL_COLORS.map((color, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                onFormatChange({ backgroundColor: color });
+                                setRecentColors(prev => {
+                                  const filtered = prev.filter(c => c !== color);
+                                  return [color, ...filtered].slice(0, 10);
+                                });
+                                setBgColorOpen(false);
+                              }}
+                              style={{
+                                width: '20px',
+                                height: '20px',
+                                background: color,
+                                border: formatOptions.backgroundColor === color ? '2px solid #fff' : '1px solid #444',
+                                borderRadius: '3px',
+                                cursor: 'pointer',
+                                padding: 0,
+                              }}
+                              title={color}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Current Theme Tab */}
+                      {bgColorTab === 'theme' && (
+                        <div>
+                          <div style={{ fontSize: '10px', color: '#8b8b8b', marginBottom: '8px', fontWeight: 600 }}>
+                            Colors from Current Theme
+                          </div>
+                          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                            {(formatOptions.themeType === 'colorful' 
+                              ? COLORFUL_THEMES[formatOptions.theme]?.colors 
+                              : CLASSIC_THEMES[formatOptions.theme]?.colors
+                            )?.map((color, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  onFormatChange({ backgroundColor: color });
+                                  setRecentColors(prev => {
+                                    const filtered = prev.filter(c => c !== color);
+                                    return [color, ...filtered].slice(0, 10);
+                                  });
+                                  setBgColorOpen(false);
+                                }}
+                                style={{
+                                  width: '28px',
+                                  height: '28px',
+                                  background: color,
+                                  border: formatOptions.backgroundColor === color ? '2px solid #fff' : '1px solid #444',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                }}
+                                title={color}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Recent Tab */}
+                      {bgColorTab === 'recent' && (
+                        <div>
+                          {recentColors.length > 0 ? (
+                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                              {recentColors.map((color, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => {
+                                    onFormatChange({ backgroundColor: color });
+                                    setBgColorOpen(false);
+                                  }}
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    background: color,
+                                    border: formatOptions.backgroundColor === color ? '2px solid #fff' : '1px solid #444',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                  }}
+                                  title={color}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '11px', color: '#8b8b8b', textAlign: 'center', padding: '20px' }}>
+                              No recently used colors
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Divider */}
