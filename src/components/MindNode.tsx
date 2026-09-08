@@ -14,6 +14,7 @@ interface MindNodeProps {
   hasChildren: boolean;
   isCollapsed: boolean;
   isLinkSource: boolean;
+  isDragging: boolean;
   onSelect: (id: string, e: React.MouseEvent) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -31,6 +32,9 @@ interface MindNodeProps {
   onRemoveLabel: (nodeId: string) => void;
   onRemoveTask: (nodeId: string) => void;
   onToggleTask: (nodeId: string) => void;
+  onDragStart: (id: string, e: React.MouseEvent) => void;
+  onDrag: (id: string, deltaX: number, deltaY: number) => void;
+  onDragEnd: (id: string) => void;
 }
 
 export const MindNodeComponent: React.FC<MindNodeProps> = ({
@@ -44,6 +48,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   hasChildren,
   isCollapsed,
   isLinkSource,
+  isDragging,
   onSelect,
   onEdit,
   onTextChange,
@@ -61,6 +66,9 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   onRemoveLabel,
   onRemoveTask,
   onToggleTask,
+  onDragStart,
+  onDrag,
+  onDragEnd,
 }) => {
   const [text, setText] = useState(node.text);
   const [showMarkerPicker, setShowMarkerPicker] = useState(false);
@@ -94,7 +102,16 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onEdit(node.id);
+    // Double-click starts drag mode instead of edit mode
+    onDragStart(node.id, e);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // If already in drag mode, continue dragging
+    if (isDragging) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -159,15 +176,18 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   return (
     <div
-      className="absolute cursor-pointer select-none group"
+      className={`absolute select-none group ${isDragging ? 'cursor-grabbing' : 'cursor-pointer'}`}
       style={{
         left: `${x}px`,
         top: `${y}px`,
         transform: 'translate(-50%, -50%)',
-        zIndex: isSelected || isMultiSelected ? 10 : 1,
+        zIndex: isDragging ? 100 : (isSelected || isMultiSelected ? 10 : 1),
+        opacity: isDragging ? 0.8 : 1,
+        transition: isDragging ? 'none' : 'opacity 0.2s',
       }}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
+      onMouseDown={handleMouseDown}
     >
       <div
         className="relative flex items-center gap-2 whitespace-nowrap transition-all duration-200"

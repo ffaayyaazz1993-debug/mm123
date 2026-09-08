@@ -262,6 +262,15 @@ export function useMindMap() {
     });
   }, []);
 
+  const updateNodePosition = useCallback((nodeId: string, x: number, y: number) => {
+    setRoot(prev => updateNode(prev, nodeId, n => ({
+      ...n,
+      x,
+      y,
+      floating: true, // Mark as floating when manually positioned
+    })));
+  }, [updateNode]);
+
   const deleteNode = useCallback((nodeId: string) => {
     setRoot(prev => {
       if (prev.id === nodeId) return prev;
@@ -578,6 +587,7 @@ export function useMindMap() {
     addChild,
     addSibling,
     addFloatingNode,
+    updateNodePosition,
     deleteNode,
     updateText,
     toggleCollapse,

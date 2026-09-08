@@ -22,6 +22,7 @@ export default function App() {
     addChild,
     addSibling,
     addFloatingNode,
+    updateNodePosition,
     deleteNode,
     updateText,
     toggleCollapse,
@@ -258,6 +259,7 @@ export default function App() {
         onRemoveLabel={removeLabel}
         onRemoveTask={removeTask}
         onAddFloatingNode={addFloatingNode}
+        onUpdateNodePosition={updateNodePosition}
         viewState={viewState}
         setViewState={setViewState}
       />
@@ -327,6 +329,10 @@ export default function App() {
         <div className="flex items-center gap-2">
           <kbd className="px-1.5 py-0.5 bg-amber-100 rounded text-[10px] font-mono border border-amber-200 text-amber-700">Double-click</kbd>
           <span>Create floating node</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <kbd className="px-1.5 py-0.5 bg-cyan-100 rounded text-[10px] font-mono border border-cyan-200 text-cyan-700">Double-click node</kbd>
+          <span>Drag to reposition</span>
         </div>
       </div>
 

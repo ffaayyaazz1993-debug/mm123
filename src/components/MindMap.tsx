@@ -44,6 +44,7 @@ interface MindMapProps {
   onRemoveLabel: (nodeId: string) => void;
   onRemoveTask: (nodeId: string) => void;
   onAddFloatingNode: (x: number, y: number) => void;
+  onUpdateNodePosition: (id: string, x: number, y: number) => void;
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
@@ -86,11 +87,14 @@ export const MindMap: React.FC<MindMapProps> = ({
   onRemoveLabel,
   onRemoveTask,
   onAddFloatingNode,
+  onUpdateNodePosition,
   viewState,
   setViewState,
 }) => {  const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
+  const [nodeDragStart, setNodeDragStart] = useState({ x: 0, y: 0 });
 
   // Calculate layout
   const layoutResults = useMemo(() => calculateLayout(root), [root]);
@@ -128,12 +132,12 @@ export const MindMap: React.FC<MindMapProps> = ({
     return map;
   }, [layoutMap, root]);
 
-  // Pan handlers
+  // Canvas pan handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return;
     const target = e.target as HTMLElement;
     if (target === containerRef.current || target.classList.contains('canvas-bg') || target.tagName === 'svg' || target.tagName === 'path') {
-      setIsDragging(true);
+      setIsDraggingCanvas(true);
       setDragStart({ x: e.clientX - viewState.offsetX, y: e.clientY - viewState.offsetY });
       onSelect(null);
       onClearSelection();
@@ -141,17 +145,44 @@ export const MindMap: React.FC<MindMapProps> = ({
   }, [viewState.offsetX, viewState.offsetY, onSelect, onClearSelection]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging) {
+    // Handle canvas panning
+    if (isDraggingCanvas) {
       setViewState(prev => ({
         ...prev,
         offsetX: e.clientX - dragStart.x,
         offsetY: e.clientY - dragStart.y,
       }));
     }
-  }, [isDragging, dragStart, setViewState]);
+    // Handle node dragging
+    else if (draggingNodeId) {
+      const deltaX = (e.clientX - nodeDragStart.x) / viewState.scale;
+      const deltaY = (e.clientY - nodeDragStart.y) / viewState.scale;
+      
+      // Get current node position from layout
+      const nodePos = layoutMap.get(draggingNodeId);
+      if (nodePos) {
+        const newX = nodePos.x + deltaX;
+        const newY = nodePos.y + deltaY;
+        onUpdateNodePosition(draggingNodeId, newX, newY);
+      }
+      
+      // Update drag start for next movement
+      setNodeDragStart({ x: e.clientX, y: e.clientY });
+    }
+  }, [isDraggingCanvas, draggingNodeId, nodeDragStart, dragStart, viewState.scale, layoutMap, onUpdateNodePosition, setViewState]);
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
+    setIsDraggingCanvas(false);
+    if (draggingNodeId) {
+      setDraggingNodeId(null);
+    }
+  }, [draggingNodeId]);
+
+  // Node drag handlers
+  const handleNodeDragStart = useCallback((id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setDraggingNodeId(id);
+    setNodeDragStart({ x: e.clientX, y: e.clientY });
   }, []);
 
   // Double-click handler to create floating node
@@ -240,7 +271,7 @@ export const MindMap: React.FC<MindMapProps> = ({
     <div
       ref={containerRef}
       className="w-full h-full overflow-hidden relative"
-      style={{ cursor: isDragging ? 'grabbing' : linkMode ? 'crosshair' : multiSelectMode ? 'cell' : 'default' }}
+      style={{ cursor: isDraggingCanvas || draggingNodeId ? 'grabbing' : linkMode ? 'crosshair' : multiSelectMode ? 'cell' : 'default' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -349,6 +380,7 @@ export const MindMap: React.FC<MindMapProps> = ({
                 hasChildren={node.children.length > 0}
                 isCollapsed={node.collapsed || false}
                 isLinkSource={linkSourceId === node.id}
+                isDragging={draggingNodeId === node.id}
                 onSelect={(id, e) => handleNodeSelect(id, e)}
                 onEdit={onEdit}
                 onTextChange={onTextChange}
@@ -356,6 +388,9 @@ export const MindMap: React.FC<MindMapProps> = ({
                 onToggleCollapse={onToggleCollapse}
                 onAddChild={onAddChild}
                 onToggleMarker={onToggleMarker}
+                onDragStart={handleNodeDragStart}
+                onDrag={() => {}} // Handled in parent mouse move
+                onDragEnd={() => setDraggingNodeId(null)}
                 onToggleTask={onToggleTask}
                 onRemoveLink={onRemoveLink}
                 onRemoveAttachment={onRemoveAttachment}
