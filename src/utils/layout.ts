@@ -104,7 +104,9 @@ function layoutBranchSide(
   return results;
 }
 
-export function calculateLayout(root: MindNode): LayoutResult[] {
+export type LayoutType = 'mind-map' | 'org-chart' | 'tree-chart' | 'logic-chart' | 'timeline' | 'fishbone' | 'brace-map' | 'tree-table' | 'matrix';
+
+export function calculateLayout(root: MindNode, layoutType: LayoutType = 'org-chart'): LayoutResult[] {
   const results: LayoutResult[] = [];
 
   // Center node
@@ -120,18 +122,140 @@ export function calculateLayout(root: MindNode): LayoutResult[] {
     return results;
   }
 
-  // Split children: first half right, second half left
-  const mid = Math.ceil(root.children.length / 2);
-  const rightChildren = root.children.slice(0, mid);
-  const leftChildren = root.children.slice(mid);
+  // Different layout algorithms based on layoutType
+  switch (layoutType) {
+    case 'mind-map':
+    case 'org-chart':
+    default: {
+      // Split children: first half right, second half left
+      const mid = Math.ceil(root.children.length / 2);
+      const rightChildren = root.children.slice(0, mid);
+      const leftChildren = root.children.slice(mid);
 
-  // Layout right side
-  const rightResults = layoutBranchSide(rightChildren, 1, 'right', 0);
-  results.push(...rightResults);
+      // Layout right side
+      const rightResults = layoutBranchSide(rightChildren, 1, 'right', 0);
+      results.push(...rightResults);
 
-  // Layout left side
-  const leftResults = layoutBranchSide(leftChildren, 1, 'left', 0);
-  results.push(...leftResults);
+      // Layout left side
+      const leftResults = layoutBranchSide(leftChildren, 1, 'left', 0);
+      results.push(...leftResults);
+      break;
+    }
+
+    case 'tree-chart': {
+      // All children on the right side
+      const rightResults = layoutBranchSide(root.children, 1, 'right', 0);
+      results.push(...rightResults);
+      break;
+    }
+
+    case 'logic-chart': {
+      // Horizontal linear layout
+      let currentX = HORIZONTAL_SPACING;
+      for (const child of root.children) {
+        results.push({
+          id: child.id,
+          x: currentX,
+          y: 0,
+          depth: 1,
+          side: 'right',
+        });
+        currentX += HORIZONTAL_SPACING;
+      }
+      break;
+    }
+
+    case 'timeline': {
+      // Horizontal timeline with nodes at different Y positions
+      let currentX = HORIZONTAL_SPACING;
+      for (let i = 0; i < root.children.length; i++) {
+        const child = root.children[i];
+        const yOffset = (i % 2 === 0 ? -1 : 1) * 60;
+        results.push({
+          id: child.id,
+          x: currentX,
+          y: yOffset,
+          depth: 1,
+          side: 'right',
+        });
+        currentX += HORIZONTAL_SPACING * 0.8;
+      }
+      break;
+    }
+
+    case 'fishbone': {
+      // Diagonal layout
+      let currentX = HORIZONTAL_SPACING * 0.5;
+      for (let i = 0; i < root.children.length; i++) {
+        const child = root.children[i];
+        const yOffset = (i % 2 === 0 ? -1 : 1) * (40 + i * 20);
+        results.push({
+          id: child.id,
+          x: currentX,
+          y: yOffset,
+          depth: 1,
+          side: 'right',
+        });
+        currentX += HORIZONTAL_SPACING * 0.6;
+      }
+      break;
+    }
+
+    case 'brace-map': {
+      // Vertical brace layout
+      let currentY = -((root.children.length - 1) * VERTICAL_SPACING) / 2;
+      for (const child of root.children) {
+        results.push({
+          id: child.id,
+          x: HORIZONTAL_SPACING * 0.8,
+          y: currentY,
+          depth: 1,
+          side: 'right',
+        });
+        currentY += VERTICAL_SPACING;
+      }
+      break;
+    }
+
+    case 'tree-table': {
+      // Grid-like layout
+      const cols = Math.ceil(Math.sqrt(root.children.length));
+      for (let i = 0; i < root.children.length; i++) {
+        const child = root.children[i];
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        results.push({
+          id: child.id,
+          x: col * HORIZONTAL_SPACING,
+          y: row * VERTICAL_SPACING * 2,
+          depth: 1,
+          side: 'right',
+        });
+      }
+      break;
+    }
+
+    case 'matrix': {
+      // Matrix grid layout
+      const size = Math.ceil(Math.sqrt(root.children.length));
+      const spacing = HORIZONTAL_SPACING * 0.7;
+      for (let i = 0; i < root.children.length; i++) {
+        const child = root.children[i];
+        const col = i % size;
+        const row = Math.floor(i / size);
+        const offsetX = (col - (size - 1) / 2) * spacing;
+        const offsetY = (row - (size - 1) / 2) * spacing;
+        results.push({
+          id: child.id,
+          x: offsetX,
+          y: offsetY,
+          depth: 1,
+          side: 'right',
+        });
+      }
+      break;
+    }
+  }
 
   return results;
 }

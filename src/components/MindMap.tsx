@@ -18,6 +18,12 @@ interface MindMapProps {
   linkSourceId: string | null;
   multiSelectMode: boolean;
   dragEnabled: boolean;
+  selectedLayout: {
+    layoutId: string;
+    layoutName: string;
+    variantId: string;
+    variantName: string;
+  };
   onSelect: (id: string | null) => void;
   onEdit: (id: string) => void;
   onTextChange: (id: string, text: string) => void;
@@ -62,6 +68,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   linkSourceId,
   multiSelectMode,
   dragEnabled,
+  selectedLayout,
   onSelect,
   onEdit,
   onTextChange,
@@ -100,7 +107,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   const [draggedNodePosition, setDraggedNodePosition] = useState<{ x: number; y: number } | null>(null);
 
   // Calculate layout
-  const layoutResults = useMemo(() => calculateLayout(root), [root]);
+  const layoutResults = useMemo(() => calculateLayout(root, selectedLayout.layoutId as any), [root, selectedLayout.layoutId]);
 
   // Create a map of id -> layout position
   const layoutMap = useMemo(() => {

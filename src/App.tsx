@@ -78,6 +78,19 @@ export default function App() {
   // Format panel state
   const [showFormatPanel, setShowFormatPanel] = useState(false);
   
+  // Selected layout state
+  const [selectedLayout, setSelectedLayout] = useState<{
+    layoutId: string;
+    layoutName: string;
+    variantId: string;
+    variantName: string;
+  }>({
+    layoutId: 'org-chart',
+    layoutName: 'Org Chart',
+    variantId: 'oc-hierarchical',
+    variantName: 'Hierarchical',
+  });
+  
   // Helper to find a node by ID
   const findNode = useCallback((node: MindNode, id: string): MindNode | null => {
     if (node.id === id) return node;
@@ -235,6 +248,8 @@ export default function App() {
         <FormatPanel
           onClose={() => setShowFormatPanel(false)}
           onMinimize={() => setShowFormatPanel(false)}
+          selectedLayout={selectedLayout}
+          onLayoutChange={setSelectedLayout}
         />
       )}
 
@@ -250,6 +265,7 @@ export default function App() {
         linkMode={linkMode}
         linkSourceId={linkSourceId}
         multiSelectMode={multiSelectMode}
+        selectedLayout={selectedLayout}
         onSelect={setSelectedId}
         onEdit={setEditingId}
         onTextChange={updateText}

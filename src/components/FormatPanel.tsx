@@ -4,6 +4,18 @@ import { LayoutPickerPopover } from './LayoutPickerPopover';
 interface FormatPanelProps {
   onClose: () => void;
   onMinimize: () => void;
+  selectedLayout: {
+    layoutId: string;
+    layoutName: string;
+    variantId: string;
+    variantName: string;
+  };
+  onLayoutChange: (layout: {
+    layoutId: string;
+    layoutName: string;
+    variantId: string;
+    variantName: string;
+  }) => void;
 }
 
 const THEME_COLORS = ['#e0407b', '#4a90d9', '#58b368', '#e6a23c', '#d9534f', '#8e6bbf'];
@@ -50,7 +62,12 @@ const ChevronDown: React.FC<{ className?: string }> = ({ className = '' }) => (
   </svg>
 );
 
-export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize }) => {
+export const FormatPanel: React.FC<FormatPanelProps> = ({ 
+  onClose, 
+  onMinimize,
+  selectedLayout,
+  onLayoutChange,
+}) => {
   const [activeTab, setActiveTab] = useState<'style' | 'pitch' | 'map'>('map');
   const [selectedTheme, setSelectedTheme] = useState(0);
   const [coloredBranch, setColoredBranch] = useState(true);
@@ -59,7 +76,6 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize })
   const [fontOpen, setFontOpen] = useState(false);
   const [widthOpen, setWidthOpen] = useState(false);
   const [layoutPickerOpen, setLayoutPickerOpen] = useState(false);
-  const [selectedLayoutName, setSelectedLayoutName] = useState('Org Chart');
   const layoutCardRef = useRef<HTMLButtonElement>(null);
 
   const tabs = [
@@ -184,7 +200,10 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize })
                   >
                     <MiniOrgChart accentColor="#9ca3af" size="large" />
                   </div>
-                  <span className="flex-1 text-left" style={{ color: '#e0e0e0', fontSize: '13px' }}>{selectedLayoutName}</span>
+                  <div className="flex-1 text-left">
+                    <div style={{ color: '#e0e0e0', fontSize: '13px' }}>{selectedLayout.layoutName}</div>
+                    <div style={{ color: '#8b8b8b', fontSize: '10px', marginTop: '2px' }}>{selectedLayout.variantName}</div>
+                  </div>
                   <ChevronDown className="flex-shrink-0" />
                 </button>
               </div>
@@ -194,7 +213,7 @@ export const FormatPanel: React.FC<FormatPanelProps> = ({ onClose, onMinimize })
                 isOpen={layoutPickerOpen}
                 onClose={() => setLayoutPickerOpen(false)}
                 onSelect={(layoutId, layoutName, variantId, variantName) => {
-                  setSelectedLayoutName(layoutName);
+                  onLayoutChange({ layoutId, layoutName, variantId, variantName });
                 }}
                 anchorRef={layoutCardRef as React.RefObject<HTMLElement>}
               />
