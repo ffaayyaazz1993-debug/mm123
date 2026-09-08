@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { MindMap } from './components/MindMap';
 import { Toolbar } from './components/Toolbar';
+import { InsertMenu } from './components/InsertMenu';
 import { useMindMap } from './hooks/useMindMap';
-import { ViewState } from './types';
+import { ViewState, MindNode } from './types';
 
 export default function App() {
   const {
@@ -64,6 +65,25 @@ export default function App() {
 
   // Multi-select mode: when active, regular clicks toggle node selection
   const [multiSelectMode, setMultiSelectMode] = useState(false);
+  
+  // Insert menu state
+  const [showInsertMenu, setShowInsertMenu] = useState(false);
+  
+  // Helper to find a node by ID
+  const findNode = useCallback((node: MindNode, id: string): MindNode | null => {
+    if (node.id === id) return node;
+    for (const child of node.children) {
+      const found = findNode(child, id);
+      if (found) return found;
+    }
+    return null;
+  }, []);
+  
+  // Get the currently selected node
+  const selectedNode = useMemo(() => {
+    if (!selectedId) return null;
+    return findNode(root, selectedId);
+  }, [root, selectedId, findNode]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -163,12 +183,30 @@ export default function App() {
         onCancelLink={cancelLinkMode}
         onToggleMultiSelect={() => setMultiSelectMode(!multiSelectMode)}
         onSummary={handleCreateSummary}
+        onInsert={() => setShowInsertMenu(true)}
         onReset={resetMap}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onFitView={handleFitView}
         scale={viewState.scale}
       />
+
+      {/* Insert Menu Modal */}
+      {showInsertMenu && selectedNode && (
+        <InsertMenu
+          node={selectedNode}
+          onClose={() => setShowInsertMenu(false)}
+          onInsertNote={insertNote}
+          onInsertLabel={insertLabel}
+          onInsertTask={insertTask}
+          onInsertLink={insertLink}
+          onInsertAttachment={insertAttachment}
+          onInsertAudioNote={insertAudioNote}
+          onInsertSticker={insertSticker}
+          onInsertIllustration={insertIllustration}
+          onInsertEquation={insertEquation}
+        />
+      )}
 
       {/* Mind Map Canvas */}
       <MindMap
@@ -198,21 +236,12 @@ export default function App() {
         onFinishSummaryEdit={() => setEditingSummaryId(null)}
         onDeleteSummary={deleteSummary}
         onToggleMarker={toggleMarker}
-        onInsertNote={insertNote}
-        onInsertLabel={insertLabel}
-        onInsertTask={insertTask}
         onToggleTask={toggleTask}
-        onInsertLink={insertLink}
         onRemoveLink={removeLink}
-        onInsertAttachment={insertAttachment}
         onRemoveAttachment={removeAttachment}
-        onInsertAudioNote={insertAudioNote}
         onRemoveAudioNote={removeAudioNote}
-        onInsertSticker={insertSticker}
         onRemoveSticker={removeSticker}
-        onInsertIllustration={insertIllustration}
         onRemoveIllustration={removeIllustration}
-        onInsertEquation={insertEquation}
         onRemoveEquation={removeEquation}
         onRemoveNote={removeNote}
         onRemoveLabel={removeLabel}

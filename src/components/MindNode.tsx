@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MindNode as MindNodeType } from '../types';
 import { MarkerPicker } from './MarkerPicker';
-import { InsertMenu } from './InsertMenu';
 import { getMarkerById } from '../utils/markers';
 
 interface MindNodeProps {
@@ -22,25 +21,16 @@ interface MindNodeProps {
   onToggleCollapse: (id: string) => void;
   onAddChild: (id: string) => void;
   onToggleMarker: (nodeId: string, markerId: string) => void;
-  onInsertNote: (nodeId: string, note: string) => void;
-  onInsertLabel: (nodeId: string, label: string) => void;
-  onInsertTask: (nodeId: string) => void;
-  onToggleTask: (nodeId: string) => void;
-  onInsertLink: (nodeId: string, type: 'webpage' | 'topic' | 'file' | 'folder', url: string, title?: string) => void;
   onRemoveLink: (nodeId: string, linkId: string) => void;
-  onInsertAttachment: (nodeId: string, file: File) => void;
   onRemoveAttachment: (nodeId: string, attachmentId: string) => void;
-  onInsertAudioNote: (nodeId: string, duration: number, dataUrl?: string) => void;
   onRemoveAudioNote: (nodeId: string) => void;
-  onInsertSticker: (nodeId: string, sticker: string) => void;
   onRemoveSticker: (nodeId: string) => void;
-  onInsertIllustration: (nodeId: string, url: string, alt?: string) => void;
   onRemoveIllustration: (nodeId: string) => void;
-  onInsertEquation: (nodeId: string, equation: string) => void;
   onRemoveEquation: (nodeId: string) => void;
   onRemoveNote: (nodeId: string) => void;
   onRemoveLabel: (nodeId: string) => void;
   onRemoveTask: (nodeId: string) => void;
+  onToggleTask: (nodeId: string) => void;
 }
 
 export const MindNodeComponent: React.FC<MindNodeProps> = ({
@@ -61,32 +51,21 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   onToggleCollapse,
   onAddChild,
   onToggleMarker,
-  onInsertNote,
-  onInsertLabel,
-  onInsertTask,
-  onToggleTask,
-  onInsertLink,
   onRemoveLink,
-  onInsertAttachment,
   onRemoveAttachment,
-  onInsertAudioNote,
   onRemoveAudioNote,
-  onInsertSticker,
   onRemoveSticker,
-  onInsertIllustration,
   onRemoveIllustration,
-  onInsertEquation,
   onRemoveEquation,
   onRemoveNote,
   onRemoveLabel,
   onRemoveTask,
+  onToggleTask,
 }) => {
   const [text, setText] = useState(node.text);
   const [showMarkerPicker, setShowMarkerPicker] = useState(false);
-  const [showInsertMenu, setShowInsertMenu] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const markerPickerRef = useRef<HTMLDivElement>(null);
-  const insertMenuRef = useRef<HTMLDivElement>(null);
 
   // Close marker picker when clicking outside
   useEffect(() => {
@@ -301,49 +280,6 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
               currentMarkers={node.markers || []}
               onToggleMarker={(markerId) => onToggleMarker(node.id, markerId)}
               onClose={() => setShowMarkerPicker(false)}
-            />
-          </div>
-        )}
-
-        {/* Insert button */}
-        {!isEditing && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowInsertMenu(!showInsertMenu);
-            }}
-            className="absolute -left-4 bottom-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-            style={{
-              background: '#fff',
-              color: '#0ea5e9',
-              border: '2px solid #0ea5e9',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-            }}
-            title="Insert"
-          >
-            +
-          </button>
-        )}
-
-        {/* Insert Menu */}
-        {showInsertMenu && (
-          <div
-            ref={insertMenuRef}
-            className="absolute left-0 bottom-full mb-2 z-50"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <InsertMenu
-              node={node}
-              onClose={() => setShowInsertMenu(false)}
-              onInsertNote={onInsertNote}
-              onInsertLabel={onInsertLabel}
-              onInsertTask={onInsertTask}
-              onInsertLink={onInsertLink}
-              onInsertAttachment={onInsertAttachment}
-              onInsertAudioNote={onInsertAudioNote}
-              onInsertSticker={onInsertSticker}
-              onInsertIllustration={onInsertIllustration}
-              onInsertEquation={onInsertEquation}
             />
           </div>
         )}
