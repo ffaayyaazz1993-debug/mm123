@@ -100,94 +100,56 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
     }
   }, [isEditing]);
 
-  const [holdTimer, setHoldTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const [holdProgress, setHoldProgress] = useState(0);
-  const [mouseDownPos, setMouseDownPos] = useState({ x: 0, y: 0 });
-  const [isHoldActive, setIsHoldActive] = useState(false);
+  const [tapCount, setTapCount] = useState(0);
+  const [lastTapTime, setLastTapTime] = useState(0);
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(node.id);
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
+    
+    // If within 500ms of last tap, increment counter
+    if (timeSinceLastTap < 500) {
+      const newTapCount = tapCount + 1;
+      setTapCount(newTapCount);
+      
+      // Triple tap detected
+      if (newTapCount >= 3) {
+        setTapCount(0);
+        setLastTapTime(0);
+        onDragStart(node.id, e);
+        return; // Don't call onSelect for triple tap
+      }
+    } else {
+      // Reset counter
+      setTapCount(1);
+    }
+    
+    setLastTapTime(now);
+    onSelect(node.id, e);
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return; // Only left click
-    if (isDragging) return; // Already dragging
-    
-    const startX = e.clientX;
-    const startY = e.clientY;
-    setMouseDownPos({ x: startX, y: startY });
-    setIsHoldActive(true);
-    
-    // Start hold timer
-    const timer = setTimeout(() => {
-      // After 3 seconds, enter drag mode
-      onDragStart(node.id, e);
-      setHoldProgress(100);
-      setIsHoldActive(false);
-    }, 3000);
-    
-    setHoldTimer(timer);
-    
-    // Update progress every 50ms for smoother animation
-    const progressInterval = setInterval(() => {
-      setHoldProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + 1.67; // 100% / 60 intervals (3 seconds / 50ms)
-      });
-    }, 50);
-    
-    // Store interval ID to clear it later
-    (timer as any).progressInterval = progressInterval;
+    // If in drag mode, prevent default to avoid text selection
+    if (isDragging) {
+      e.preventDefault();
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    // If in hold phase (not yet dragging), check if mouse moved too much
-    if (isHoldActive && !isDragging) {
-      const dx = Math.abs(e.clientX - mouseDownPos.x);
-      const dy = Math.abs(e.clientY - mouseDownPos.y);
-      
-      // If moved more than 10px, cancel the hold
-      if (dx > 10 || dy > 10) {
-        if (holdTimer) {
-          clearTimeout(holdTimer);
-          if ((holdTimer as any).progressInterval) {
-            clearInterval((holdTimer as any).progressInterval);
-          }
-          setHoldTimer(null);
-          setHoldProgress(0);
-          setIsHoldActive(false);
-        }
-      }
-    }
+    // Nothing needed here - drag is handled by parent
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
-    // Cancel hold timer if still active
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-      if ((holdTimer as any).progressInterval) {
-        clearInterval((holdTimer as any).progressInterval);
-      }
-      setHoldTimer(null);
-      setHoldProgress(0);
-      setIsHoldActive(false);
-    }
-    
     // If in drag mode, end drag
     if (isDragging) {
       onDragEnd(node.id);
-    }
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Don't trigger click if we were dragging
-    if (!isDragging) {
-      onSelect(node.id, e);
     }
   };
 
@@ -264,24 +226,6 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      {/* Hold progress indicator */}
-      {holdProgress > 0 && holdProgress < 100 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <svg className="w-full h-full -rotate-90" style={{ filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.2))' }}>
-            <circle
-              cx="50%"
-              cy="50%"
-              r="45%"
-              fill="none"
-              stroke={color}
-              strokeWidth="3"
-              strokeDasharray={`${holdProgress * 2.83} 283`}
-              strokeLinecap="round"
-              opacity="0.6"
-            />
-          </svg>
-        </div>
-      )}
       <div
         className="relative flex items-center gap-2 whitespace-nowrap transition-all duration-200"
         style={{

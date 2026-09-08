@@ -331,7 +331,7 @@ export default function App() {
           <span>Create floating node</span>
         </div>
         <div className="flex items-center gap-2">
-          <kbd className="px-1.5 py-0.5 bg-cyan-100 rounded text-[10px] font-mono border border-cyan-200 text-cyan-700">Hold 3s on node</kbd>
+          <kbd className="px-1.5 py-0.5 bg-cyan-100 rounded text-[10px] font-mono border border-cyan-200 text-cyan-700">Triple-tap node</kbd>
           <span>Drag to reposition</span>
         </div>
       </div>
