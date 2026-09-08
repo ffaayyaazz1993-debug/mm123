@@ -103,6 +103,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
   const [holdTimer, setHoldTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
   const [mouseDownPos, setMouseDownPos] = useState({ x: 0, y: 0 });
+  const [isHoldActive, setIsHoldActive] = useState(false);
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -111,49 +112,55 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return; // Only left click
+    if (isDragging) return; // Already dragging
     
     const startX = e.clientX;
     const startY = e.clientY;
     setMouseDownPos({ x: startX, y: startY });
+    setIsHoldActive(true);
     
     // Start hold timer
     const timer = setTimeout(() => {
       // After 3 seconds, enter drag mode
       onDragStart(node.id, e);
       setHoldProgress(100);
+      setIsHoldActive(false);
     }, 3000);
     
     setHoldTimer(timer);
     
-    // Update progress every 100ms
+    // Update progress every 50ms for smoother animation
     const progressInterval = setInterval(() => {
       setHoldProgress(prev => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           return 100;
         }
-        return prev + 3.33; // 100% / 30 intervals (3 seconds / 100ms)
+        return prev + 1.67; // 100% / 60 intervals (3 seconds / 50ms)
       });
-    }, 100);
+    }, 50);
     
     // Store interval ID to clear it later
     (timer as any).progressInterval = progressInterval;
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    // If not in drag mode yet, check if mouse moved too much
-    if (!isDragging && holdTimer) {
+    // If in hold phase (not yet dragging), check if mouse moved too much
+    if (isHoldActive && !isDragging) {
       const dx = Math.abs(e.clientX - mouseDownPos.x);
       const dy = Math.abs(e.clientY - mouseDownPos.y);
       
-      // If moved more than 5px, cancel the hold
-      if (dx > 5 || dy > 5) {
-        clearTimeout(holdTimer);
-        if ((holdTimer as any).progressInterval) {
-          clearInterval((holdTimer as any).progressInterval);
+      // If moved more than 10px, cancel the hold
+      if (dx > 10 || dy > 10) {
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+          if ((holdTimer as any).progressInterval) {
+            clearInterval((holdTimer as any).progressInterval);
+          }
+          setHoldTimer(null);
+          setHoldProgress(0);
+          setIsHoldActive(false);
         }
-        setHoldTimer(null);
-        setHoldProgress(0);
       }
     }
   };
@@ -167,6 +174,7 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
       }
       setHoldTimer(null);
       setHoldProgress(0);
+      setIsHoldActive(false);
     }
     
     // If in drag mode, end drag
@@ -177,7 +185,10 @@ export const MindNodeComponent: React.FC<MindNodeProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onSelect(node.id, e);
+    // Don't trigger click if we were dragging
+    if (!isDragging) {
+      onSelect(node.id, e);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

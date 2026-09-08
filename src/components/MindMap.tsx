@@ -95,6 +95,7 @@ export const MindMap: React.FC<MindMapProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   const [nodeDragStart, setNodeDragStart] = useState({ x: 0, y: 0 });
+  const [draggedNodePosition, setDraggedNodePosition] = useState<{ x: number; y: number } | null>(null);
 
   // Calculate layout
   const layoutResults = useMemo(() => calculateLayout(root), [root]);
@@ -154,27 +155,28 @@ export const MindMap: React.FC<MindMapProps> = ({
       }));
     }
     // Handle node dragging
-    else if (draggingNodeId) {
+    else if (draggingNodeId && draggedNodePosition) {
       const deltaX = (e.clientX - nodeDragStart.x) / viewState.scale;
       const deltaY = (e.clientY - nodeDragStart.y) / viewState.scale;
       
-      // Get current node position from layout
-      const nodePos = layoutMap.get(draggingNodeId);
-      if (nodePos) {
-        const newX = nodePos.x + deltaX;
-        const newY = nodePos.y + deltaY;
-        onUpdateNodePosition(draggingNodeId, newX, newY);
-      }
+      // Calculate new position based on the initial dragged position
+      const newX = draggedNodePosition.x + deltaX;
+      const newY = draggedNodePosition.y + deltaY;
+      
+      // Update the node position
+      onUpdateNodePosition(draggingNodeId, newX, newY);
       
       // Update drag start for next movement
       setNodeDragStart({ x: e.clientX, y: e.clientY });
+      setDraggedNodePosition({ x: newX, y: newY });
     }
-  }, [isDraggingCanvas, draggingNodeId, nodeDragStart, dragStart, viewState.scale, layoutMap, onUpdateNodePosition, setViewState]);
+  }, [isDraggingCanvas, draggingNodeId, draggedNodePosition, nodeDragStart, dragStart, viewState.scale, onUpdateNodePosition, setViewState]);
 
   const handleMouseUp = useCallback(() => {
     setIsDraggingCanvas(false);
     if (draggingNodeId) {
       setDraggingNodeId(null);
+      setDraggedNodePosition(null);
     }
   }, [draggingNodeId]);
 
@@ -183,7 +185,13 @@ export const MindMap: React.FC<MindMapProps> = ({
     e.preventDefault();
     setDraggingNodeId(id);
     setNodeDragStart({ x: e.clientX, y: e.clientY });
-  }, []);
+    
+    // Get the current position from layout map
+    const nodePos = layoutMap.get(id);
+    if (nodePos) {
+      setDraggedNodePosition({ x: nodePos.x, y: nodePos.y });
+    }
+  }, [layoutMap]);
 
   // Double-click handler to create floating node
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -367,12 +375,17 @@ export const MindMap: React.FC<MindMapProps> = ({
             const pos = layoutMap.get(node.id);
             if (!pos) return null;
 
+            // Use dragged position if this node is being dragged
+            const isBeingDragged = draggingNodeId === node.id && draggedNodePosition;
+            const nodeX = isBeingDragged ? draggedNodePosition.x : pos.x;
+            const nodeY = isBeingDragged ? draggedNodePosition.y : pos.y;
+
             return (
               <MindNodeComponent
                 key={node.id}
                 node={node}
-                x={pos.x}
-                y={pos.y}
+                x={nodeX}
+                y={nodeY}
                 isSelected={selectedId === node.id}
                 isMultiSelected={selectedIds.has(node.id)}
                 isEditing={editingId === node.id}
@@ -390,7 +403,10 @@ export const MindMap: React.FC<MindMapProps> = ({
                 onToggleMarker={onToggleMarker}
                 onDragStart={handleNodeDragStart}
                 onDrag={() => {}} // Handled in parent mouse move
-                onDragEnd={() => setDraggingNodeId(null)}
+                onDragEnd={() => {
+                  setDraggingNodeId(null);
+                  setDraggedNodePosition(null);
+                }}
                 onToggleTask={onToggleTask}
                 onRemoveLink={onRemoveLink}
                 onRemoveAttachment={onRemoveAttachment}
