@@ -230,7 +230,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
   // Calculate position - determine if popover should appear left or right of anchor
   const anchorRect = anchorRef.current?.getBoundingClientRect();
   const top = anchorRect ? anchorRect.top : 100;
-  const popoverWidth = 310;
+  const popoverWidth = 380;
   const gap = 10;
   
   // Calculate left position (popover to the left of anchor)
@@ -258,7 +258,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
         position: 'fixed',
         top: `${Math.max(20, top - 50)}px`,
         left: `${Math.max(10, finalLeft)}px`,
-        width: `${popoverWidth}px`,
+        width: '380px',
         minHeight: '530px',
         background: '#262626',
         borderRadius: '8px',
@@ -270,34 +270,33 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
       }}
     >
       {/* Left menu column */}
-      <div style={{ width: '160px', paddingRight: '8px' }}>
+      <div style={{ width: '170px', paddingRight: '10px' }}>
         {LAYOUTS.map(layout => {
           const isExpanded = expandedId === layout.id;
           return (
-            <div
-              key={layout.id}
-              onClick={() => toggleExpand(layout.id)}
-              style={{
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '0 8px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                transition: 'background 0.15s',
-                background: isExpanded ? '#333333' : 'transparent',
-              }}
-              onMouseEnter={(e) => {
-                if (!isExpanded) e.currentTarget.style.background = '#333333';
-              }}
-              onMouseLeave={(e) => {
-                if (!isExpanded) e.currentTarget.style.background = 'transparent';
-              }}
-            >
-              <span
+              <div
+                key={layout.id}
+                onClick={() => toggleExpand(layout.id)}
                 style={{
-                  fontSize: '10px',
+                  height: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '0 10px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  transition: 'background 0.15s',
+                  background: isExpanded ? '#333333' : 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isExpanded) e.currentTarget.style.background = '#333333';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isExpanded) e.currentTarget.style.background = 'transparent';
+                }}
+              >              <span
+                style={{
+                  fontSize: '12px',
                   color: '#cfcfcf',
                   transition: 'transform 0.2s',
                   transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -306,7 +305,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
               >
                 ▸
               </span>
-              <span style={{ fontSize: '14px', color: '#e6e6e6', fontWeight: 500 }}>
+              <span style={{ fontSize: '15px', color: '#e6e6e6', fontWeight: 500 }}>
                 {layout.name}
               </span>
             </div>
@@ -363,10 +362,10 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                 >
                   <div
                     style={{
-                      width: '44px',
-                      height: '30px',
+                      width: '64px',
+                      height: '44px',
                       background: '#fff',
-                      borderRadius: '3px',
+                      borderRadius: '4px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -375,7 +374,7 @@ export const LayoutPickerPopover: React.FC<LayoutPickerPopoverProps> = ({
                   >
                     {variant.thumbnail}
                   </div>
-                  <span style={{ fontSize: '10px', color: '#e0e0e0', textAlign: 'center', lineHeight: '1.2' }}>
+                  <span style={{ fontSize: '11px', color: '#e0e0e0', textAlign: 'center', lineHeight: '1.2', fontWeight: 500 }}>
                     {variant.name}
                   </span>
                 </div>
